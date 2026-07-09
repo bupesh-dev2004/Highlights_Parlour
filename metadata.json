@@ -1,0 +1,6 @@
+{
+  "name": "Aura Salon & Spa",
+  "description": "A premium, soft, and welcoming beauty parlour, salon & spa website featuring an interactive booking system, services pricing, filterable gallery, and membership tiers.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

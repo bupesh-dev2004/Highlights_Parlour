@@ -30,19 +30,14 @@ export default function Header({ currentPage, setCurrentPage, onReserveClick }: 
     <header id="app-header" className="sticky top-0 z-50 w-full bg-brand-cream/90 backdrop-blur-md border-b border-brand-blush/60 shadow-xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
-          
+
           {/* Elegant Serif Logo */}
-          <button 
+          <button
             id="logo-btn"
-            onClick={() => handleNavClick('home')} 
+            onClick={() => handleNavClick('home')}
             className="flex items-center space-x-2 group cursor-pointer"
           >
-            <div className="relative flex items-center justify-center w-10 h-10 rounded-full bg-brand-blush text-brand-gold group-hover:bg-brand-rose transition-colors duration-300">
-              <Sparkles className="w-5 h-5" />
-            </div>
-            <span className="font-serif text-2xl font-semibold tracking-wide text-brand-charcoal group-hover:text-brand-gold transition-colors duration-300">
-              Aura<span className="text-brand-gold font-sans font-light text-sm ml-1 uppercase tracking-widest">Salon</span>
-            </span>
+            <img src="/logo.jpg" alt="Highlights Makeoverartistry Logo" className="h-16 w-auto object-contain mix-blend-multiply" />
           </button>
 
           {/* Desktop Navigation links */}
@@ -113,11 +108,10 @@ export default function Header({ currentPage, setCurrentPage, onReserveClick }: 
                     id={`mobile-nav-link-${item.id}`}
                     key={item.id}
                     onClick={() => handleNavClick(item.id)}
-                    className={`block w-full text-left px-4 py-3 rounded-xl text-base font-medium tracking-wide transition-colors ${
-                      isActive 
-                        ? 'bg-brand-blush text-brand-gold font-semibold' 
-                        : 'text-brand-charcoal hover:bg-brand-blush/40 hover:text-brand-gold'
-                    }`}
+                    className={`block w-full text-left px-4 py-3 rounded-xl text-base font-medium tracking-wide transition-colors ${isActive
+                      ? 'bg-brand-blush text-brand-gold font-semibold'
+                      : 'text-brand-charcoal hover:bg-brand-blush/40 hover:text-brand-gold'
+                      }`}
                   >
                     {item.label}
                   </button>

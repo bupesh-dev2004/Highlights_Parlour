@@ -35,22 +35,17 @@ export default function Footer({ setCurrentPage }: FooterProps) {
 
   return (
     <footer id="app-footer" className="bg-brand-charcoal text-stone-300 border-t border-brand-charcoal/20">
-      
+
       {/* Top Banner Style Border */}
       <div className="h-1.5 bg-gradient-to-r from-brand-blush via-brand-gold to-brand-rose"></div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-          
+
           {/* Logo & Brand Philosophy */}
           <div className="space-y-6">
-            <div className="flex items-center space-x-2">
-              <div className="relative flex items-center justify-center w-9 h-9 rounded-full bg-brand-rose/25 text-brand-rose">
-                <Sparkles className="w-4 h-4" />
-              </div>
-              <span className="font-serif text-2xl font-semibold tracking-wide text-white">
-                Aura<span className="text-brand-rose font-sans font-light text-xs ml-1 uppercase tracking-widest">Spa</span>
-              </span>
+            <div className="inline-flex items-center justify-center bg-white p-3 rounded-2xl shadow-sm">
+              <img src="/logo.jpg" alt="Highlights Makeoverartistry Logo" className="h-12 w-auto object-contain mix-blend-multiply" />
             </div>
             <p className="text-sm leading-relaxed text-stone-400">
               A premium, boutique beauty parlor dedicated to restoring your inner radiance and outward glow with custom, organic treatments and masterful design techniques.
@@ -119,7 +114,7 @@ export default function Footer({ setCurrentPage }: FooterProps) {
             <p className="text-sm text-stone-400">
               Subscribe to receive exclusive boutique invites, early-bird membership specials, and luxury care tips.
             </p>
-            
+
             {subscribed ? (
               <div className="bg-emerald-950/40 border border-emerald-900/50 rounded-xl p-4 flex items-start space-x-3">
                 <CheckCircle className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
@@ -155,7 +150,7 @@ export default function Footer({ setCurrentPage }: FooterProps) {
 
         {/* Lower copyright bar */}
         <div className="mt-16 pt-8 border-t border-stone-800/80 flex flex-col sm:flex-row justify-between items-center text-xs text-stone-500 space-y-4 sm:space-y-0">
-          <p>© 2026 Aura Salon & Spa. All rights reserved. Elegant visual design.</p>
+          <p>© 2026 Highlights Makeoverartistry. All rights reserved. Elegant visual design.</p>
           <div className="flex space-x-6">
             <a href="#privacy" className="hover:text-stone-300 transition-colors">Privacy Policy</a>
             <a href="#terms" className="hover:text-stone-300 transition-colors">Terms of Service</a>

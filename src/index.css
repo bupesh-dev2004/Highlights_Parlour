@@ -40,3 +40,21 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-brand-gold);
 }
+
+/* Gold Gradient Flow Animation */
+@keyframes gold-flow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gold-flow {
+  background-size: 200% 200%;
+  animation: gold-flow 4s ease infinite;
+}

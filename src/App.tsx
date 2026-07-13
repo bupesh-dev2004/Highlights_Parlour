@@ -71,7 +71,7 @@ export default function App() {
       {/* 1. Dynamic Soft Pastel Status Bar Greeting */}
       <div id="dynamic-status-bar" className="bg-brand-blush/60 border-b border-brand-rose/20 py-2.5 px-4 text-center text-[11px] font-sans font-medium uppercase tracking-widest flex items-center justify-center space-x-2">
         <Sparkles className="w-3.5 h-3.5 text-brand-gold animate-pulse shrink-0" />
-        <span>{greeting}, welcome to Aura Salon & Spa Beverly Hills</span>
+        <span>{greeting}, welcome to Highlights Makeoverartistry</span>
         {localBookings.length > 0 && (
           <button
             id="open-bookings-tray-bar-btn"

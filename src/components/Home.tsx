@@ -54,21 +54,21 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
     <div className="space-y-24 pb-20">
       
       {/* 1. Hero Banner */}
-      <section id="hero-banner" className="relative h-[90vh] flex items-center justify-center overflow-hidden bg-stone-900">
+      <section id="hero-banner" className="relative h-[90vh] flex items-center justify-start overflow-hidden bg-stone-900">
         
         {/* Parallax Background Image with Dark Soft Overlay */}
         <div className="absolute inset-0">
           <img
-            src="https://images.unsplash.com/photo-1600334089648-b0d9d3028eb2?auto=format&fit=crop&w=1920&q=85"
+            src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=1920&q=85"
             alt="Aura Sanctuary Spa Ambiance"
-            className="w-full h-full object-cover object-center opacity-60 scale-105 animate-pulse-slow"
+            className="w-full h-full object-cover object-center opacity-75 scale-105 animate-pulse-slow"
             referrerPolicy="no-referrer"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-brand-charcoal/80 via-brand-charcoal/65 to-brand-charcoal/40" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/60 to-transparent" />
         </div>
 
         {/* Hero Content */}
-        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-8">
+        <div className="relative w-full max-w-4xl ml-0 mr-auto px-6 sm:px-12 md:pl-20 lg:pl-32 text-left space-y-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -76,7 +76,7 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
             className="space-y-4"
           >
             <span className="text-brand-rose font-sans font-semibold text-xs sm:text-sm tracking-widest uppercase block">
-              ✦ Welcome to Aura Salon & Spa ✦
+              ✦ Welcome to Highlights Makeoverartistry ✦
             </span>
             <h1 className="font-serif text-4xl sm:text-6xl md:text-7xl text-white font-light tracking-tight leading-tight">
               Restore Your Natural <br />
@@ -88,7 +88,7 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5, duration: 1 }}
-            className="text-stone-300 font-sans max-w-2xl mx-auto text-base sm:text-lg font-light leading-relaxed"
+            className="text-stone-300 font-sans max-w-2xl text-base sm:text-lg font-light leading-relaxed"
           >
             A high-end sanctuary in Beverly Hills. Experience personalized biological facials, couture hair coloring, and relaxing hot stone rituals.
           </motion.p>
@@ -97,7 +97,7 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.8, duration: 0.5 }}
-            className="pt-4 flex flex-col sm:flex-row justify-center items-center gap-4"
+            className="pt-4 flex flex-col sm:flex-row justify-start items-center gap-4"
           >
             <button
               id="hero-reserve-btn"
@@ -125,37 +125,33 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
         </div>
       </section>
 
-      {/* 2. Highlights Ribbon */}
-      <section id="highlights-strip" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-3xl p-8 sm:p-12 border border-brand-blush shadow-xs grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {highlightItems.map((item, index) => {
-            const IconComponent = item.icon;
-            return (
-              <div key={index} className="flex flex-col items-center sm:items-start text-center sm:text-left space-y-3 group">
-                <div className="w-12 h-12 rounded-2xl bg-brand-blush flex items-center justify-center text-brand-gold group-hover:bg-brand-gold group-hover:text-white transition-all duration-300">
-                  <IconComponent className="w-6 h-6" />
-                </div>
-                <h3 className="font-serif text-lg font-medium text-brand-charcoal">{item.title}</h3>
-                <p className="text-xs text-stone-500 font-light leading-relaxed">{item.desc}</p>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* 3. Short About Us preview */}
-      <section id="about-preview" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* 2. Short About Us preview */}
+      <motion.section
+        id="about-preview"
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.8, ease: 'easeOut' }}
+      >
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           
-          <div className="lg:col-span-5 relative">
+          <div className="lg:col-span-5 relative group">
             <div className="absolute -top-4 -left-4 w-2/3 h-2/3 rounded-3xl bg-brand-blush/60 -z-1" />
-            <img
-              src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=800&q=80"
-              alt="Luxury Spa Massage treatment"
-              className="rounded-3xl shadow-sm object-cover h-[450px] w-full"
-              referrerPolicy="no-referrer"
-            />
-            <div className="absolute -bottom-6 -right-6 bg-white border border-brand-blush p-6 rounded-2xl shadow-xs hidden sm:block max-w-[200px] text-center">
+            
+            {/* Golden Gradient Shine Border Wrapper */}
+            <div className="relative p-[3px] rounded-[32px] bg-gradient-to-tr from-amber-500 via-yellow-200 to-amber-600 shadow-md transition-all duration-500 group-hover:shadow-xl group-hover:scale-[1.01] animate-gold-flow">
+              <div className="bg-white rounded-[29px] p-8 flex items-center justify-center overflow-hidden">
+                <img
+                  src="/relaxation.png"
+                  alt="The Art of Relaxation Logo"
+                  className="object-contain h-[350px] w-full mix-blend-multiply transform transition-transform duration-700 group-hover:scale-105"
+                  referrerPolicy="no-referrer"
+                />
+              </div>
+            </div>
+
+            <div className="absolute -bottom-6 -right-6 bg-white border border-brand-blush p-6 rounded-2xl shadow-xs hidden sm:block max-w-[200px] text-center z-10">
               <span className="block font-serif text-3xl font-semibold text-brand-gold">100%</span>
               <span className="block text-[10px] text-stone-500 uppercase tracking-widest mt-1">Satisfaction Assured</span>
             </div>
@@ -190,10 +186,17 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
           </div>
 
         </div>
-      </section>
+      </motion.section>
 
-      {/* 4. Popular Services Grid */}
-      <section id="popular-services" className="bg-brand-blush/30 py-20">
+      {/* 3. Popular Services Grid */}
+      <motion.section
+        id="popular-services"
+        className="bg-brand-blush/30 py-20"
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.8, ease: 'easeOut' }}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           
           <div className="text-center space-y-3">
@@ -260,10 +263,17 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
           </div>
 
         </div>
-      </section>
+      </motion.section>
 
-      {/* 5. Gallery Teaser */}
-      <section id="gallery-teaser" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+      {/* 4. Gallery Teaser */}
+      <motion.section
+        id="gallery-teaser"
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12"
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.8, ease: 'easeOut' }}
+      >
         <div className="text-center space-y-3">
           <span className="text-brand-gold font-sans font-semibold text-xs tracking-widest uppercase block">
             ✦ Visual Inspiration
@@ -311,10 +321,17 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </button>
         </div>
-      </section>
+      </motion.section>
 
-      {/* 6. Client Testimonials Slider */}
-      <section id="testimonials" className="bg-brand-cream border-y border-brand-blush/60 py-20 relative overflow-hidden">
+      {/* 5. Client Testimonials Slider */}
+      <motion.section
+        id="testimonials"
+        className="bg-brand-cream border-y border-brand-blush/60 py-20 relative overflow-hidden"
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.8, ease: 'easeOut' }}
+      >
         
         {/* Subtle decorative circles */}
         <div className="absolute -top-12 -left-12 w-48 h-48 rounded-full bg-brand-blush/40 blur-xl" />
@@ -398,10 +415,17 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
           </div>
 
         </div>
-      </section>
+      </motion.section>
 
-      {/* 7. Membership Promo Banner */}
-      <section id="membership-promo" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* 6. Membership Promo Banner */}
+      <motion.section
+        id="membership-promo"
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.8, ease: 'easeOut' }}
+      >
         <div className="relative rounded-3xl overflow-hidden bg-brand-charcoal text-white p-8 sm:p-16 border border-brand-charcoal shadow-lg">
           
           {/* Delicate golden accent patterns */}
@@ -444,7 +468,7 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
             </div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
     </div>
   );

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Award, Sparkles, ShieldCheck, Calendar, ArrowRight, Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import { SERVICES, TESTIMONIALS, GALLERY_ITEMS } from '../data';
@@ -12,6 +12,16 @@ interface HomeProps {
 
 export default function Home({ setCurrentPage, onReserveClick, onBookService }: HomeProps) {
   const [activeTestimonial, setActiveTestimonial] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Take first 6 popular services
   const popularServices = SERVICES.slice(0, 6);
@@ -54,21 +64,33 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
     <div className="space-y-24 pb-20">
       
       {/* 1. Hero Banner */}
-      <section id="hero-banner" className="relative h-[90vh] flex items-center justify-start overflow-hidden bg-stone-900">
+      <section id="hero-banner" className="relative h-[90vh] flex items-start pt-8 sm:items-center sm:pt-0 justify-center sm:justify-start overflow-hidden bg-stone-900">
         
         {/* Background Video with Dark Soft Overlay */}
         <div className="absolute inset-0">
+          {/* Desktop Video */}
           <video
             autoPlay
             loop
             muted
             playsInline
-            className="w-full h-full object-cover object-center opacity-75"
+            className="hidden sm:block w-full h-full object-cover object-center opacity-75"
           >
             <source src="/Home page BG.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
-          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent" />
+          {/* Mobile Video */}
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="block sm:hidden w-full h-full object-cover object-center opacity-75"
+          >
+            <source src="/Home page BG for Mobile.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/50 sm:bg-gradient-to-r sm:from-black/70 sm:via-black/30 sm:to-transparent" />
         </div>
 
         {/* Hero Content */}
@@ -81,11 +103,11 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
               opacity: 1,
               transition: {
                 staggerChildren: 0.15,
-                delayChildren: 0.5
+                delayChildren: isMobile ? 2.0 : 0.5
               }
             }
           }}
-          className="relative w-full max-w-4xl ml-0 mr-auto px-6 sm:px-12 md:pl-12 lg:pl-16 text-left space-y-6"
+          className="relative w-full max-w-4xl mx-auto sm:ml-0 sm:mr-auto px-6 sm:px-12 md:pl-12 lg:pl-16 text-center sm:text-left space-y-4 sm:space-y-6"
         >
           {/* Tagline */}
           <div className="overflow-hidden">
@@ -94,7 +116,7 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
                 hidden: { y: "100%", opacity: 0 },
                 visible: { y: 0, opacity: 1, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } }
               }}
-              className="text-brand-rose font-sans font-semibold text-xs sm:text-sm tracking-[0.25em] uppercase block"
+              className="text-brand-rose font-sans font-semibold text-[10px] sm:text-sm tracking-[0.25em] uppercase block"
             >
               ✦ Welcome to Highlights Makeoverartistry ✦
             </motion.span>
@@ -108,7 +130,7 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
                   hidden: { y: "100%", opacity: 0 },
                   visible: { y: 0, opacity: 1, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } }
                 }}
-                className="font-serif text-4xl sm:text-6xl md:text-7xl text-white font-light tracking-tight leading-tight"
+                className="font-serif text-2xl sm:text-6xl md:text-7xl text-white font-light tracking-tight leading-tight"
               >
                 Restore Your Natural
               </motion.h1>
@@ -119,7 +141,7 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
                   hidden: { y: "100%", opacity: 0 },
                   visible: { y: 0, opacity: 1, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } }
                 }}
-                className="font-serif text-4xl sm:text-6xl md:text-7xl font-light tracking-tight leading-none"
+                className="font-serif text-2xl sm:text-6xl md:text-7xl font-light tracking-tight leading-none"
               >
                 <span className="font-serif italic text-brand-rose">Inner Radiance</span>
               </motion.h1>
@@ -133,7 +155,7 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
                 hidden: { y: "100%", opacity: 0 },
                 visible: { y: 0, opacity: 1, transition: { duration: 1.1, ease: [0.16, 1, 0.3, 1] } }
               }}
-              className="text-stone-300 font-sans max-w-2xl text-base sm:text-lg font-light leading-relaxed"
+              className="text-stone-300 font-sans max-w-md mx-auto sm:max-w-2xl sm:mx-0 text-xs sm:text-lg font-light leading-relaxed"
             >
               A high-end sanctuary in Beverly Hills. Experience personalized biological facials, couture hair coloring, and relaxing hot stone rituals.
             </motion.p>
@@ -146,19 +168,19 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
                 hidden: { y: "100%", opacity: 0 },
                 visible: { y: 0, opacity: 1, transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1] } }
               }}
-              className="flex flex-col sm:flex-row justify-start items-center gap-4"
+              className="flex flex-row justify-center sm:justify-start items-center gap-3 sm:gap-4"
             >
               <button
                 id="hero-reserve-btn"
                 onClick={onReserveClick}
-                className="w-full sm:w-auto bg-brand-gold hover:bg-brand-gold-dark text-white px-8 py-4 rounded-full text-xs font-semibold tracking-widest uppercase transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 cursor-pointer"
+                className="bg-brand-gold hover:bg-brand-gold-dark text-white px-5 py-2.5 sm:px-8 sm:py-4 rounded-full text-[9px] sm:text-xs font-semibold tracking-widest uppercase transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 cursor-pointer"
               >
                 Reserve Your Ritual
               </button>
               <button
                 id="hero-services-btn"
                 onClick={() => setCurrentPage('services')}
-                className="w-full sm:w-auto bg-white/10 hover:bg-white/20 text-white border border-white/30 backdrop-blur-xs px-8 py-4 rounded-full text-xs font-semibold tracking-widest uppercase transition-all duration-300 cursor-pointer"
+                className="bg-white/10 hover:bg-white/20 text-white border border-white/30 backdrop-blur-xs px-5 py-2.5 sm:px-8 sm:py-4 rounded-full text-[9px] sm:text-xs font-semibold tracking-widest uppercase transition-all duration-300 cursor-pointer"
               >
                 Explore Services
               </button>

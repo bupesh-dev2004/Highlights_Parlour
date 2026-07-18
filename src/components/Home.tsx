@@ -62,10 +62,10 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
 
   return (
     <div className="space-y-24 pb-20">
-      
+
       {/* 1. Hero Banner */}
       <section id="hero-banner" className="relative h-[90vh] flex items-start pt-8 sm:items-center sm:pt-0 justify-center sm:justify-start overflow-hidden bg-stone-900">
-        
+
         {/* Background Video with Dark Soft Overlay */}
         <div className="absolute inset-0">
           {/* Desktop Video */}
@@ -90,7 +90,7 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
             <source src="/Home page BG for Mobile.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
-          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/50 sm:bg-gradient-to-r sm:from-black/70 sm:via-black/30 sm:to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/30 sm:bg-gradient-to-r sm:from-black/70 sm:via-black/30 sm:to-transparent" />
         </div>
 
         {/* Hero Content */}
@@ -207,10 +207,10 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
         transition={{ duration: 0.8, ease: 'easeOut' }}
       >
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          
+
           <div className="lg:col-span-5 relative group">
             <div className="absolute -top-4 -left-4 w-2/3 h-2/3 rounded-3xl bg-brand-blush/60 -z-1" />
-            
+
             {/* Golden Gradient Shine Border Wrapper */}
             <div className="relative p-[3px] rounded-[32px] bg-gradient-to-tr from-amber-500 via-yellow-200 to-amber-600 shadow-md transition-all duration-500 group-hover:shadow-xl group-hover:scale-[1.01] animate-gold-flow">
               <div className="bg-white rounded-[29px] p-8 flex items-center justify-center overflow-hidden">
@@ -270,7 +270,7 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
         transition={{ duration: 0.8, ease: 'easeOut' }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-          
+
           <div className="text-center space-y-3">
             <span className="text-brand-gold font-sans font-semibold text-xs tracking-widest uppercase block">
               ✦ Guest Favorites
@@ -404,13 +404,13 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.8, ease: 'easeOut' }}
       >
-        
+
         {/* Subtle decorative circles */}
         <div className="absolute -top-12 -left-12 w-48 h-48 rounded-full bg-brand-blush/40 blur-xl" />
         <div className="absolute -bottom-12 -right-12 w-48 h-48 rounded-full bg-brand-rose/25 blur-xl" />
 
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-10 relative">
-          
+
           <div className="space-y-2">
             <span className="text-brand-gold font-sans font-semibold text-xs tracking-widest uppercase block">
               ✦ Customer Stories
@@ -422,7 +422,7 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
 
           {/* Testimonial Active Slider Card */}
           <div className="bg-white rounded-3xl p-8 sm:p-12 border border-brand-blush shadow-xs space-y-6">
-            
+
             {/* Stars */}
             <div className="flex justify-center space-x-1 text-brand-gold">
               {[...Array(TESTIMONIALS[activeTestimonial].rating)].map((_, i) => (
@@ -469,9 +469,8 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
                   id={`testimonial-dot-${idx}`}
                   key={idx}
                   onClick={() => setActiveTestimonial(idx)}
-                  className={`w-2 h-2 rounded-full transition-all cursor-pointer ${
-                    activeTestimonial === idx ? 'w-6 bg-brand-gold' : 'bg-stone-300'
-                  }`}
+                  className={`w-2 h-2 rounded-full transition-all cursor-pointer ${activeTestimonial === idx ? 'w-6 bg-brand-gold' : 'bg-stone-300'
+                    }`}
                   aria-label={`Go to testimonial ${idx + 1}`}
                 />
               ))}
@@ -499,7 +498,7 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
         transition={{ duration: 0.8, ease: 'easeOut' }}
       >
         <div className="relative rounded-3xl overflow-hidden bg-brand-charcoal text-white p-8 sm:p-16 border border-brand-charcoal shadow-lg">
-          
+
           {/* Delicate golden accent patterns */}
           <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-brand-gold opacity-15 skew-x-12 translate-x-16 pointer-events-none" />
 

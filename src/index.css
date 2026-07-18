@@ -4,7 +4,7 @@
 @theme {
   --font-serif: "Playfair Display", serif;
   --font-sans: "Plus Jakarta Sans", sans-serif;
-  
+
   /* Brand Pastel Color Palette */
   --color-brand-blush: #FAF0ED;
   --color-brand-blush-dark: #F5DEC9;
@@ -30,13 +30,16 @@ body {
 ::-webkit-scrollbar {
   width: 8px;
 }
+
 ::-webkit-scrollbar-track {
   background: var(--color-brand-cream);
 }
+
 ::-webkit-scrollbar-thumb {
   background: var(--color-brand-gold-light);
   border-radius: 4px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-brand-gold);
 }
@@ -46,9 +49,11 @@ body {
   0% {
     background-position: 0% 50%;
   }
+
   50% {
     background-position: 100% 50%;
   }
+
   100% {
     background-position: 0% 50%;
   }

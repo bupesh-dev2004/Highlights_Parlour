@@ -6,9 +6,17 @@ interface HeaderProps {
   currentPage: string;
   setCurrentPage: (page: string) => void;
   onReserveClick: () => void;
+  localBookingsCount?: number;
+  onBookingsClick?: () => void;
 }
 
-export default function Header({ currentPage, setCurrentPage, onReserveClick }: HeaderProps) {
+export default function Header({ 
+  currentPage, 
+  setCurrentPage, 
+  onReserveClick,
+  localBookingsCount = 0,
+  onBookingsClick
+}: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = [
@@ -66,6 +74,20 @@ export default function Header({ currentPage, setCurrentPage, onReserveClick }: 
 
           {/* Reserve Now CTA & Mobile Menu Toggle */}
           <div className="flex items-center space-x-4">
+            {localBookingsCount > 0 && (
+              <button
+                id="header-bookings-btn"
+                onClick={onBookingsClick}
+                className="relative flex items-center justify-center p-2.5 rounded-full border border-brand-rose/30 hover:border-brand-gold text-brand-gold hover:bg-brand-blush/20 transition-all duration-300 cursor-pointer"
+                title="View your active bookings"
+              >
+                <Calendar className="w-4.5 h-4.5" />
+                <span className="absolute -top-1 -right-1 bg-brand-rose text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center animate-pulse">
+                  {localBookingsCount}
+                </span>
+              </button>
+            )}
+
             <button
               id="reserve-now-nav-btn"
               onClick={onReserveClick}

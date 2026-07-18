@@ -56,65 +56,115 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
       {/* 1. Hero Banner */}
       <section id="hero-banner" className="relative h-[90vh] flex items-center justify-start overflow-hidden bg-stone-900">
         
-        {/* Parallax Background Image with Dark Soft Overlay */}
+        {/* Background Video with Dark Soft Overlay */}
         <div className="absolute inset-0">
-          <img
-            src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=1920&q=85"
-            alt="Aura Sanctuary Spa Ambiance"
-            className="w-full h-full object-cover object-center opacity-75 scale-105 animate-pulse-slow"
-            referrerPolicy="no-referrer"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/60 to-transparent" />
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-cover object-center opacity-75"
+          >
+            <source src="/Home page BG.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent" />
         </div>
 
         {/* Hero Content */}
-        <div className="relative w-full max-w-4xl ml-0 mr-auto px-6 sm:px-12 md:pl-20 lg:pl-32 text-left space-y-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1 }}
-            className="space-y-4"
-          >
-            <span className="text-brand-rose font-sans font-semibold text-xs sm:text-sm tracking-widest uppercase block">
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={{
+            hidden: { opacity: 0 },
+            visible: {
+              opacity: 1,
+              transition: {
+                staggerChildren: 0.15,
+                delayChildren: 0.5
+              }
+            }
+          }}
+          className="relative w-full max-w-4xl ml-0 mr-auto px-6 sm:px-12 md:pl-12 lg:pl-16 text-left space-y-6"
+        >
+          {/* Tagline */}
+          <div className="overflow-hidden">
+            <motion.span
+              variants={{
+                hidden: { y: "100%", opacity: 0 },
+                visible: { y: 0, opacity: 1, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } }
+              }}
+              className="text-brand-rose font-sans font-semibold text-xs sm:text-sm tracking-[0.25em] uppercase block"
+            >
               ✦ Welcome to Highlights Makeoverartistry ✦
-            </span>
-            <h1 className="font-serif text-4xl sm:text-6xl md:text-7xl text-white font-light tracking-tight leading-tight">
-              Restore Your Natural <br />
-              <span className="font-serif italic text-brand-rose">Inner Radiance</span>
-            </h1>
-          </motion.div>
+            </motion.span>
+          </div>
 
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5, duration: 1 }}
-            className="text-stone-300 font-sans max-w-2xl text-base sm:text-lg font-light leading-relaxed"
-          >
-            A high-end sanctuary in Beverly Hills. Experience personalized biological facials, couture hair coloring, and relaxing hot stone rituals.
-          </motion.p>
+          {/* Heading - Line by Line */}
+          <div className="space-y-1">
+            <div className="overflow-hidden">
+              <motion.h1
+                variants={{
+                  hidden: { y: "100%", opacity: 0 },
+                  visible: { y: 0, opacity: 1, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } }
+                }}
+                className="font-serif text-4xl sm:text-6xl md:text-7xl text-white font-light tracking-tight leading-tight"
+              >
+                Restore Your Natural
+              </motion.h1>
+            </div>
+            <div className="overflow-hidden py-1">
+              <motion.h1
+                variants={{
+                  hidden: { y: "100%", opacity: 0 },
+                  visible: { y: 0, opacity: 1, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } }
+                }}
+                className="font-serif text-4xl sm:text-6xl md:text-7xl font-light tracking-tight leading-none"
+              >
+                <span className="font-serif italic text-brand-rose">Inner Radiance</span>
+              </motion.h1>
+            </div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.8, duration: 0.5 }}
-            className="pt-4 flex flex-col sm:flex-row justify-start items-center gap-4"
-          >
-            <button
-              id="hero-reserve-btn"
-              onClick={onReserveClick}
-              className="w-full sm:w-auto bg-brand-gold hover:bg-brand-gold-dark text-white px-8 py-4 rounded-full text-xs font-semibold tracking-widest uppercase transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 cursor-pointer"
+          {/* Description */}
+          <div className="overflow-hidden">
+            <motion.p
+              variants={{
+                hidden: { y: "100%", opacity: 0 },
+                visible: { y: 0, opacity: 1, transition: { duration: 1.1, ease: [0.16, 1, 0.3, 1] } }
+              }}
+              className="text-stone-300 font-sans max-w-2xl text-base sm:text-lg font-light leading-relaxed"
             >
-              Reserve Your Ritual
-            </button>
-            <button
-              id="hero-services-btn"
-              onClick={() => setCurrentPage('services')}
-              className="w-full sm:w-auto bg-white/10 hover:bg-white/20 text-white border border-white/30 backdrop-blur-xs px-8 py-4 rounded-full text-xs font-semibold tracking-widest uppercase transition-all duration-300 cursor-pointer"
+              A high-end sanctuary in Beverly Hills. Experience personalized biological facials, couture hair coloring, and relaxing hot stone rituals.
+            </motion.p>
+          </div>
+
+          {/* Buttons */}
+          <div className="overflow-hidden py-1">
+            <motion.div
+              variants={{
+                hidden: { y: "100%", opacity: 0 },
+                visible: { y: 0, opacity: 1, transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1] } }
+              }}
+              className="flex flex-col sm:flex-row justify-start items-center gap-4"
             >
-              Explore Services
-            </button>
-          </motion.div>
-        </div>
+              <button
+                id="hero-reserve-btn"
+                onClick={onReserveClick}
+                className="w-full sm:w-auto bg-brand-gold hover:bg-brand-gold-dark text-white px-8 py-4 rounded-full text-xs font-semibold tracking-widest uppercase transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 cursor-pointer"
+              >
+                Reserve Your Ritual
+              </button>
+              <button
+                id="hero-services-btn"
+                onClick={() => setCurrentPage('services')}
+                className="w-full sm:w-auto bg-white/10 hover:bg-white/20 text-white border border-white/30 backdrop-blur-xs px-8 py-4 rounded-full text-xs font-semibold tracking-widest uppercase transition-all duration-300 cursor-pointer"
+              >
+                Explore Services
+              </button>
+            </motion.div>
+          </div>
+        </motion.div>
 
         {/* Scroll Indicator */}
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 hidden sm:flex flex-col items-center space-y-2 opacity-50">

@@ -20,6 +20,27 @@ export default function App() {
   const [localBookings, setLocalBookings] = useState<Booking[]>([]);
   const [showBookingsTray, setShowBookingsTray] = useState<boolean>(false);
   const [greeting, setGreeting] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(true);
+  const [loadingProgress, setLoadingProgress] = useState<number>(0);
+
+  // Preloader progress simulator
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setLoadingProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          setTimeout(() => {
+            setLoading(false);
+          }, 500);
+          return 100;
+        }
+        const increment = Math.floor(Math.random() * 12) + 6;
+        return Math.min(prev + increment, 100);
+      });
+    }, 80);
+
+    return () => clearInterval(interval);
+  }, []);
 
   // Local Time dynamic greeting
   useEffect(() => {
@@ -66,29 +87,103 @@ export default function App() {
   };
 
   return (
-    <div id="app-root-container" className="flex flex-col min-h-screen bg-brand-cream text-brand-charcoal overflow-x-hidden selection:bg-brand-rose selection:text-brand-charcoal">
-      
-      {/* 1. Dynamic Soft Pastel Status Bar Greeting */}
-      <div id="dynamic-status-bar" className="bg-brand-blush/60 border-b border-brand-rose/20 py-2.5 px-4 text-center text-[11px] font-sans font-medium uppercase tracking-widest flex items-center justify-center space-x-2">
-        <Sparkles className="w-3.5 h-3.5 text-brand-gold animate-pulse shrink-0" />
-        <span>{greeting}, welcome to Highlights Makeoverartistry</span>
-        {localBookings.length > 0 && (
-          <button
-            id="open-bookings-tray-bar-btn"
-            onClick={() => setShowBookingsTray(true)}
-            className="ml-2.5 underline hover:text-brand-gold text-[10px] font-bold cursor-pointer"
+    <>
+      <AnimatePresence mode="wait">
+        {loading && (
+          <motion.div
+            key="preloader"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0, scale: 1.02, filter: 'blur(8px)', transition: { duration: 0.8, ease: [0.76, 0, 0.24, 1] } }}
+            className="fixed inset-0 z-[9999] bg-[radial-gradient(ellipse_at_center,_#2A2421_0%,_#1C1816_100%)] flex flex-col items-center justify-center text-white"
           >
-            ({localBookings.length}) Active Bookings
-          </button>
-        )}
-      </div>
+            <div className="text-center space-y-10 px-6 max-w-md relative flex flex-col items-center">
+              
+              {/* Decorative Glow Background */}
+              <div className="absolute w-72 h-72 bg-brand-gold/5 rounded-full blur-3xl -z-10 pointer-events-none" />
 
-      {/* 2. Header */}
-      <Header 
-        currentPage={currentPage} 
-        setCurrentPage={setCurrentPage} 
-        onReserveClick={handleReserveClick} 
-      />
+              {/* Logo Area with Rotating Golden Ring */}
+              <div className="relative w-36 h-36 flex items-center justify-center">
+                {/* Outer Rotating Premium Gold Ring */}
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ repeat: Infinity, duration: 10, ease: "linear" }}
+                  className="absolute inset-0 rounded-full border border-dashed border-brand-gold/45"
+                />
+                
+                {/* Second Inner Ring with Glow */}
+                <div className="absolute inset-2 rounded-full border border-brand-rose/25 shadow-lg shadow-brand-gold/5" />
+                
+                <motion.img
+                  initial={{ scale: 0.85, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 1.2, ease: 'easeOut' }}
+                  src="/logo.jpg"
+                  alt="Highlights Makeoverartistry Logo"
+                  className="h-28 w-28 rounded-full object-cover z-10 border border-brand-gold/30 shadow-inner"
+                />
+              </div>
+
+              {/* Brand Typography */}
+              <motion.div
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3, duration: 0.8 }}
+                className="space-y-2"
+              >
+                <h2 className="text-2xl font-serif tracking-[0.15em] text-transparent bg-clip-text bg-gradient-to-r from-brand-gold-light via-brand-gold to-brand-gold-dark font-light">
+                  HIGHLIGHTS
+                </h2>
+                <span className="text-[10px] text-brand-rose font-sans font-semibold tracking-[0.3em] uppercase block">
+                  ✦ Makeoverartistry ✦
+                </span>
+              </motion.div>
+
+              {/* Progress Indicator */}
+              <div className="space-y-4 w-64">
+                <div className="w-full h-[1px] bg-white/5 rounded-full overflow-hidden relative">
+                  <motion.div
+                    className="absolute left-0 top-0 bottom-0 bg-gradient-to-r from-brand-rose via-brand-gold to-brand-rose"
+                    initial={{ width: '0%' }}
+                    animate={{ width: `${loadingProgress}%` }}
+                    transition={{ ease: 'easeOut' }}
+                  />
+                </div>
+
+                {/* Dynamic Status Text */}
+                <div className="flex flex-col items-center space-y-1">
+                  <span className="text-[10px] text-brand-gold-light/85 tracking-widest font-serif italic uppercase h-4 block transition-all duration-300">
+                    {loadingProgress < 25 && "Calibrating botanical active concentrates..."}
+                    {loadingProgress >= 25 && loadingProgress < 55 && "Preparing cellular skin therapies..."}
+                    {loadingProgress >= 55 && loadingProgress < 85 && "Setting bespoke sanctuary acoustics..."}
+                    {loadingProgress >= 85 && "Welcome to Highlights Sanctuary..."}
+                  </span>
+                  <span className="text-[9px] text-stone-400 font-mono tracking-widest uppercase">
+                    Loading {loadingProgress}%
+                  </span>
+                </div>
+              </div>
+
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {!loading && (
+        <motion.div
+          id="app-root-container"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="flex flex-col min-h-screen bg-brand-cream text-brand-charcoal overflow-x-hidden selection:bg-brand-rose selection:text-brand-charcoal"
+        >
+          {/* 2. Header */}
+          <Header 
+            currentPage={currentPage} 
+            setCurrentPage={setCurrentPage} 
+            onReserveClick={handleReserveClick} 
+            localBookingsCount={localBookings.length}
+            onBookingsClick={() => setShowBookingsTray(true)}
+          />
 
       {/* 3. Render Router Content Area with Page Transitions */}
       <main id="main-content" className="flex-1">
@@ -265,6 +360,8 @@ export default function App() {
         )}
       </AnimatePresence>
 
-    </div>
+        </motion.div>
+      )}
+    </>
   );
 }

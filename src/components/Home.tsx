@@ -64,7 +64,7 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
     <div className="space-y-24 pb-20">
 
       {/* 1. Hero Banner */}
-      <section id="hero-banner" className="relative h-[90vh] flex items-start pt-8 sm:items-center sm:pt-0 justify-center sm:justify-start overflow-hidden bg-stone-900">
+      <section id="hero-banner" className="relative h-[90vh] flex items-start pt-10 sm:items-start sm:pt-[10vh] justify-center sm:justify-start overflow-hidden bg-brand-cream">
 
         {/* Background Video with Dark Soft Overlay */}
         <div className="absolute inset-0">
@@ -74,7 +74,7 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
             loop
             muted
             playsInline
-            className="hidden sm:block w-full h-full object-cover object-center opacity-75"
+            className="hidden sm:block w-full h-full object-cover object-center"
           >
             <source src="/Home page BG.mp4" type="video/mp4" />
             Your browser does not support the video tag.
@@ -85,12 +85,11 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
             loop
             muted
             playsInline
-            className="block sm:hidden w-full h-full object-cover object-center opacity-75"
+            className="block sm:hidden w-full h-full object-cover object-center"
           >
             <source src="/Home page BG for Mobile.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
-          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/30 sm:bg-gradient-to-r sm:from-black/70 sm:via-black/30 sm:to-transparent" />
         </div>
 
         {/* Hero Content */}
@@ -103,11 +102,11 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
               opacity: 1,
               transition: {
                 staggerChildren: 0.15,
-                delayChildren: isMobile ? 2.0 : 0.5
+                delayChildren: 2.0
               }
             }
           }}
-          className="relative w-full max-w-4xl mx-auto sm:ml-0 sm:mr-auto px-6 sm:px-12 md:pl-12 lg:pl-16 text-center sm:text-left space-y-4 sm:space-y-6"
+          className="relative w-full max-w-4xl mx-auto sm:ml-0 sm:mr-auto px-6 sm:pl-4 sm:pr-0 md:pl-6 lg:pl-8 text-center sm:text-left space-y-4 sm:space-y-6"
         >
           {/* Tagline */}
           <div className="overflow-hidden">
@@ -116,7 +115,7 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
                 hidden: { y: "100%", opacity: 0 },
                 visible: { y: 0, opacity: 1, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } }
               }}
-              className="text-brand-rose font-sans font-semibold text-[10px] sm:text-sm tracking-[0.25em] uppercase block"
+              className="text-brand-rose sm:text-brand-gold-dark font-sans font-semibold text-[9px] sm:text-xs tracking-[0.25em] uppercase block"
             >
               ✦ Welcome to Highlights Makeoverartistry ✦
             </motion.span>
@@ -130,7 +129,7 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
                   hidden: { y: "100%", opacity: 0 },
                   visible: { y: 0, opacity: 1, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } }
                 }}
-                className="font-serif text-2xl sm:text-6xl md:text-7xl text-white font-light tracking-tight leading-tight"
+                className="font-serif text-xl sm:text-4xl md:text-5xl text-white sm:text-brand-charcoal font-light tracking-tight leading-tight"
               >
                 Restore Your Natural
               </motion.h1>
@@ -141,9 +140,9 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
                   hidden: { y: "100%", opacity: 0 },
                   visible: { y: 0, opacity: 1, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } }
                 }}
-                className="font-serif text-2xl sm:text-6xl md:text-7xl font-light tracking-tight leading-none"
+                className="font-serif text-xl sm:text-4xl md:text-5xl font-light tracking-tight leading-none"
               >
-                <span className="font-serif italic text-brand-rose">Inner Radiance</span>
+                <span className="font-serif italic text-brand-rose sm:text-brand-gold-dark">Inner Radiance</span>
               </motion.h1>
             </div>
           </div>
@@ -155,7 +154,7 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
                 hidden: { y: "100%", opacity: 0 },
                 visible: { y: 0, opacity: 1, transition: { duration: 1.1, ease: [0.16, 1, 0.3, 1] } }
               }}
-              className="text-stone-300 font-sans max-w-md mx-auto sm:max-w-2xl sm:mx-0 text-xs sm:text-lg font-light leading-relaxed"
+              className="text-stone-300 sm:text-stone-700 font-sans max-w-[460px] mx-auto sm:ml-0 sm:mr-auto text-xs sm:text-base font-medium leading-relaxed"
             >
               A high-end sanctuary in Beverly Hills. Experience personalized biological facials, couture hair coloring, and relaxing hot stone rituals.
             </motion.p>
@@ -170,20 +169,24 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
               }}
               className="flex flex-row justify-center sm:justify-start items-center gap-3 sm:gap-4"
             >
-              <button
+              <motion.button
                 id="hero-reserve-btn"
                 onClick={onReserveClick}
-                className="bg-brand-gold hover:bg-brand-gold-dark text-white px-5 py-2.5 sm:px-8 sm:py-4 rounded-full text-[9px] sm:text-xs font-semibold tracking-widest uppercase transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 cursor-pointer"
+                whileHover={{ scale: 1.03, y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                className="bg-brand-gold-dark hover:bg-brand-gold text-white px-5 py-2.5 sm:px-8 sm:py-4 rounded-full text-[9px] sm:text-xs font-semibold tracking-widest uppercase transition-all duration-300 hover:shadow-lg cursor-pointer"
               >
                 Reserve Your Ritual
-              </button>
-              <button
+              </motion.button>
+              <motion.button
                 id="hero-services-btn"
                 onClick={() => setCurrentPage('services')}
-                className="bg-white/10 hover:bg-white/20 text-white border border-white/30 backdrop-blur-xs px-5 py-2.5 sm:px-8 sm:py-4 rounded-full text-[9px] sm:text-xs font-semibold tracking-widest uppercase transition-all duration-300 cursor-pointer"
+                whileHover={{ scale: 1.03, y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                className="bg-white/10 sm:bg-brand-charcoal/10 hover:bg-white/20 sm:hover:bg-brand-charcoal/20 text-white sm:text-brand-charcoal border border-white/30 sm:border-brand-charcoal/30 backdrop-blur-xs px-5 py-2.5 sm:px-8 sm:py-4 rounded-full text-[9px] sm:text-xs font-semibold tracking-widest uppercase transition-all duration-300 cursor-pointer"
               >
                 Explore Services
-              </button>
+              </motion.button>
             </motion.div>
           </div>
         </motion.div>

@@ -247,7 +247,12 @@ export default function App() {
                     onBookService={handleBookService} 
                   />
                 )}
-                {currentPage === 'about' && <About />}
+                {currentPage === 'about' && (
+                  <About 
+                    setCurrentPage={handlePageChange} 
+                    onReserveClick={handleReserveClick} 
+                  />
+                )}
                 {currentPage === 'services' && (
                   <Services onBookService={handleBookService} />
                 )}

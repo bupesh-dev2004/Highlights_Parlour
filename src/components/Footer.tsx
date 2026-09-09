@@ -1,160 +1,111 @@
-import React, { useState } from 'react';
-import { Mail, Phone, MapPin, Clock, ArrowRight, Instagram, Facebook, Sparkles, CheckCircle } from 'lucide-react';
+import { Phone, Mail, MapPin, Instagram, Facebook, Youtube, Heart } from 'lucide-react';
 
 interface FooterProps {
   setCurrentPage: (page: string) => void;
 }
 
 export default function Footer({ setCurrentPage }: FooterProps) {
-  const [email, setEmail] = useState('');
-  const [subscribed, setSubscribed] = useState(false);
-  const [error, setError] = useState('');
-
-  const handleSubscribe = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email || !email.includes('@')) {
-      setError('Please enter a valid email address.');
-      return;
-    }
-    setError('');
-    setSubscribed(true);
-    setEmail('');
-    setTimeout(() => {
-      setSubscribed(false);
-    }, 5000);
+  const handleNavClick = (pageId: string) => {
+    setCurrentPage(pageId);
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   };
 
-  const quickLinks = [
-    { id: 'home', label: 'Home' },
-    { id: 'about', label: 'About Us' },
-    { id: 'services', label: 'Our Services' },
-    { id: 'gallery', label: 'Visual Gallery' },
-    { id: 'membership', label: 'Membership Plans' },
-    { id: 'contact', label: 'Get in Touch' },
-  ];
-
   return (
-    <footer id="app-footer" className="bg-brand-charcoal text-stone-300 border-t border-brand-charcoal/20">
-
-      {/* Top Banner Style Border */}
-      <div className="h-1.5 bg-gradient-to-r from-brand-blush via-brand-gold to-brand-rose"></div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-
-          {/* Logo & Brand Philosophy */}
-          <div className="space-y-6">
-            <div className="inline-flex items-center justify-center bg-white p-3 rounded-2xl shadow-sm">
-              <img src="/logo.jpg" alt="Highlights Makeoverartistry Logo" className="h-12 w-auto object-contain mix-blend-multiply" />
+    <footer id="app-footer" className="bg-brand-charcoal text-white pt-16 pb-12 border-t border-brand-charcoal">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+        
+        {/* Main Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8">
+          
+          {/* Column 1: Brand Info */}
+          <div className="lg:col-span-4 space-y-4">
+            <div className="flex items-center space-x-3">
+              <img src="/logo.jpg" alt="Highlights Makeoverartistry Logo" className="h-12 w-auto object-contain rounded-full border border-brand-gold/30" />
+              <div>
+                <span className="font-serif text-lg font-light tracking-[0.12em] text-white block leading-none">
+                  HIGHLIGHTS
+                </span>
+                <span className="text-[9px] text-brand-rose font-sans font-semibold tracking-[0.25em] uppercase block mt-0.5">
+                  ✦ Makeoverartistry ✦
+                </span>
+              </div>
             </div>
-            <p className="text-sm leading-relaxed text-stone-400">
-              A premium, boutique beauty parlor dedicated to restoring your inner radiance and outward glow with custom, organic treatments and masterful design techniques.
+
+            <p className="text-stone-300 text-xs font-light leading-relaxed max-w-sm">
+              Beverly Hills’ premier beauty sanctuary. Delivering bespoke biological facials, couture hair coloring, HD bridal makeup, and restorative spa rituals inside a peaceful pastel oasis.
             </p>
-            <div className="flex items-center space-x-4">
-              <a href="https://instagram.com" target="_blank" rel="noreferrer" className="w-9 h-9 flex items-center justify-center rounded-full bg-stone-800 text-stone-400 hover:text-brand-rose hover:bg-stone-700 transition-colors cursor-pointer" aria-label="Instagram">
+
+            <div className="flex space-x-3 pt-2">
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-white/10 hover:bg-brand-gold flex items-center justify-center transition-colors text-white" aria-label="Instagram">
                 <Instagram className="w-4 h-4" />
               </a>
-              <a href="https://facebook.com" target="_blank" rel="noreferrer" className="w-9 h-9 flex items-center justify-center rounded-full bg-stone-800 text-stone-400 hover:text-brand-rose hover:bg-stone-700 transition-colors cursor-pointer" aria-label="Facebook">
+              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-white/10 hover:bg-brand-gold flex items-center justify-center transition-colors text-white" aria-label="Facebook">
                 <Facebook className="w-4 h-4" />
+              </a>
+              <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-white/10 hover:bg-brand-gold flex items-center justify-center transition-colors text-white" aria-label="Youtube">
+                <Youtube className="w-4 h-4" />
               </a>
             </div>
           </div>
 
-          {/* Navigation Links */}
-          <div className="space-y-6">
-            <h3 className="font-serif text-lg font-medium text-white tracking-wider border-b border-stone-800 pb-2">Quick Links</h3>
-            <ul className="space-y-3 text-sm">
-              {quickLinks.map((link) => (
-                <li key={link.id}>
-                  <button
-                    id={`footer-link-${link.id}`}
-                    onClick={() => {
-                      setCurrentPage(link.id);
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }}
-                    className="hover:text-brand-rose transition-colors duration-200 flex items-center space-x-1 cursor-pointer"
-                  >
-                    <span className="text-xs text-brand-gold opacity-60">✦</span>
-                    <span>{link.label}</span>
-                  </button>
-                </li>
-              ))}
+          {/* Column 2: Quick Links */}
+          <div className="lg:col-span-2 space-y-3">
+            <h4 className="font-serif text-sm font-semibold tracking-wider text-brand-gold uppercase">Quick Links</h4>
+            <ul className="space-y-2 text-xs font-light text-stone-300">
+              <li><button onClick={() => handleNavClick('home')} className="hover:text-brand-rose cursor-pointer">Home</button></li>
+              <li><button onClick={() => handleNavClick('about')} className="hover:text-brand-rose cursor-pointer">About Us</button></li>
+              <li><button onClick={() => handleNavClick('services')} className="hover:text-brand-rose cursor-pointer">Services Menu</button></li>
+              <li><button onClick={() => handleNavClick('packages')} className="hover:text-brand-rose cursor-pointer">Special Packages</button></li>
+              <li><button onClick={() => handleNavClick('gallery')} className="hover:text-brand-rose cursor-pointer">Gallery</button></li>
+              <li><button onClick={() => handleNavClick('offers')} className="hover:text-brand-rose cursor-pointer">Offers & Deals</button></li>
+              <li><button onClick={() => handleNavClick('reviews')} className="hover:text-brand-rose cursor-pointer">Customer Reviews</button></li>
+              <li><button onClick={() => handleNavClick('contact')} className="hover:text-brand-rose cursor-pointer">Contact Us</button></li>
             </ul>
           </div>
 
-          {/* Contact Details & Hours */}
-          <div className="space-y-6">
-            <h3 className="font-serif text-lg font-medium text-white tracking-wider border-b border-stone-800 pb-2">Contact Details</h3>
-            <ul className="space-y-4 text-sm">
-              <li className="flex items-start space-x-3 text-stone-400">
-                <MapPin className="w-5 h-5 text-brand-rose shrink-0 mt-0.5" />
-                <span>104 Radiant Boulevard, Suite 500, Beverly Hills, CA 90210</span>
-              </li>
-              <li className="flex items-center space-x-3 text-stone-400">
-                <Phone className="w-4 h-4 text-brand-rose shrink-0" />
-                <span>+1 (310) 555-0190</span>
-              </li>
-              <li className="flex items-center space-x-3 text-stone-400">
-                <Mail className="w-4 h-4 text-brand-rose shrink-0" />
-                <span>concierge@aurasalonspa.com</span>
-              </li>
-              <li className="flex items-start space-x-3 text-stone-400">
-                <Clock className="w-5 h-5 text-brand-rose shrink-0 mt-0.5" />
-                <div>
-                  <span className="block font-medium text-stone-300">Mon - Sat: 9:00 AM - 8:00 PM</span>
-                  <span className="block text-xs text-stone-500">Sunday: 10:00 AM - 5:00 PM</span>
-                </div>
-              </li>
+          {/* Column 3: Popular Services */}
+          <div className="lg:col-span-3 space-y-3">
+            <h4 className="font-serif text-sm font-semibold tracking-wider text-brand-gold uppercase">Popular Services</h4>
+            <ul className="space-y-2 text-xs font-light text-stone-300">
+              <li>Balayage & Couture Glossing</li>
+              <li>24K Gold Cellular Facial</li>
+              <li>The Royal Maharani Bridal HD Makeup</li>
+              <li>Luxury Gel Manicure & Hand Spa</li>
+              <li>Olaplex Molecular Hair Spa</li>
+              <li>Himalayan Hot Stone Pedicure</li>
             </ul>
           </div>
 
-          {/* Newsletter Form */}
-          <div className="space-y-6">
-            <h3 className="font-serif text-lg font-medium text-white tracking-wider border-b border-stone-800 pb-2">Newsletter</h3>
-            <p className="text-sm text-stone-400">
-              Subscribe to receive exclusive boutique invites, early-bird membership specials, and luxury care tips.
+          {/* Column 4: Salon Contact & Hours */}
+          <div className="lg:col-span-3 space-y-3 text-xs font-light text-stone-300">
+            <h4 className="font-serif text-sm font-semibold tracking-wider text-brand-gold uppercase">Opening Hours & Address</h4>
+            <p className="flex items-start space-x-2">
+              <MapPin className="w-4 h-4 text-brand-gold shrink-0 mt-0.5" />
+              <span>742 Rodeo Luxury Blvd, Beverly Hills, CA 90210</span>
             </p>
-
-            {subscribed ? (
-              <div className="bg-emerald-950/40 border border-emerald-900/50 rounded-xl p-4 flex items-start space-x-3">
-                <CheckCircle className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
-                <div>
-                  <h4 className="text-sm font-semibold text-white">Subscription Active!</h4>
-                  <p className="text-xs text-stone-400 mt-1">Check your inbox soon for your 15% discount code.</p>
-                </div>
-              </div>
-            ) : (
-              <form onSubmit={handleSubscribe} className="space-y-2">
-                <div className="relative">
-                  <input
-                    type="email"
-                    placeholder="Enter your email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full bg-stone-900 border border-stone-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-brand-gold text-white placeholder-stone-500"
-                  />
-                  <button
-                    type="submit"
-                    className="absolute right-1.5 top-1.5 bottom-1.5 w-10 flex items-center justify-center bg-brand-gold hover:bg-brand-gold-dark text-white rounded-lg transition-colors cursor-pointer"
-                    aria-label="Subscribe"
-                  >
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
-                </div>
-                {error && <p className="text-xs text-rose-400 pl-1">{error}</p>}
-              </form>
-            )}
+            <p className="flex items-center space-x-2">
+              <Phone className="w-4 h-4 text-brand-gold shrink-0" />
+              <span>+1 (310) 555-0199</span>
+            </p>
+            <p className="flex items-center space-x-2">
+              <Mail className="w-4 h-4 text-brand-gold shrink-0" />
+              <span>concierge@highlightsmakeover.com</span>
+            </p>
+            <div className="pt-2 border-t border-white/10 text-[11px] text-stone-400">
+              <p>Mon - Sat: 09:00 AM - 08:00 PM</p>
+              <p>Sunday: 10:00 AM - 06:00 PM</p>
+            </div>
           </div>
 
         </div>
 
-        {/* Lower copyright bar */}
-        <div className="mt-16 pt-8 border-t border-stone-800/80 flex flex-col sm:flex-row justify-between items-center text-xs text-stone-500 space-y-4 sm:space-y-0">
-          <p>© 2026 Highlights Makeoverartistry. All rights reserved. Elegant visual design.</p>
+        {/* Bottom copyright & policies */}
+        <div className="pt-8 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center text-[11px] text-stone-400 gap-4">
+          <p>© {new Date().getFullYear()} Highlights Makeoverartistry. All rights reserved.</p>
           <div className="flex space-x-6">
-            <a href="#privacy" className="hover:text-stone-300 transition-colors">Privacy Policy</a>
-            <a href="#terms" className="hover:text-stone-300 transition-colors">Terms of Service</a>
-            <a href="#safety" className="hover:text-stone-300 transition-colors">Hygiene Standards</a>
+            <a href="#privacy" onClick={(e) => { e.preventDefault(); alert("Privacy Policy: All customer data is kept strictly confidential."); }} className="hover:text-white">Privacy Policy</a>
+            <a href="#terms" onClick={(e) => { e.preventDefault(); alert("Terms & Conditions: Appointments can be rescheduled up to 24h prior."); }} className="hover:text-white">Terms & Conditions</a>
+            <a href="#cancellation" onClick={(e) => { e.preventDefault(); alert("Cancellation Policy: Minimum 24h cancellation notice required."); }} className="hover:text-white">Cancellation Policy</a>
           </div>
         </div>
 

@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { Sparkles, Clock, CheckCircle2, ChevronDown, ChevronUp, Gift } from 'lucide-react';
+import React from 'react';
+import { motion } from 'motion/react';
+import { Clock, CheckCircle2, Calendar, Sparkles, ArrowRight, Gift, ChevronUp, ChevronDown } from 'lucide-react';
 import { SERVICES, FAQS } from '../data';
 import { Service } from '../types';
 
@@ -9,19 +9,7 @@ interface ServicesProps {
 }
 
 export default function Services({ onBookService }: ServicesProps) {
-  const [activeCategory, setActiveCategory] = useState<'Hair' | 'Skin' | 'Nails' | 'Bridal' | 'Spa' | 'Makeup'>('Hair');
-  const [openFaq, setOpenFaq] = useState<string | null>(null);
-
-  const categories: ('Hair' | 'Skin' | 'Nails' | 'Bridal' | 'Spa' | 'Makeup')[] = [
-    'Hair',
-    'Skin',
-    'Nails',
-    'Bridal',
-    'Spa',
-    'Makeup'
-  ];
-
-  const filteredServices = SERVICES.filter(s => s.category === activeCategory);
+  const [openFaq, setOpenFaq] = React.useState<string | null>(null);
 
   const toggleFaq = (id: string) => {
     setOpenFaq(prev => (prev === id ? null : id));
@@ -39,7 +27,7 @@ export default function Services({ onBookService }: ServicesProps) {
         'Signature Cut & Blow Dry (60m)',
         'Complimentary Organic Honey Mask upgrade',
       ],
-      description: 'Our signature glow facial combined with Vivienne Vance’s iconic hair restoration cut. The perfect pre-gala preparation.',
+      description: 'Our signature glow facial combined with couture hair restoration cut. The perfect pre-gala preparation.',
       badge: 'Most Popular'
     },
     {
@@ -53,17 +41,16 @@ export default function Services({ onBookService }: ServicesProps) {
         'Aura Signature Pedicure (60m)',
         'Complimentary Warm Lavender Scrub & Oil Pack',
       ],
-      description: 'Melt deep physical exhaustion with full body aromatherapy manipulation followed by our famous milk-and-sugarcane pedicure.',
+      description: 'Melt deep physical exhaustion with full body aromatherapy manipulation followed by our signature milk-and-sugarcane pedicure.',
       badge: 'Best Value'
     },
   ];
 
   const handleComboBook = (combo: typeof comboDeals[0]) => {
-    // We can translate a combo book into a special service payload to initialize the booking flow
     const virtualService: Service = {
       id: `combo-${combo.title.toLowerCase().replace(/\s+/g, '-')}`,
       name: `[COMBO] ${combo.title} (${combo.subtitle})`,
-      category: 'Spa',
+      category: 'Hair Spa',
       description: combo.description,
       duration: combo.duration,
       price: combo.price,
@@ -73,161 +60,200 @@ export default function Services({ onBookService }: ServicesProps) {
   };
 
   return (
-    <div className="space-y-24 py-12 pb-24">
+    <div className="w-full min-h-screen bg-brand-cream pb-24 overflow-x-hidden">
       
-      {/* 1. Page Header */}
-      <section className="max-w-4xl mx-auto text-center px-4 space-y-4">
-        <span className="text-brand-gold font-sans font-semibold text-xs tracking-widest uppercase block">
-          ✦ Premium Ritual Menu ✦
-        </span>
-        <h1 className="font-serif text-4xl sm:text-5xl text-brand-charcoal font-light leading-tight">
-          Exquisite Care, Exceptional Results
-        </h1>
-        <p className="text-stone-500 font-sans font-light max-w-2xl mx-auto text-sm sm:text-base">
-          Every selection on our menu is personalized to your distinct genetic profile and styled with organic botanical concentrates.
-        </p>
-        <div className="h-0.5 w-20 bg-brand-gold/40 mx-auto" />
+      {/* 1. SERVICES HERO / INTRO */}
+      <section className="w-full pt-10 pb-12 px-4 sm:px-6 lg:px-12 text-center">
+        <div className="max-w-4xl mx-auto space-y-4">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-blush/60 border border-brand-gold/30">
+            <Sparkles className="w-3.5 h-3.5 text-brand-gold" />
+            <span className="text-brand-gold-dark font-sans font-semibold text-xs tracking-[0.25em] uppercase">
+              Artisan Beauty Menu
+            </span>
+          </div>
+
+          <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl text-brand-charcoal font-light leading-tight tracking-tight">
+            Services Tailored to Your Radiance
+          </h1>
+
+          <p className="text-stone-600 font-sans font-normal max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
+            Explore our complete collection of biological facials, couture hair coloring, bridal packages, and hand-crafted spa rituals designed exclusively for you.
+          </p>
+
+          <div className="flex items-center justify-center gap-3 pt-2">
+            <span className="h-px w-12 bg-brand-gold/40" />
+            <span className="w-2 h-2 rotate-45 border border-brand-gold/60 bg-brand-gold/20" />
+            <span className="h-px w-12 bg-brand-gold/40" />
+          </div>
+        </div>
       </section>
 
-      {/* 2. Category Tabs & Service Grid */}
-      <section id="menu-section" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-        
-        {/* Horizontal Category Tab Bar */}
-        <div className="flex flex-wrap justify-center gap-2 border-b border-brand-blush/60 pb-1 max-w-3xl mx-auto">
-          {categories.map((cat) => {
-            const isSelected = activeCategory === cat;
+      {/* 2. FULL-WIDTH STACKING SERVICE CARDS */}
+      <section className="w-full px-4 sm:px-6 lg:px-12 py-6">
+        <div className="w-full max-w-[1500px] mx-auto space-y-12">
+          {SERVICES.map((service, index) => {
+            // Sticky top position with slight cascade offset so cards stack gracefully
+            const topOffset = 96 + Math.min(index * 12, 60);
+
             return (
-              <button
-                id={`cat-tab-${cat.toLowerCase()}`}
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                className={`px-5 py-3 rounded-full text-xs sm:text-sm tracking-widest uppercase font-medium transition-all cursor-pointer ${
-                  isSelected
-                    ? 'bg-brand-gold text-white shadow-xs'
-                    : 'text-stone-500 hover:text-brand-gold hover:bg-brand-blush/40'
-                }`}
+              <div
+                key={service.id}
+                className="sticky transition-all duration-300 w-full"
+                style={{
+                  top: `${topOffset}px`,
+                  zIndex: 10 + index,
+                }}
               >
-                {cat}
-              </button>
+                <div className="w-[96%] sm:w-[92%] lg:w-[88%] mx-auto bg-white rounded-3xl sm:rounded-4xl border border-brand-gold/35 shadow-[0_20px_50px_rgba(42,36,33,0.10)] hover:shadow-[0_25px_60px_rgba(197,160,89,0.20)] transition-all duration-500 overflow-hidden backdrop-blur-md">
+                  
+                  <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[440px]">
+                    
+                    {/* LEFT COLUMN: Service Info & Details (7 cols on lg) */}
+                    <div className="lg:col-span-7 p-6 sm:p-10 lg:p-12 flex flex-col justify-between space-y-6 bg-gradient-to-br from-white via-brand-cream/30 to-brand-blush/20">
+                      <div className="space-y-4">
+                        
+                        {/* Category & Badge */}
+                        <div className="flex flex-wrap items-center gap-3">
+                          <span className="px-3.5 py-1 rounded-full text-[11px] font-sans font-bold tracking-widest uppercase bg-brand-blush text-brand-gold-dark border border-brand-gold/30 shadow-2xs">
+                            {service.category}
+                          </span>
+                          <span className="text-teal-700 text-xs font-medium flex items-center gap-1.5 bg-teal-50/80 px-2.5 py-0.5 rounded-full border border-teal-200/50">
+                            <span className="w-1.5 h-1.5 rounded-full bg-teal-600 animate-pulse" />
+                            Highlights Signature
+                          </span>
+                        </div>
+
+                        {/* Title */}
+                        <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl text-brand-charcoal font-normal leading-snug">
+                          {service.name}
+                        </h2>
+
+                        {/* Description */}
+                        <p className="text-stone-600 font-sans text-sm sm:text-base font-light leading-relaxed max-w-2xl">
+                          {service.description}
+                        </p>
+
+                        {/* Key Features Pill List */}
+                        {service.features && service.features.length > 0 && (
+                          <div className="pt-3">
+                            <span className="text-[11px] uppercase tracking-wider text-brand-charcoal/60 font-semibold block mb-2.5">
+                              Included Amenities & Treatment Highlights:
+                            </span>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                              {service.features.map((feat, idx) => (
+                                <div key={idx} className="flex items-center space-x-2 text-xs sm:text-sm text-stone-700 bg-white/70 backdrop-blur-xs px-3 py-2 rounded-xl border border-brand-blush-dark/40">
+                                  <CheckCircle2 className="w-4 h-4 text-brand-gold shrink-0" />
+                                  <span className="font-sans font-medium">{feat}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Bottom Info bar */}
+                      <div className="pt-4 border-t border-brand-blush flex items-center justify-between text-xs text-stone-500 font-sans">
+                        <span>Complimentary organic consultation included</span>
+                        <span className="hidden sm:inline-block text-brand-gold-dark font-medium">Verified Salon Quality</span>
+                      </div>
+                    </div>
+
+                    {/* RIGHT COLUMN: Large Prominent Image & Action Bar (5 cols on lg) */}
+                    <div className="lg:col-span-5 relative flex flex-col justify-between p-6 sm:p-8 bg-brand-cream/50 border-t lg:border-t-0 lg:border-l border-brand-blush-dark/40">
+                      
+                      {/* Service Image */}
+                      <div className="relative w-full h-64 sm:h-72 lg:h-80 rounded-2xl sm:rounded-3xl overflow-hidden shadow-inner group">
+                        <img
+                          src={service.image}
+                          alt={service.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                          loading="lazy"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-brand-charcoal/60 via-transparent to-black/10 pointer-events-none" />
+
+                        {/* Floating Price Pill */}
+                        <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-md px-4 py-1.5 rounded-full border border-brand-gold/40 shadow-lg flex items-center space-x-1.5">
+                          <span className="text-xs text-stone-500 font-sans">From</span>
+                          <span className="text-lg font-serif font-bold text-brand-charcoal">${service.price}</span>
+                        </div>
+
+                        {/* Duration Pill */}
+                        <div className="absolute bottom-4 left-4 bg-brand-charcoal/85 backdrop-blur-xs text-white text-xs px-3.5 py-1.5 rounded-full flex items-center space-x-1.5 border border-white/10 shadow-md">
+                          <Clock className="w-3.5 h-3.5 text-brand-gold" />
+                          <span className="font-sans">{service.duration}</span>
+                        </div>
+                      </div>
+
+                      {/* Booking Action Button */}
+                      <div className="pt-6">
+                        <button
+                          id={`book-service-${service.id}`}
+                          onClick={() => onBookService(service)}
+                          className="w-full py-4 px-6 rounded-full bg-gradient-to-r from-brand-gold via-[#D8B467] to-brand-gold-dark hover:from-brand-gold-dark hover:to-brand-gold text-white font-sans font-semibold text-xs sm:text-sm uppercase tracking-widest shadow-[0_10px_25px_rgba(197,160,89,0.4)] hover:shadow-[0_15px_30px_rgba(197,160,89,0.55)] transition-all duration-300 cursor-pointer flex items-center justify-center gap-2 group transform active:scale-[0.99]"
+                        >
+                          <Calendar className="w-4 h-4 text-white transition-transform group-hover:rotate-12" />
+                          <span>Book This Service</span>
+                          <ArrowRight className="w-4 h-4 ml-1 opacity-80 group-hover:translate-x-1 transition-transform" />
+                        </button>
+                      </div>
+
+                    </div>
+
+                  </div>
+                </div>
+              </div>
             );
           })}
         </div>
-
-        {/* Services Grid with Tab Switch Animation */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            id="services-grid-container"
-            key={activeCategory}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-            className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12"
-          >
-            {filteredServices.length > 0 ? (
-              filteredServices.map((service) => (
-                <div
-                  key={service.id}
-                  className="bg-white rounded-3xl p-5 border border-brand-blush/60 shadow-xs flex flex-col sm:flex-row gap-6 group hover:shadow-md transition-all duration-300"
-                >
-                  
-                  {/* Service Image */}
-                  <div className="w-full sm:w-44 h-44 rounded-2xl overflow-hidden shrink-0 relative">
-                    <img
-                      src={service.image}
-                      alt={service.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      referrerPolicy="no-referrer"
-                    />
-                    <span className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-xs px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wider text-brand-gold">
-                      ${service.price}
-                    </span>
-                  </div>
-
-                  {/* Service Details */}
-                  <div className="flex-1 flex flex-col justify-between space-y-4">
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-start gap-4">
-                        <h3 className="font-serif text-lg font-semibold text-brand-charcoal">{service.name}</h3>
-                      </div>
-                      <div className="flex items-center space-x-2 text-stone-400 text-xs">
-                        <Clock className="w-3.5 h-3.5 text-brand-rose" />
-                        <span>Duration: {service.duration}</span>
-                      </div>
-                      <p className="text-stone-500 text-xs sm:text-sm font-light leading-relaxed">
-                        {service.description}
-                      </p>
-                    </div>
-
-                    <button
-                      id={`book-service-card-${service.id}`}
-                      onClick={() => onBookService(service)}
-                      className="inline-flex items-center justify-center space-x-2 bg-brand-charcoal hover:bg-brand-charcoal/90 text-white text-[11px] font-bold uppercase tracking-widest py-3 px-5 rounded-xl transition-all cursor-pointer"
-                    >
-                      <span>Book Service</span>
-                    </button>
-                  </div>
-
-                </div>
-              ))
-            ) : (
-              <div className="col-span-2 text-center py-12 text-stone-400">
-                No active services in this category at this moment.
-              </div>
-            )}
-          </motion.div>
-        </AnimatePresence>
-
       </section>
 
-      {/* 3. Combo Packages deals section */}
-      <section id="combo-packages" className="bg-brand-blush/30 py-20 border-y border-brand-blush/60">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+      {/* 3. BESPOKE COMBOS & LUXURY PACKAGES */}
+      <section className="w-full px-4 sm:px-6 lg:px-12 pt-24">
+        <div className="w-[96%] sm:w-[92%] lg:w-[88%] mx-auto bg-brand-blush/40 rounded-4xl p-8 sm:p-12 lg:p-16 border border-brand-gold/30 shadow-sm space-y-12">
           
-          <div className="text-center space-y-3">
-            <span className="text-brand-gold font-sans font-semibold text-xs tracking-widest uppercase block">
-              ✦ Tailored Packages
+          <div className="text-center space-y-3 max-w-2xl mx-auto">
+            <span className="text-brand-gold-dark font-sans font-semibold text-xs tracking-widest uppercase block">
+              ✦ Tailored Packages ✦
             </span>
-            <h2 className="font-serif text-3xl text-brand-charcoal font-light">
+            <h2 className="font-serif text-3xl sm:text-4xl text-brand-charcoal font-light">
               Bespoke Combos & Luxury Packages
             </h2>
-            <p className="text-stone-500 font-sans font-light max-w-xl mx-auto text-xs sm:text-sm">
-              Combine our highly rated services into structured, curated blocks of pure pampering and receive up to 18% bundled discount.
+            <p className="text-stone-600 font-sans font-light max-w-xl mx-auto text-xs sm:text-sm">
+              Combine our highly rated services into structured, curated blocks of pure pampering and receive bundled savings.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {comboDeals.map((combo, index) => (
               <div
                 key={index}
-                className="bg-white rounded-3xl p-8 border border-brand-rose/60 shadow-xs relative flex flex-col justify-between space-y-6 group hover:shadow-md transition-shadow"
+                className="bg-white rounded-3xl p-8 border border-brand-gold/30 hover:border-brand-gold shadow-sm relative flex flex-col justify-between space-y-6 group hover:shadow-md transition-all"
               >
-                {/* Ribbon Tag */}
-                <span className="absolute -top-3 left-6 bg-brand-gold text-white text-[9px] uppercase tracking-widest px-3 py-1 rounded-full font-bold">
+                <span className="absolute -top-3 left-8 bg-brand-gold text-white text-[9px] uppercase tracking-widest px-3.5 py-1 rounded-full font-bold shadow-sm">
                   {combo.badge}
                 </span>
 
-                <div className="space-y-4">
+                <div className="space-y-4 pt-1">
                   <div className="flex justify-between items-baseline">
                     <div>
-                      <h3 className="font-serif text-xl font-bold text-brand-charcoal">{combo.title}</h3>
-                      <p className="text-xs text-brand-gold font-medium mt-0.5">{combo.subtitle}</p>
+                      <h3 className="font-serif text-2xl font-normal text-brand-charcoal">{combo.title}</h3>
+                      <p className="text-xs text-brand-gold-dark font-medium mt-0.5">{combo.subtitle}</p>
                     </div>
                     <div className="text-right">
-                      <span className="block text-xl font-bold text-brand-charcoal">${combo.price}</span>
-                      <span className="block text-[10px] text-stone-400 line-through">Value: ${combo.value}</span>
+                      <span className="block text-2xl font-serif font-bold text-brand-charcoal">${combo.price}</span>
+                      <span className="block text-[11px] text-stone-400 line-through">Value: ${combo.value}</span>
                     </div>
                   </div>
 
-                  <p className="text-stone-500 text-xs sm:text-sm font-light leading-relaxed">
+                  <p className="text-stone-600 text-xs sm:text-sm font-light leading-relaxed">
                     {combo.description}
                   </p>
 
-                  <div className="h-px bg-stone-100" />
+                  <div className="h-px bg-brand-blush" />
 
                   <div className="space-y-2.5">
-                    <span className="block text-[10px] uppercase text-stone-400 tracking-wider">Ritual includes:</span>
-                    <ul className="space-y-2 text-xs sm:text-sm text-stone-600">
+                    <span className="block text-[10px] uppercase text-stone-400 tracking-wider font-semibold">Ritual includes:</span>
+                    <ul className="space-y-2 text-xs sm:text-sm text-stone-700">
                       {combo.includes.map((incl, idx) => (
                         <li key={idx} className="flex items-center space-x-2">
                           <CheckCircle2 className="w-4 h-4 text-brand-gold shrink-0" />
@@ -238,17 +264,17 @@ export default function Services({ onBookService }: ServicesProps) {
                   </div>
                 </div>
 
-                <div className="pt-2 flex items-center justify-between gap-4">
-                  <div className="flex items-center space-x-1.5 text-stone-400 text-xs">
-                    <Clock className="w-4 h-4 text-brand-rose" />
+                <div className="pt-4 border-t border-stone-100 flex items-center justify-between gap-4">
+                  <div className="flex items-center space-x-1.5 text-stone-500 text-xs">
+                    <Clock className="w-4 h-4 text-brand-gold" />
                     <span>Est: {combo.duration}</span>
                   </div>
                   <button
                     id={`book-combo-${index}`}
                     onClick={() => handleComboBook(combo)}
-                    className="bg-brand-charcoal hover:bg-brand-charcoal/90 text-white text-xs font-bold uppercase tracking-widest px-6 py-3 rounded-xl transition-all cursor-pointer flex items-center space-x-2"
+                    className="bg-brand-charcoal hover:bg-brand-gold text-white text-xs font-semibold uppercase tracking-widest px-6 py-3.5 rounded-full transition-all cursor-pointer flex items-center space-x-2 shadow-md hover:shadow-lg"
                   >
-                    <Gift className="w-4 h-4 text-brand-rose" />
+                    <Gift className="w-4 h-4" />
                     <span>Book Combo</span>
                   </button>
                 </div>
@@ -256,44 +282,43 @@ export default function Services({ onBookService }: ServicesProps) {
               </div>
             ))}
           </div>
-
         </div>
       </section>
 
-      {/* 4. FAQ Accordion Section */}
-      <section id="faq-section" className="max-w-4xl mx-auto px-4 space-y-12">
-        <div className="text-center space-y-3">
-          <span className="text-brand-gold font-sans font-semibold text-xs tracking-widest uppercase block">
-            ✦ Answered Queries
-          </span>
-          <h2 className="font-serif text-2xl sm:text-3xl text-brand-charcoal font-light">
-            Frequently Asked Questions
-          </h2>
-          <div className="h-0.5 w-16 bg-brand-gold/40 mx-auto" />
-        </div>
+      {/* 4. FREQUENTLY ASKED QUESTIONS */}
+      <section id="faq-section" className="w-full px-4 sm:px-6 lg:px-12 pt-20">
+        <div className="w-[96%] sm:w-[92%] lg:w-[88%] max-w-4xl mx-auto space-y-10">
+          <div className="text-center space-y-3">
+            <span className="text-brand-gold-dark font-sans font-semibold text-xs tracking-widest uppercase block">
+              ✦ Answered Queries ✦
+            </span>
+            <h2 className="font-serif text-3xl text-brand-charcoal font-light">
+              Frequently Asked Questions
+            </h2>
+            <div className="h-0.5 w-16 bg-brand-gold/40 mx-auto" />
+          </div>
 
-        <div className="space-y-4">
-          {FAQS.map((faq) => {
-            const isOpen = openFaq === faq.id;
-            return (
-              <div
-                key={faq.id}
-                className="bg-white rounded-2xl border border-brand-blush/60 shadow-xs overflow-hidden transition-all duration-300"
-              >
-                <button
-                  id={`faq-btn-${faq.id}`}
-                  onClick={() => toggleFaq(faq.id)}
-                  className="w-full px-6 py-5 flex justify-between items-center text-left text-brand-charcoal hover:text-brand-gold focus:outline-none cursor-pointer"
+          <div className="space-y-4">
+            {FAQS.map((faq) => {
+              const isOpen = openFaq === faq.id;
+              return (
+                <div
+                  key={faq.id}
+                  className="bg-white rounded-2xl border border-brand-gold/30 hover:border-brand-gold shadow-2xs overflow-hidden transition-all duration-300"
                 >
-                  <span className="font-serif font-medium text-base sm:text-lg pr-4">{faq.question}</span>
-                  {isOpen ? (
-                    <ChevronUp className="w-5 h-5 text-brand-gold shrink-0" />
-                  ) : (
-                    <ChevronDown className="w-5 h-5 text-brand-gold shrink-0" />
-                  )}
-                </button>
-                
-                <AnimatePresence initial={false}>
+                  <button
+                    id={`faq-btn-${faq.id}`}
+                    onClick={() => toggleFaq(faq.id)}
+                    className="w-full px-6 py-5 flex justify-between items-center text-left text-brand-charcoal hover:text-brand-gold-dark focus:outline-none cursor-pointer"
+                  >
+                    <span className="font-serif font-normal text-base sm:text-lg pr-4">{faq.question}</span>
+                    {isOpen ? (
+                      <ChevronUp className="w-5 h-5 text-brand-gold shrink-0" />
+                    ) : (
+                      <ChevronDown className="w-5 h-5 text-brand-gold shrink-0" />
+                    )}
+                  </button>
+
                   {isOpen && (
                     <motion.div
                       initial={{ height: 0, opacity: 0 }}
@@ -301,15 +326,15 @@ export default function Services({ onBookService }: ServicesProps) {
                       exit={{ height: 0, opacity: 0 }}
                       transition={{ duration: 0.2 }}
                     >
-                      <div className="px-6 pb-6 text-xs sm:text-sm text-stone-500 font-light leading-relaxed border-t border-stone-50/50 pt-3">
+                      <div className="px-6 pb-6 text-xs sm:text-sm text-stone-600 font-light leading-relaxed border-t border-brand-blush pt-4">
                         {faq.answer}
                       </div>
                     </motion.div>
                   )}
-                </AnimatePresence>
-              </div>
-            );
-          })}
+                </div>
+              );
+            })}
+          </div>
         </div>
       </section>
 

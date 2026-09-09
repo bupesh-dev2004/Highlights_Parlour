@@ -1,24 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, FormEvent } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { Calendar as CalendarIcon, Clock, User, CheckCircle2, MessageCircle, Phone, ArrowLeft, ArrowRight, ShieldCheck, AlertCircle } from 'lucide-react';
 import { SERVICES, STYLISTS } from '../data';
 import { Service, Stylist, Booking } from '../types';
-import { 
-  Check, 
-  ChevronRight, 
-  ChevronLeft, 
-  Calendar as CalendarIcon, 
-  Clock, 
-  User, 
-  Phone, 
-  Mail, 
-  Sparkles, 
-  CheckCircle, 
-  DollarSign, 
-  Printer, 
-  Plus, 
-  X,
-  CalendarDays
-} from 'lucide-react';
 
 interface BookingFlowProps {
   preSelectedService: Service | null;
@@ -28,676 +12,470 @@ interface BookingFlowProps {
 
 export default function BookingFlow({ preSelectedService, clearPreSelectedService, onSuccess }: BookingFlowProps) {
   const [step, setStep] = useState<number>(1);
-  const [selectedServices, setSelectedServices] = useState<Service[]>([]);
-  const [selectedStylist, setSelectedStylist] = useState<Stylist | null>(null);
-  const [selectedDate, setSelectedDate] = useState<string>('');
-  const [selectedTime, setSelectedTime] = useState<string | null>(null);
+  const [selectedServices, setSelectedServices] = useState<Service[]>(
+    preSelectedService ? [preSelectedService] : []
+  );
+  const [selectedStylist, setSelectedStylist] = useState<Stylist>(STYLISTS[0]);
+  const [selectedDate, setSelectedDate] = useState<string>(
+    new Date(Date.now() + 86400000).toISOString().split('T')[0]
+  );
+  const [selectedTime, setSelectedTime] = useState<string>('10:30 AM');
+  const [customerName, setCustomerName] = useState<string>('');
+  const [customerPhone, setCustomerPhone] = useState<string>('');
+  const [customerEmail, setCustomerEmail] = useState<string>('');
+  const [customerNotes, setCustomerNotes] = useState<string>('');
 
-  // Customer details
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-  const [notes, setNotes] = useState('');
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [submittedBooking, setSubmittedBooking] = useState<Booking | null>(null);
 
-  // Generated Booking confirmation
-  const [confirmedBooking, setConfirmedBooking] = useState<Booking | null>(null);
-
-  // Pre-load service if clicked from another page
   useEffect(() => {
     if (preSelectedService) {
-      // Avoid duplicate addition
-      if (!selectedServices.some(s => s.id === preSelectedService.id)) {
-        setSelectedServices([preSelectedService]);
-      }
-      setStep(1); // Ensure we start at step 1
+      setSelectedServices([preSelectedService]);
     }
   }, [preSelectedService]);
 
-  // Calculate Subtotal
-  const subtotal = selectedServices.reduce((sum, s) => sum + s.price, 0);
-
-  // Calendar dates setup (Next 10 days)
-  const getNextTenDays = () => {
-    const dates = [];
-    const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    
-    for (let i = 1; i <= 10; i++) {
-      const d = new Date();
-      d.setDate(d.getDate() + i);
-      const dayName = weekdays[d.getDay()];
-      const monthName = months[d.getMonth()];
-      const dateNum = d.getDate();
-      const dateString = d.toISOString().split('T')[0]; // YYYY-MM-DD
-      
-      dates.push({
-        dateString,
-        dayName,
-        monthName,
-        dateNum
-      });
-    }
-    return dates;
-  };
-
-  const availableDates = getNextTenDays();
-
-  // Handle service check/uncheck
-  const toggleService = (service: Service) => {
-    if (selectedServices.some(s => s.id === service.id)) {
-      setSelectedServices(selectedServices.filter(s => s.id !== service.id));
+  const toggleServiceSelection = (service: Service) => {
+    if (selectedServices.find((s) => s.id === service.id)) {
+      setSelectedServices(selectedServices.filter((s) => s.id !== service.id));
     } else {
       setSelectedServices([...selectedServices, service]);
     }
   };
 
-  const handleNextStep = () => {
-    if (step === 1 && selectedServices.length === 0) return;
-    if (step === 2 && !selectedStylist) return;
-    if (step === 3 && (!selectedDate || !selectedTime)) return;
-    if (step === 4) {
-      if (!name || !email || !phone) return;
-      handleConfirmBooking();
-      return;
+  const calculateTotal = () => {
+    return selectedServices.reduce((sum, s) => sum + s.price, 0);
+  };
+
+  const validateStep1 = () => {
+    const errs: { [key: string]: string } = {};
+    if (!customerName.trim()) errs.name = 'Full name is required';
+    if (!customerPhone.trim() || customerPhone.length < 7) errs.phone = 'Valid phone number is required';
+    if (!customerEmail.trim() || !customerEmail.includes('@')) errs.email = 'Valid email address is required';
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
+
+  const validateStep2 = () => {
+    if (selectedServices.length === 0) {
+      setErrors({ services: 'Please select at least one service to proceed' });
+      return false;
     }
-    setStep(prev => prev + 1);
+    setErrors({});
+    return true;
+  };
+
+  const handleNextStep = () => {
+    if (step === 1 && validateStep1()) {
+      setStep(2);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (step === 2 && validateStep2()) {
+      setStep(3);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (step === 3) {
+      setStep(4);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   const handlePrevStep = () => {
-    if (step === 1) return;
-    setStep(prev => prev - 1);
+    if (step > 1) {
+      setStep(step - 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
-  const handleConfirmBooking = () => {
-    if (!selectedStylist || !selectedTime) return;
+  const handleFinalBookingSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    if (isSubmitting) return;
 
-    const newBooking: Booking = {
-      id: `AUR-2026-${Math.floor(1000 + Math.random() * 9000)}`,
-      services: selectedServices,
-      stylist: selectedStylist,
-      date: selectedDate,
-      time: selectedTime,
-      customerDetails: {
-        name,
-        email,
-        phone,
-        notes
-      },
-      totalPrice: subtotal,
-      createdAt: new Date().toISOString()
-    };
+    setIsSubmitting(true);
 
-    // Save to localStorage for client history
-    const existingBookingsRaw = localStorage.getItem('aura_bookings');
-    const existingBookings = existingBookingsRaw ? JSON.parse(existingBookingsRaw) : [];
-    existingBookings.push(newBooking);
-    localStorage.setItem('aura_bookings', JSON.stringify(existingBookings));
+    setTimeout(() => {
+      const newBooking: Booking = {
+        id: 'HL-' + Math.floor(100000 + Math.random() * 900000),
+        services: selectedServices,
+        stylist: selectedStylist,
+        date: selectedDate,
+        time: selectedTime,
+        customerDetails: {
+          name: customerName,
+          email: customerEmail,
+          phone: customerPhone,
+          notes: customerNotes
+        },
+        totalPrice: calculateTotal(),
+        createdAt: new Date().toISOString()
+      };
 
-    setConfirmedBooking(newBooking);
-    setStep(5);
+      // Store in localStorage
+      const existing = localStorage.getItem('aura_bookings');
+      const bookingsArr: Booking[] = existing ? JSON.parse(existing) : [];
+      bookingsArr.unshift(newBooking);
+      localStorage.setItem('aura_bookings', JSON.stringify(bookingsArr));
+
+      setSubmittedBooking(newBooking);
+      setIsSubmitting(false);
+      onSuccess();
+    }, 1200);
   };
 
-  const handlePrint = () => {
-    window.print();
-  };
-
-  const handleReset = () => {
-    setSelectedServices([]);
-    setSelectedStylist(null);
-    setSelectedDate('');
-    setSelectedTime(null);
-    setName('');
-    setEmail('');
-    setPhone('');
-    setNotes('');
-    setConfirmedBooking(null);
-    setStep(1);
-    clearPreSelectedService();
-    onSuccess();
-  };
+  const whatsappMessage = submittedBooking
+    ? encodeURIComponent(
+        `Hello Highlights Makeoverartistry! I have booked an appointment.\n\nBooking ID: ${submittedBooking.id}\nName: ${submittedBooking.customerDetails.name}\nDate: ${submittedBooking.date} at ${submittedBooking.time}\nServices: ${submittedBooking.services.map(s => s.name).join(', ')}\nTotal: $${submittedBooking.totalPrice}`
+      )
+    : '';
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-12 pb-24 space-y-12">
-      
-      {/* Page Header */}
-      <div className="text-center space-y-4">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pb-24 space-y-10">
+      {/* Page Title */}
+      <div className="text-center space-y-3">
         <span className="text-brand-gold font-sans font-semibold text-xs tracking-widest uppercase block">
-          ✦ Live Reservation Engine ✦
+          ✦ Seamless Digital Scheduling ✦
         </span>
-        <h1 className="font-serif text-3xl sm:text-4xl text-brand-charcoal font-light">
-          Book Your Aura Sanctuary Experience
+        <h1 className="font-serif text-3xl sm:text-5xl text-brand-charcoal font-light">
+          Reserve Your Beauty Sanctuary
         </h1>
-        <div className="h-0.5 w-16 bg-brand-gold/40 mx-auto" />
+        <p className="text-stone-500 font-sans font-light text-xs sm:text-sm max-w-md mx-auto">
+          Complete the quick steps below to confirm your appointment time with our master artisans.
+        </p>
       </div>
 
-      {/* Step Progress Line */}
-      <div id="booking-progress-line" className="max-w-3xl mx-auto flex justify-between items-center relative px-2 sm:px-6">
-        {/* Horizontal bar */}
-        <div className="absolute top-1/2 left-6 right-6 h-0.5 bg-stone-200 -translate-y-1/2 -z-1" />
-        <div 
-          className="absolute top-1/2 left-6 h-0.5 bg-brand-gold -translate-y-1/2 -z-1 transition-all duration-300"
-          style={{ width: `${((step - 1) / 4) * 100}%` }}
-        />
-
-        {[1, 2, 3, 4, 5].map((num) => {
-          const isActive = step === num;
-          const isDone = step > num;
-          return (
-            <div key={num} className="flex flex-col items-center space-y-2">
-              <div 
-                className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 border ${
-                  isDone 
-                    ? 'bg-brand-gold border-brand-gold text-white' 
-                    : isActive 
-                      ? 'bg-brand-blush border-brand-gold text-brand-gold ring-4 ring-brand-blush/40 font-bold scale-110' 
-                      : 'bg-white border-stone-200 text-stone-400'
-                }`}
-              >
-                {isDone ? <Check className="w-4 h-4 sm:w-5 sm:h-5" /> : num}
-              </div>
-              <span className={`text-[10px] sm:text-xs font-semibold uppercase tracking-wider hidden sm:block ${
-                isActive ? 'text-brand-gold font-bold' : 'text-stone-400'
-              }`}>
-                {num === 1 && 'Services'}
-                {num === 2 && 'Stylist'}
-                {num === 3 && 'Date & Time'}
-                {num === 4 && 'Contact'}
-                {num === 5 && 'Confirmation'}
-              </span>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Multi-step Container Card */}
-      <div className="bg-white border border-brand-blush rounded-3xl p-6 sm:p-10 shadow-xs grid grid-cols-1 lg:grid-cols-12 gap-10">
-        
-        {/* Step Contents - Left Columns (Col Span 8) */}
-        <div className="lg:col-span-8 space-y-6">
-          <AnimatePresence mode="wait">
-            
-            {/* STEP 1: SELECT SERVICES */}
-            {step === 1 && (
-              <motion.div
-                key="step-1"
-                initial={{ opacity: 0, x: 15 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -15 }}
-                className="space-y-6"
-              >
-                <div className="space-y-1">
-                  <h3 className="font-serif text-xl font-medium text-brand-charcoal">Step 1: Select Your Services</h3>
-                  <p className="text-xs text-stone-500">Choose multiple services to craft your customized pampering pack.</p>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[500px] overflow-y-auto pr-2">
-                  {SERVICES.map((srv) => {
-                    const isChecked = selectedServices.some(s => s.id === srv.id);
-                    return (
-                      <div
-                        key={srv.id}
-                        onClick={() => toggleService(srv)}
-                        className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-start space-x-3.5 select-none ${
-                          isChecked 
-                            ? 'border-brand-gold bg-brand-blush/35' 
-                            : 'border-stone-100 hover:border-brand-blush/80'
-                        }`}
-                      >
-                        <div className={`w-5 h-5 rounded border flex items-center justify-center shrink-0 mt-0.5 ${
-                          isChecked ? 'bg-brand-gold border-brand-gold text-white' : 'border-stone-300 bg-white'
-                        }`}>
-                          {isChecked && <Check className="w-3.5 h-3.5" />}
-                        </div>
-                        <div className="flex-1 space-y-1">
-                          <h4 className="font-semibold text-xs sm:text-sm text-brand-charcoal leading-tight">{srv.name}</h4>
-                          <span className="block text-[10px] text-brand-gold font-medium uppercase tracking-wider">
-                            {srv.category} • {srv.duration}
-                          </span>
-                          <span className="block text-xs font-bold text-stone-700">${srv.price}</span>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </motion.div>
-            )}
-
-            {/* STEP 2: CHOOSE STYLIST */}
-            {step === 2 && (
-              <motion.div
-                key="step-2"
-                initial={{ opacity: 0, x: 15 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -15 }}
-                className="space-y-6"
-              >
-                <div className="space-y-1">
-                  <h3 className="font-serif text-xl font-medium text-brand-charcoal">Step 2: Choose Stylist/Therapist</h3>
-                  <p className="text-xs text-stone-500">Our highly accredited experts specialize in bespoke treatments.</p>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  {STYLISTS.map((stylist) => {
-                    const isSelected = selectedStylist?.id === stylist.id;
-                    return (
-                      <div
-                        key={stylist.id}
-                        onClick={() => setSelectedStylist(stylist)}
-                        className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-center space-x-4 select-none ${
-                          isSelected 
-                            ? 'border-brand-gold bg-brand-blush/35' 
-                            : 'border-stone-100 hover:border-brand-blush/80'
-                        }`}
-                      >
-                        <img
-                          src={stylist.photo}
-                          alt={stylist.name}
-                          className="w-16 h-16 rounded-full object-cover shrink-0 ring-2 ring-brand-blush"
-                          referrerPolicy="no-referrer"
-                        />
-                        <div className="flex-1 space-y-1">
-                          <h4 className="font-semibold text-xs sm:text-sm text-brand-charcoal leading-tight">{stylist.name}</h4>
-                          <span className="block text-[10px] text-brand-gold font-medium tracking-wider uppercase">{stylist.role}</span>
-                          <span className="block text-[11px] text-stone-400 font-light leading-tight line-clamp-1">{stylist.specialization}</span>
-                          <div className="flex items-center space-x-1 text-[11px] text-brand-gold">
-                            <span>★</span>
-                            <span className="font-semibold">{stylist.rating} rating</span>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </motion.div>
-            )}
-
-            {/* STEP 3: PICK DATE & TIME */}
-            {step === 3 && (
-              <motion.div
-                key="step-3"
-                initial={{ opacity: 0, x: 15 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -15 }}
-                className="space-y-8"
-              >
-                <div className="space-y-1">
-                  <h3 className="font-serif text-xl font-medium text-brand-charcoal">Step 3: Select Date & Slot</h3>
-                  <p className="text-xs text-stone-500">Pick an upcoming date and time slot with {selectedStylist?.name}.</p>
-                </div>
-
-                {/* Date Picker Ribbon */}
-                <div className="space-y-3">
-                  <span className="block text-xs font-semibold text-stone-600 pl-1 uppercase tracking-wider flex items-center space-x-1">
-                    <CalendarDays className="w-4 h-4 text-brand-rose" />
-                    <span>Available Dates (Next 10 Days)</span>
-                  </span>
-                  
-                  <div className="flex overflow-x-auto space-x-3 pb-3 scrollbar-none">
-                    {availableDates.map((item) => {
-                      const isSelected = selectedDate === item.dateString;
-                      return (
-                        <button
-                          key={item.dateString}
-                          onClick={() => {
-                            setSelectedDate(item.dateString);
-                            setSelectedTime(null); // Reset time when date changes
-                          }}
-                          className={`flex flex-col items-center p-3 rounded-2xl min-w-[75px] border-2 transition-all cursor-pointer ${
-                            isSelected 
-                              ? 'border-brand-gold bg-brand-gold text-white font-bold scale-102' 
-                              : 'border-stone-100 bg-stone-50 text-stone-700 hover:border-brand-blush'
-                          }`}
-                        >
-                          <span className={`text-[10px] uppercase font-light ${isSelected ? 'text-white/80' : 'text-stone-400'}`}>
-                            {item.dayName.substring(0, 3)}
-                          </span>
-                          <span className="text-lg font-serif font-semibold leading-tight my-0.5">
-                            {item.dateNum}
-                          </span>
-                          <span className={`text-[9px] font-medium tracking-wider uppercase ${isSelected ? 'text-white' : 'text-stone-500'}`}>
-                            {item.monthName}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Time Slots Picker */}
-                {selectedDate && selectedStylist && (
-                  <div className="space-y-3">
-                    <span className="block text-xs font-semibold text-stone-600 pl-1 uppercase tracking-wider flex items-center space-x-1">
-                      <Clock className="w-4 h-4 text-brand-rose" />
-                      <span>Available Time Slots</span>
-                    </span>
-                    
-                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-                      {selectedStylist.availableSlots.map((slot) => {
-                        const isSelected = selectedTime === slot;
-                        return (
-                          <button
-                            key={slot}
-                            onClick={() => setSelectedTime(slot)}
-                            className={`py-3 rounded-xl border text-xs font-medium tracking-wider transition-all cursor-pointer ${
-                              isSelected
-                                ? 'bg-brand-gold border-brand-gold text-white font-semibold'
-                                : 'bg-white border-stone-200 text-stone-600 hover:border-brand-gold/60'
-                            }`}
-                          >
-                            {slot}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-              </motion.div>
-            )}
-
-            {/* STEP 4: CUSTOMER DETAILS */}
-            {step === 4 && (
-              <motion.div
-                key="step-4"
-                initial={{ opacity: 0, x: 15 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -15 }}
-                className="space-y-6"
-              >
-                <div className="space-y-1">
-                  <h3 className="font-serif text-xl font-medium text-brand-charcoal">Step 4: Contact & Customization</h3>
-                  <p className="text-xs text-stone-500 font-light">Provide your contact info to secure the reservation.</p>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="space-y-1">
-                    <label className="text-xs font-semibold text-stone-600 pl-1 flex items-center space-x-1">
-                      <User className="w-3.5 h-3.5 text-brand-rose" />
-                      <span>Your Full Name *</span>
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder="Audrey Hepburn"
-                      className="w-full bg-brand-cream/40 border border-brand-blush rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-brand-gold text-brand-charcoal"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                      <label className="text-xs font-semibold text-stone-600 pl-1 flex items-center space-x-1">
-                        <Mail className="w-3.5 h-3.5 text-brand-rose" />
-                        <span>Email Address *</span>
-                      </label>
-                      <input
-                        type="email"
-                        required
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="audrey@gala.com"
-                        className="w-full bg-brand-cream/40 border border-brand-blush rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-brand-gold text-brand-charcoal"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-semibold text-stone-600 pl-1 flex items-center space-x-1">
-                        <Phone className="w-3.5 h-3.5 text-brand-rose" />
-                        <span>Phone Number *</span>
-                      </label>
-                      <input
-                        type="tel"
-                        required
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        placeholder="(310) 555-0190"
-                        className="w-full bg-brand-cream/40 border border-brand-blush rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-brand-gold text-brand-charcoal"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="text-xs font-semibold text-stone-600 pl-1">Special Requests or Medical Contraindications</label>
-                    <textarea
-                      rows={3}
-                      value={notes}
-                      onChange={(e) => setNotes(e.target.value)}
-                      placeholder="Allergic to lavender essence, prefer soft pressure during facial massage..."
-                      className="w-full bg-brand-cream/40 border border-brand-blush rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-brand-gold text-brand-charcoal"
-                    />
-                  </div>
-                </div>
-              </motion.div>
-            )}
-
-            {/* STEP 5: CONFIRMATION SUMMARY */}
-            {step === 5 && confirmedBooking && (
-              <motion.div
-                key="step-5"
-                initial={{ opacity: 0, scale: 0.98 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="space-y-8"
-              >
-                
-                {/* Micro animation heading */}
-                <div className="text-center space-y-2 py-4">
-                  <div className="w-14 h-14 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto animate-bounce">
-                    <CheckCircle className="w-8 h-8" />
-                  </div>
-                  <h3 className="font-serif text-2xl font-semibold text-brand-charcoal">Ritual Secured!</h3>
-                  <p className="text-xs text-stone-500">Your reservation code is: <strong className="text-brand-gold">{confirmedBooking.id}</strong></p>
-                </div>
-
-                {/* Receipt Card */}
-                <div id="booking-receipt" className="border border-brand-rose/60 rounded-3xl p-6 sm:p-8 space-y-6 bg-brand-cream/30 relative print:border-0 print:bg-white">
-                  
-                  <div className="flex justify-between items-start border-b border-stone-200/60 pb-4">
-                    <div>
-                      <h4 className="font-serif text-lg font-bold text-brand-charcoal">Aura Beverly Hills</h4>
-                      <span className="text-[10px] text-stone-400 uppercase tracking-widest block mt-0.5">Sanctuary Reservation</span>
-                    </div>
-                    <div className="text-right">
-                      <span className="block text-xs text-stone-500 font-mono">Date: {confirmedBooking.date}</span>
-                      <span className="block text-xs text-stone-500 font-mono">Time: {confirmedBooking.time}</span>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div>
-                      <span className="text-[10px] text-stone-400 uppercase tracking-wider block">Customer Details:</span>
-                      <span className="block font-semibold text-xs sm:text-sm text-brand-charcoal mt-1">{confirmedBooking.customerDetails.name}</span>
-                      <span className="block text-xs text-stone-500">{confirmedBooking.customerDetails.phone} • {confirmedBooking.customerDetails.email}</span>
-                    </div>
-
-                    <div>
-                      <span className="text-[10px] text-stone-400 uppercase tracking-wider block">Reserved Stylist:</span>
-                      <div className="flex items-center space-x-2 mt-1.5">
-                        <img
-                          src={confirmedBooking.stylist.photo}
-                          alt={confirmedBooking.stylist.name}
-                          className="w-8 h-8 rounded-full object-cover ring-1 ring-brand-blush"
-                          referrerPolicy="no-referrer"
-                        />
-                        <span className="text-xs font-semibold text-stone-700">{confirmedBooking.stylist.name} ({confirmedBooking.stylist.role})</span>
-                      </div>
-                    </div>
-
-                    <div>
-                      <span className="text-[10px] text-stone-400 uppercase tracking-wider block mb-1.5">Services Block:</span>
-                      <ul className="space-y-2">
-                        {confirmedBooking.services.map((s) => (
-                          <li key={s.id} className="flex justify-between text-xs text-stone-600">
-                            <span>{s.name} ({s.duration})</span>
-                            <span className="font-semibold">${s.price}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-
-                  <div className="border-t border-stone-200/60 pt-4 flex justify-between items-center">
-                    <span className="text-xs font-bold text-stone-700">Total Charged:</span>
-                    <span className="font-serif text-xl font-bold text-brand-gold-dark">${confirmedBooking.totalPrice}</span>
-                  </div>
-
-                  {confirmedBooking.customerDetails.notes && (
-                    <div className="bg-white rounded-xl p-3 text-[11px] text-stone-500 border border-stone-100">
-                      <strong>Client Note:</strong> "{confirmedBooking.customerDetails.notes}"
-                    </div>
-                  )}
-
-                  {/* Policies */}
-                  <div className="text-[10px] text-stone-400 leading-relaxed border-t border-stone-200/40 pt-4 space-y-1">
-                    <p className="font-bold text-stone-500">Cancellation & Rescheduling Guidelines:</p>
-                    <p>Standard clients must reschedule at least 24 hours prior to prevent a late-reschedule assessment. Please keep this invoice reference code secure.</p>
-                  </div>
-
-                </div>
-
-                {/* Receipt Actions */}
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <button
-                    id="print-receipt-btn"
-                    onClick={handlePrint}
-                    className="flex-1 border border-brand-gold text-brand-gold hover:bg-brand-blush/40 py-3.5 rounded-xl text-xs font-bold uppercase tracking-widest transition-all cursor-pointer flex items-center justify-center space-x-2"
-                  >
-                    <Printer className="w-4 h-4" />
-                    <span>Print Reservation</span>
-                  </button>
-                  <button
-                    id="reset-booking-btn"
-                    onClick={handleReset}
-                    className="flex-1 bg-brand-gold hover:bg-brand-gold-dark text-white py-3.5 rounded-xl text-xs font-bold uppercase tracking-widest transition-all cursor-pointer"
-                  >
-                    Book Another Service
-                  </button>
-                </div>
-
-              </motion.div>
-            )}
-
-          </AnimatePresence>
+      {/* Animated Step Progress Bar */}
+      {!submittedBooking && (
+        <div className="bg-white border border-brand-blush rounded-2xl p-4 shadow-2xs">
+          <div className="flex justify-between items-center text-xs font-semibold text-stone-500 pb-2">
+            <span className={step >= 1 ? 'text-brand-gold font-bold' : ''}>1. Contact Info</span>
+            <span className={step >= 2 ? 'text-brand-gold font-bold' : ''}>2. Services</span>
+            <span className={step >= 3 ? 'text-brand-gold font-bold' : ''}>3. Date & Stylist</span>
+            <span className={step >= 4 ? 'text-brand-gold font-bold' : ''}>4. Review</span>
+          </div>
+          <div className="w-full h-1.5 bg-stone-100 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-brand-gold transition-all duration-500 ease-out"
+              style={{ width: `${(step / 4) * 100}%` }}
+            />
+          </div>
         </div>
+      )}
 
-        {/* Wizard Sidebar / Cart - Right Column (Col Span 4) */}
-        {step < 5 && (
-          <div className="lg:col-span-4 bg-brand-blush/20 border border-brand-blush rounded-2xl p-6 h-fit space-y-6">
-            <h4 className="font-serif text-lg font-semibold text-brand-charcoal border-b border-brand-blush/60 pb-2">Booking Summary</h4>
-            
-            {/* Services Added */}
-            <div className="space-y-4">
-              <span className="text-[10px] text-stone-400 uppercase tracking-widest block font-medium">Added Services</span>
-              
-              {selectedServices.length > 0 ? (
-                <div className="space-y-2 max-h-[160px] overflow-y-auto pr-1">
-                  {selectedServices.map((srv) => (
-                    <div key={srv.id} className="flex justify-between items-start text-xs text-stone-700 bg-white p-2 rounded-lg border border-stone-100">
-                      <div className="flex-1">
-                        <span className="block font-semibold">{srv.name}</span>
-                        <span className="block text-[10px] text-stone-400">{srv.duration} • ${srv.price}</span>
+      {/* Submitted Booking Success Screen */}
+      {submittedBooking ? (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="bg-white border border-brand-blush rounded-3xl p-8 sm:p-12 text-center space-y-6 shadow-md"
+        >
+          <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto">
+            <CheckCircle2 className="w-10 h-10" />
+          </div>
+          <div className="space-y-2">
+            <span className="bg-brand-blush text-brand-gold-dark font-bold text-xs px-3 py-1 rounded-full uppercase tracking-widest">
+              Booking Confirmation #{submittedBooking.id}
+            </span>
+            <h2 className="font-serif text-3xl font-light text-brand-charcoal pt-2">
+              Appointment Successfully Reserved!
+            </h2>
+            <p className="text-stone-500 text-xs sm:text-sm max-w-md mx-auto">
+              Thank you, <span className="font-semibold text-brand-charcoal">{submittedBooking.customerDetails.name}</span>. We look forward to welcoming you on <span className="font-semibold">{submittedBooking.date}</span> at <span className="font-semibold">{submittedBooking.time}</span>.
+            </p>
+          </div>
+
+          {/* Reserved Summary */}
+          <div className="bg-brand-cream border border-brand-blush p-6 rounded-2xl text-left max-w-lg mx-auto space-y-3">
+
+            <div className="space-y-1">
+              <span className="text-xs text-stone-400 uppercase tracking-wider block">Selected Services:</span>
+              {submittedBooking.services.map((s) => (
+                <div key={s.id} className="flex justify-between text-xs text-stone-700">
+                  <span>{s.name}</span>
+                  <span className="font-semibold">${s.price}</span>
+                </div>
+              ))}
+            </div>
+            <div className="flex justify-between text-sm font-serif font-bold text-brand-gold-dark pt-2 border-t border-brand-blush/60">
+              <span>Total Estimated Price:</span>
+              <span>${submittedBooking.totalPrice}</span>
+            </div>
+          </div>
+
+          {/* WhatsApp & Return Actions */}
+          <div className="pt-4 flex flex-col sm:flex-row justify-center gap-4">
+            <a
+              id="whatsapp-confirm-link"
+              href={`https://wa.me/13105550199?text=${whatsappMessage}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-full text-xs font-bold uppercase tracking-widest flex items-center justify-center space-x-2 transition-colors"
+            >
+              <MessageCircle className="w-4 h-4" />
+              <span>Confirm via WhatsApp</span>
+            </a>
+            <button
+              id="book-another-btn"
+              onClick={() => {
+                setSubmittedBooking(null);
+                setStep(1);
+                clearPreSelectedService();
+                setSelectedServices([]);
+              }}
+              className="bg-brand-charcoal text-white hover:bg-brand-charcoal/90 px-6 py-3 rounded-full text-xs font-bold uppercase tracking-widest transition-colors cursor-pointer"
+            >
+              Book Another Appointment
+            </button>
+          </div>
+        </motion.div>
+      ) : (
+        /* Multi-step Form Wizard */
+        <div className="bg-white border border-brand-blush rounded-3xl p-6 sm:p-10 shadow-sm space-y-8">
+          
+          {/* STEP 1: Customer Contact Info */}
+          {step === 1 && (
+            <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
+              <div className="space-y-1">
+                <h2 className="font-serif text-2xl font-light text-brand-charcoal">1. Your Personal Information</h2>
+                <p className="text-stone-500 text-xs font-light">Please enter your details so we can confirm your reservation.</p>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-xs font-medium text-brand-charcoal mb-1">Full Name *</label>
+                  <input
+                    id="booking-name-input"
+                    type="text"
+                    value={customerName}
+                    onChange={(e) => setCustomerName(e.target.value)}
+                    placeholder="e.g. Charlotte Vance"
+                    className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-gold focus:ring-1 focus:ring-brand-gold"
+                  />
+                  {errors.name && <span className="text-xs text-rose-500 mt-1 block">{errors.name}</span>}
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-medium text-brand-charcoal mb-1">Phone Number *</label>
+                    <input
+                      id="booking-phone-input"
+                      type="tel"
+                      value={customerPhone}
+                      onChange={(e) => setCustomerPhone(e.target.value)}
+                      placeholder="+1 (310) 555-0199"
+                      className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-gold focus:ring-1 focus:ring-brand-gold"
+                    />
+                    {errors.phone && <span className="text-xs text-rose-500 mt-1 block">{errors.phone}</span>}
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-medium text-brand-charcoal mb-1">Email Address *</label>
+                    <input
+                      id="booking-email-input"
+                      type="email"
+                      value={customerEmail}
+                      onChange={(e) => setCustomerEmail(e.target.value)}
+                      placeholder="charlotte@example.com"
+                      className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-gold focus:ring-1 focus:ring-brand-gold"
+                    />
+                    {errors.email && <span className="text-xs text-rose-500 mt-1 block">{errors.email}</span>}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* STEP 2: Service Selection */}
+          {step === 2 && (
+            <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
+              <div className="space-y-1">
+                <h2 className="font-serif text-2xl font-light text-brand-charcoal">2. Select Your Services</h2>
+                <p className="text-stone-500 text-xs font-light">Choose one or more treatments for your session.</p>
+              </div>
+
+              {errors.services && (
+                <div className="bg-rose-50 border border-rose-200 p-3 rounded-xl flex items-center space-x-2 text-rose-600 text-xs">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <span>{errors.services}</span>
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[380px] overflow-y-auto pr-1">
+                {SERVICES.map((serv) => {
+                  const isSelected = selectedServices.some((s) => s.id === serv.id);
+                  return (
+                    <div
+                      key={serv.id}
+                      onClick={() => toggleServiceSelection(serv)}
+                      className={`p-4 rounded-2xl border cursor-pointer transition-all flex items-start space-x-3 ${
+                        isSelected
+                          ? 'border-brand-gold bg-brand-blush/40 shadow-2xs'
+                          : 'border-stone-200 bg-white hover:border-brand-gold/50'
+                      }`}
+                    >
+                      <img src={serv.image} alt={serv.name} className="w-14 h-14 rounded-xl object-cover shrink-0" />
+                      <div className="flex-1 space-y-1">
+                        <div className="flex justify-between items-baseline">
+                          <h4 className="font-serif text-sm font-semibold text-brand-charcoal">{serv.name}</h4>
+                          <span className="text-xs font-bold text-brand-gold-dark">${serv.price}</span>
+                        </div>
+                        <p className="text-[11px] text-stone-500 font-light line-clamp-1">{serv.description}</p>
+                        <span className="text-[10px] text-stone-400 font-mono">{serv.duration}</span>
                       </div>
-                      <button
-                        id={`remove-service-summary-${srv.id}`}
-                        onClick={() => toggleService(srv)}
-                        className="text-stone-300 hover:text-rose-500 p-0.5 cursor-pointer"
-                        aria-label="Remove"
-                      >
-                        <X className="w-3.5 h-3.5" />
-                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="bg-stone-50 p-4 rounded-2xl flex justify-between items-center text-sm font-serif">
+                <span>Total Selected ({selectedServices.length}):</span>
+                <span className="font-bold text-brand-gold-dark text-base">${calculateTotal()}</span>
+              </div>
+            </motion.div>
+          )}
+
+          {/* STEP 3: Date & Time Selection */}
+          {step === 3 && (
+            <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
+              <div className="space-y-1">
+                <h2 className="font-serif text-2xl font-light text-brand-charcoal">3. Date & Time Selection</h2>
+                <p className="text-stone-500 text-xs font-light">Pick your preferred appointment date and time slot.</p>
+              </div>
+
+              <div className="space-y-5">
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-medium text-brand-charcoal mb-1">Preferred Date *</label>
+                    <input
+                      id="booking-date-input"
+                      type="date"
+                      value={selectedDate}
+                      min={new Date().toISOString().split('T')[0]}
+                      onChange={(e) => setSelectedDate(e.target.value)}
+                      className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-gold"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-medium text-brand-charcoal mb-1">Preferred Time Slot *</label>
+                    <select
+                      id="booking-time-select"
+                      value={selectedTime}
+                      onChange={(e) => setSelectedTime(e.target.value)}
+                      className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-gold"
+                    >
+                      {selectedStylist.availableSlots.map((slot) => (
+                        <option key={slot} value={slot}>{slot}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-brand-charcoal mb-1">Additional Notes / Requests (Optional)</label>
+                  <textarea
+                    id="booking-notes-input"
+                    rows={2}
+                    value={customerNotes}
+                    onChange={(e) => setCustomerNotes(e.target.value)}
+                    placeholder="e.g. Hair allergy details, wedding theme reference, etc."
+                    className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-gold"
+                  />
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* STEP 4: Review & Final Confirmation */}
+          {step === 4 && (
+            <form onSubmit={handleFinalBookingSubmit} className="space-y-6">
+              <div className="space-y-1">
+                <h2 className="font-serif text-2xl font-light text-brand-charcoal">4. Review & Confirm Booking</h2>
+                <p className="text-stone-500 text-xs font-light">Verify your reservation details before confirming.</p>
+              </div>
+
+              <div className="bg-brand-cream border border-brand-blush p-6 rounded-2xl space-y-4">
+                <div className="flex justify-between items-center text-xs border-b border-brand-blush/60 pb-3">
+                  <div>
+                    <span className="text-stone-400 uppercase tracking-wider block text-[10px]">Guest Name:</span>
+                    <span className="font-bold text-brand-charcoal text-sm">{customerName}</span>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-stone-400 uppercase tracking-wider block text-[10px]">Contact:</span>
+                    <span className="text-stone-600 font-mono">{customerPhone}</span>
+                  </div>
+                </div>
+
+                <div className="flex justify-between items-center text-xs border-b border-brand-blush/60 pb-3">
+                  <div>
+                    <span className="text-stone-400 uppercase tracking-wider block text-[10px]">Date & Time:</span>
+                    <span className="font-semibold text-stone-700">{selectedDate} at {selectedTime}</span>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-stone-400 uppercase tracking-wider block text-[10px]">Stylist:</span>
+                    <span className="font-semibold text-brand-gold-dark">{selectedStylist.name}</span>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <span className="text-xs text-stone-400 uppercase tracking-wider block">Services Summary:</span>
+                  {selectedServices.map((s) => (
+                    <div key={s.id} className="flex justify-between text-xs text-stone-700">
+                      <span>{s.name}</span>
+                      <span className="font-semibold">${s.price}</span>
                     </div>
                   ))}
                 </div>
-              ) : (
-                <div className="text-center py-4 text-xs text-stone-400 italic">No services added yet.</div>
-              )}
-            </div>
 
-            {/* Stylist Selected */}
-            {selectedStylist && (
-              <div className="space-y-2 border-t border-stone-100 pt-4">
-                <span className="text-[10px] text-stone-400 uppercase tracking-widest block font-medium">Stylist / Therapist</span>
-                <div className="flex items-center space-x-2 text-xs text-stone-700 bg-white p-2.5 rounded-lg border border-stone-100">
-                  <img
-                    src={selectedStylist.photo}
-                    alt={selectedStylist.name}
-                    className="w-7 h-7 rounded-full object-cover ring-1 ring-brand-blush"
-                    referrerPolicy="no-referrer"
-                  />
-                  <div>
-                    <span className="block font-semibold">{selectedStylist.name}</span>
-                    <span className="block text-[9px] text-stone-400">{selectedStylist.role}</span>
-                  </div>
+                <div className="pt-3 border-t border-brand-blush/60 flex justify-between items-center text-base font-serif font-bold text-brand-gold-dark">
+                  <span>Total Amount Due at Salon:</span>
+                  <span>${calculateTotal()}</span>
                 </div>
               </div>
-            )}
 
-            {/* Date & Time Picker */}
-            {(selectedDate || selectedTime) && (
-              <div className="space-y-2 border-t border-stone-100 pt-4">
-                <span className="text-[10px] text-stone-400 uppercase tracking-widest block font-medium">Schedule Spot</span>
-                <div className="space-y-1 text-xs text-stone-700 bg-white p-2.5 rounded-lg border border-stone-100">
-                  {selectedDate && <span className="block font-semibold">Date: {selectedDate}</span>}
-                  {selectedTime && <span className="block font-semibold">Time Slot: {selectedTime}</span>}
-                </div>
-              </div>
-            )}
-
-            {/* Totals Box */}
-            <div className="border-t border-brand-rose/30 pt-4 space-y-2">
-              <div className="flex justify-between text-xs text-stone-500">
-                <span>Subtotal ({selectedServices.length} srv):</span>
-                <span>${subtotal}</span>
-              </div>
-              <div className="flex justify-between text-xs text-stone-500">
-                <span>Estimated Tax:</span>
-                <span className="font-light italic">Included</span>
-              </div>
-              <div className="flex justify-between items-center text-sm font-bold text-stone-800 border-t border-stone-100 pt-2">
-                <span>Est. Total:</span>
-                <span className="text-brand-gold-dark text-lg font-serif font-bold">${subtotal}</span>
-              </div>
-            </div>
-
-            {/* Nav controls inside block */}
-            <div className="flex justify-between items-center pt-2 gap-3">
-              {step > 1 && (
-                <button
-                  id="wizard-back-btn"
-                  onClick={handlePrevStep}
-                  className="flex items-center space-x-1.5 text-xs font-bold text-stone-500 hover:text-brand-gold uppercase tracking-wider py-2.5 px-4 bg-white border border-stone-200 rounded-xl cursor-pointer"
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                  <span>Back</span>
-                </button>
-              )}
-              
               <button
-                id="wizard-next-btn"
-                onClick={handleNextStep}
-                disabled={
-                  (step === 1 && selectedServices.length === 0) ||
-                  (step === 2 && !selectedStylist) ||
-                  (step === 3 && (!selectedDate || !selectedTime)) ||
-                  (step === 4 && (!name || !email || !phone))
-                }
-                className={`flex-1 flex items-center justify-center space-x-1 py-3 px-4 rounded-xl text-xs font-semibold uppercase tracking-wider cursor-pointer ${
-                  ((step === 1 && selectedServices.length === 0) ||
-                  (step === 2 && !selectedStylist) ||
-                  (step === 3 && (!selectedDate || !selectedTime)) ||
-                  (step === 4 && (!name || !email || !phone)))
-                    ? 'bg-stone-100 text-stone-400 border border-stone-200 cursor-not-allowed'
-                    : 'bg-brand-gold hover:bg-brand-gold-dark text-white'
-                }`}
+                id="submit-booking-final-btn"
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full bg-brand-gold hover:bg-brand-gold-dark text-white text-xs font-bold py-4 rounded-xl uppercase tracking-widest transition-all cursor-pointer shadow-md disabled:opacity-50 flex items-center justify-center space-x-2"
               >
-                <span>{step === 4 ? 'Confirm Reservation' : 'Continue'}</span>
-                {step < 4 && <ChevronRight className="w-4 h-4" />}
+                {isSubmitting ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span>Processing Reservation...</span>
+                  </>
+                ) : (
+                  <span>Confirm & Complete Booking</span>
+                )}
               </button>
-            </div>
+            </form>
+          )}
 
+          {/* Navigation Controls */}
+          <div className="flex justify-between items-center pt-4 border-t border-stone-100">
+            {step > 1 ? (
+              <button
+                type="button"
+                onClick={handlePrevStep}
+                className="text-stone-500 hover:text-brand-charcoal text-xs font-semibold uppercase tracking-wider flex items-center space-x-1 cursor-pointer"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                <span>Back</span>
+              </button>
+            ) : <div />}
+
+            {step < 4 && (
+              <button
+                type="button"
+                onClick={handleNextStep}
+                className="bg-brand-gold hover:bg-brand-gold-dark text-white px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest flex items-center space-x-1 cursor-pointer shadow-2xs"
+              >
+                <span>Continue</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            )}
           </div>
-        )}
 
-      </div>
-
+        </div>
+      )}
     </div>
   );
 }

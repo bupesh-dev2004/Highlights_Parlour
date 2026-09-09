@@ -1,349 +1,258 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Play, Maximize2, X, ChevronLeft, ChevronRight, Eye } from 'lucide-react';
-import { GALLERY_ITEMS, BEFORE_AFTER, REELS } from '../data';
+import { X, ChevronLeft, ChevronRight, Maximize2, Layers } from 'lucide-react';
+import { GALLERY_ITEMS, BEFORE_AFTER } from '../data';
 import { GalleryItem } from '../types';
 
 export default function Gallery() {
-  const [activeFilter, setActiveFilter] = useState<string>('All');
-  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
-  const [sliderPosition, setSliderPosition] = useState<number>(50);
-  const [playingReel, setPlayingReel] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [activeLightboxIndex, setActiveLightboxIndex] = useState<number | null>(null);
+  
+  // Before/After comparison slider state
+  const [sliderPos, setSliderPos] = useState<number>(50);
+  const [isDragging, setIsDragging] = useState<boolean>(false);
+  const comparisonRef = useRef<HTMLDivElement>(null);
 
-  const filters = ['All', 'Hair', 'Skin', 'Nails', 'Spa', 'Bridal', 'Makeup'];
+  const categories = [
+    'All',
+    'Salon Interior',
+    'Hair Transformations',
+    'Bridal Makeup',
+    'Party Makeup',
+    'Nail Art',
+    'Skincare',
+    'Before & After',
+    'Team'
+  ];
 
-  const filteredItems = activeFilter === 'All'
+  const filteredGallery = selectedCategory === 'All'
     ? GALLERY_ITEMS
-    : GALLERY_ITEMS.filter(item => item.category === activeFilter);
+    : GALLERY_ITEMS.filter((item) => item.category === selectedCategory);
 
-  const isDragging = useRef(false);
-  const sliderRef = useRef<HTMLDivElement>(null);
-
-  // Before/after slider interaction handlers
-  const handleMove = (clientX: number) => {
-    if (!sliderRef.current) return;
-    const rect = sliderRef.current.getBoundingClientRect();
+  const handleSliderMove = (clientX: number) => {
+    if (!comparisonRef.current) return;
+    const rect = comparisonRef.current.getBoundingClientRect();
     const x = clientX - rect.left;
-    const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100));
-    setSliderPosition(percentage);
+    let percentage = (x / rect.width) * 100;
+    if (percentage < 0) percentage = 0;
+    if (percentage > 100) percentage = 100;
+    setSliderPos(percentage);
   };
 
-  const handleTouchMove = (e: TouchEvent) => {
-    if (!isDragging.current) return;
-    handleMove(e.touches[0].clientX);
+  const nextLightboxItem = () => {
+    if (activeLightboxIndex === null) return;
+    setActiveLightboxIndex((activeLightboxIndex + 1) % filteredGallery.length);
   };
 
-  const handleMouseMove = (e: MouseEvent) => {
-    if (!isDragging.current) return;
-    handleMove(e.clientX);
-  };
-
-  const handleMouseUp = () => {
-    isDragging.current = false;
-  };
-
-  useEffect(() => {
-    window.addEventListener('mouseup', handleMouseUp);
-    window.addEventListener('touchend', handleMouseUp);
-    return () => {
-      window.removeEventListener('mouseup', handleMouseUp);
-      window.removeEventListener('touchend', handleMouseUp);
-    };
-  }, []);
-
-  const nextLightbox = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (lightboxIndex === null) return;
-    setLightboxIndex((lightboxIndex + 1) % filteredItems.length);
-  };
-
-  const prevLightbox = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (lightboxIndex === null) return;
-    setLightboxIndex((lightboxIndex - 1 + filteredItems.length) % filteredItems.length);
+  const prevLightboxItem = () => {
+    if (activeLightboxIndex === null) return;
+    setActiveLightboxIndex((activeLightboxIndex - 1 + filteredGallery.length) % filteredGallery.length);
   };
 
   return (
-    <div className="space-y-24 py-12 pb-24">
-      
-      {/* Page Header */}
+    <div className="space-y-16 py-12 pb-24">
+      {/* Header */}
       <section className="max-w-4xl mx-auto text-center px-4 space-y-4">
         <span className="text-brand-gold font-sans font-semibold text-xs tracking-widest uppercase block">
-          ✦ Visual Portfolios ✦
+          ✦ Visual Inspiration ✦
         </span>
         <h1 className="font-serif text-4xl sm:text-5xl text-brand-charcoal font-light leading-tight">
-          A Symphony of Transformations
+          Portfolio & Transformations
         </h1>
-        <p className="text-stone-500 font-sans font-light max-w-2xl mx-auto text-sm sm:text-base">
-          Explore actual results of our couture coloring, bridal makeovers, and rejuvenating aesthetic treatments.
+        <p className="text-stone-500 font-sans font-light text-sm max-w-xl mx-auto">
+          Explore our real guest hair transformations, bridal glow portraits, hand-sculpted nail art, and serene salon interior spaces.
         </p>
         <div className="h-0.5 w-20 bg-brand-gold/40 mx-auto" />
       </section>
 
-      {/* 1. Interactive Before/After Slider Section */}
-      <section id="transformation-slider" className="max-w-4xl mx-auto px-4">
-        <div className="bg-white rounded-3xl p-6 sm:p-10 border border-brand-blush shadow-xs space-y-6">
-          <div className="text-center space-y-2">
-            <span className="text-brand-gold uppercase tracking-widest text-[10px] font-bold">Featured Transformation</span>
-            <h2 className="font-serif text-2xl sm:text-3xl font-medium text-brand-charcoal">{BEFORE_AFTER.title}</h2>
-            <p className="text-stone-500 text-xs sm:text-sm font-light max-w-2xl mx-auto leading-relaxed">
-              {BEFORE_AFTER.description}
-            </p>
+      {/* Draggable Before & After Comparison Slider Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-white border border-brand-blush p-6 sm:p-10 rounded-3xl shadow-sm space-y-6">
+          <div className="text-center space-y-2 max-w-xl mx-auto">
+            <span className="text-brand-gold text-xs font-bold uppercase tracking-widest">Interactive Transformation</span>
+            <h2 className="font-serif text-2xl font-light text-brand-charcoal">{BEFORE_AFTER.title}</h2>
+            <p className="text-stone-500 text-xs font-light">{BEFORE_AFTER.description}</p>
           </div>
 
-          {/* Interactive Split Viewport */}
-          <div
-            ref={sliderRef}
-            className="relative h-[400px] sm:h-[480px] rounded-2xl overflow-hidden select-none cursor-ew-resize"
-            onMouseDown={(e) => {
-              isDragging.current = true;
-              handleMove(e.clientX);
-            }}
-            onTouchStart={(e) => {
-              isDragging.current = true;
-              handleMove(e.touches[0].clientX);
-            }}
-            onMouseMove={(e) => {
-              if (isDragging.current) handleMove(e.clientX);
-            }}
-            onTouchMove={(e) => {
-              if (isDragging.current) handleMove(e.touches[0].clientX);
-            }}
+          <div 
+            ref={comparisonRef}
+            className="relative w-full max-w-3xl h-[320px] sm:h-[450px] mx-auto rounded-3xl overflow-hidden select-none cursor-ew-resize shadow-md touch-none"
+            onMouseDown={() => setIsDragging(true)}
+            onMouseUp={() => setIsDragging(false)}
+            onMouseLeave={() => setIsDragging(false)}
+            onMouseMove={(e) => isDragging && handleSliderMove(e.clientX)}
+            onTouchStart={() => setIsDragging(true)}
+            onTouchEnd={() => setIsDragging(false)}
+            onTouchMove={(e) => isDragging && handleSliderMove(e.touches[0].clientX)}
           >
-            {/* "After" Image (Background) */}
-            <img
-              src={BEFORE_AFTER.afterUrl}
-              alt="After styled look"
-              className="absolute inset-0 w-full h-full object-cover pointer-events-none"
-              referrerPolicy="no-referrer"
+            {/* After Image */}
+            <img 
+              src={BEFORE_AFTER.afterUrl} 
+              alt="After Balayage & Styling" 
+              className="absolute inset-0 w-full h-full object-cover"
             />
-            <span className="absolute bottom-4 right-4 bg-black/60 text-white text-xs px-3.5 py-1.5 rounded-full font-bold tracking-widest uppercase select-none z-10">
-              AFTER
+            <span className="absolute top-4 right-4 bg-black/70 backdrop-blur-xs text-white text-xs px-3.5 py-1 rounded-full uppercase tracking-wider z-10 font-medium">
+              After Transformation
             </span>
 
-            {/* "Before" Image (Clipped overlay) */}
-            <div
-              className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none"
-              style={{ width: `${sliderPosition}%` }}
+            {/* Before Image */}
+            <div 
+              className="absolute inset-y-0 left-0 overflow-hidden"
+              style={{ width: `${sliderPos}%` }}
             >
-              <img
-                src={BEFORE_AFTER.beforeUrl}
-                alt="Before style"
+              <img 
+                src={BEFORE_AFTER.beforeUrl} 
+                alt="Before Restoration" 
                 className="absolute inset-0 w-full h-full object-cover max-w-none"
-                style={{ width: sliderRef.current?.getBoundingClientRect().width || 800 }}
-                referrerPolicy="no-referrer"
+                style={{ width: comparisonRef.current ? `${comparisonRef.current.clientWidth}px` : '100%' }}
               />
+              <span className="absolute top-4 left-4 bg-black/70 backdrop-blur-xs text-white text-xs px-3.5 py-1 rounded-full uppercase tracking-wider z-10 font-medium">
+                Before
+              </span>
             </div>
-            <span className="absolute bottom-4 left-4 bg-black/60 text-white text-xs px-3.5 py-1.5 rounded-full font-bold tracking-widest uppercase select-none z-10">
-              BEFORE
-            </span>
 
-            {/* Divider bar handle */}
-            <div
-              className="absolute top-0 bottom-0 w-1 bg-white cursor-ew-resize flex items-center justify-center pointer-events-none"
-              style={{ left: `${sliderPosition}%` }}
+            {/* Handle Bar */}
+            <div 
+              className="absolute inset-y-0 w-1 bg-white shadow-2xl z-20"
+              style={{ left: `${sliderPos}%` }}
             >
-              <div className="w-9 h-9 rounded-full bg-white border border-brand-gold text-brand-gold shadow-md flex items-center justify-center shrink-0">
-                <ChevronLeft className="w-3.5 h-3.5 shrink-0" />
-                <ChevronRight className="w-3.5 h-3.5 shrink-0 -ml-1" />
+              <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-9 h-9 rounded-full bg-brand-gold text-white flex items-center justify-center shadow-lg border-2 border-white">
+                <Layers className="w-4 h-4" />
               </div>
             </div>
-
-            {/* Drag helper tooltip overlay */}
-            <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-white/95 text-brand-gold text-[10px] font-bold tracking-wider px-3.5 py-1.5 rounded-full shadow-md uppercase select-none pointer-events-none">
-              Drag Center Handle
-            </div>
           </div>
+          <p className="text-center text-[11px] text-stone-400 uppercase tracking-widest">
+            Drag or swipe across the image to compare results
+          </p>
         </div>
       </section>
 
-      {/* 2. Filterable Image Grid */}
-      <section id="gallery-grid-section" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-        
-        {/* Filter Navigation */}
-        <div className="flex flex-wrap justify-center gap-1.5 max-w-3xl mx-auto">
-          {filters.map((f) => (
-            <button
-              id={`gallery-filter-${f.toLowerCase()}`}
-              key={f}
-              onClick={() => setActiveFilter(f)}
-              className={`px-4.5 py-2.5 rounded-full text-xs font-semibold tracking-widest uppercase transition-all cursor-pointer ${
-                activeFilter === f
-                  ? 'bg-brand-gold text-white shadow-xs'
-                  : 'bg-white border border-brand-blush/60 text-stone-500 hover:text-brand-gold'
-              }`}
-            >
-              {f}
-            </button>
-          ))}
+      {/* Category Filters */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center gap-2 overflow-x-auto pb-4 pt-2 no-scrollbar scroll-smooth">
+          {categories.map((cat) => {
+            const isActive = selectedCategory === cat;
+            return (
+              <button
+                id={`gallery-cat-${cat.replace(/\s+/g, '-').toLowerCase()}`}
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className={`px-5 py-2.5 rounded-full text-xs font-medium tracking-wide whitespace-nowrap transition-all duration-300 cursor-pointer ${
+                  isActive
+                    ? 'bg-brand-gold text-white shadow-md scale-105'
+                    : 'bg-white border border-brand-blush text-brand-charcoal hover:border-brand-gold hover:text-brand-gold'
+                }`}
+              >
+                {cat}
+              </button>
+            );
+          })}
         </div>
+      </section>
 
-        {/* Gallery Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-          {filteredItems.map((item, index) => (
-            <div
-              key={item.id}
-              onClick={() => setLightboxIndex(index)}
-              className="bg-white rounded-3xl overflow-hidden border border-brand-blush/50 shadow-xs hover:shadow-md cursor-pointer group relative"
-            >
-              <div className="aspect-square relative overflow-hidden">
+      {/* Gallery Cards Grid */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <AnimatePresence>
+            {filteredGallery.map((item, index) => (
+              <motion.div
+                layout
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.3 }}
+                key={item.id}
+                onClick={() => setActiveLightboxIndex(index)}
+                className="bg-white rounded-3xl overflow-hidden border-2 border-brand-blush-dark/50 hover:border-brand-gold shadow-2xs hover:shadow-md cursor-pointer group relative aspect-square"
+              >
                 <img
                   src={item.imageUrl}
                   alt={item.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  referrerPolicy="no-referrer"
+                  loading="lazy"
                 />
-                <div className="absolute inset-0 bg-brand-charcoal/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                  <div className="w-12 h-12 rounded-full bg-white/95 text-brand-gold shadow-md flex items-center justify-center transform scale-90 group-hover:scale-100 transition-all duration-300">
-                    <Maximize2 className="w-5 h-5" />
+                <div className="absolute inset-0 bg-brand-charcoal/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-5 text-white">
+                  <span className="text-[10px] text-brand-rose font-bold uppercase tracking-widest">
+                    {item.category}
+                  </span>
+                  <h3 className="font-serif text-base font-light tracking-wide mt-1">{item.title}</h3>
+                  <div className="mt-2 flex items-center space-x-1 text-xs text-brand-gold-light">
+                    <Maximize2 className="w-3.5 h-3.5" />
+                    <span className="text-[10px] font-semibold uppercase tracking-wider">Tap to Enlarge</span>
                   </div>
                 </div>
-              </div>
-              <div className="p-5 text-center">
-                <span className="text-[10px] text-brand-gold font-medium uppercase tracking-widest block">{item.category}</span>
-                <h3 className="font-serif text-base sm:text-lg font-light text-brand-charcoal mt-1 leading-tight">{item.title}</h3>
-              </div>
-            </div>
-          ))}
-        </div>
-
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
       </section>
 
-      {/* 3. Video/Reels section */}
-      <section id="gallery-reels-section" className="bg-brand-blush/30 py-20 border-y border-brand-blush/60">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-          
-          <div className="text-center space-y-3">
-            <span className="text-brand-gold font-sans font-semibold text-xs tracking-widest uppercase block">
-              ✦ Cinematic Moments
-            </span>
-            <h2 className="font-serif text-3xl text-brand-charcoal font-light">
-              Atmospheric Video & Reels
-            </h2>
-            <div className="h-0.5 w-16 bg-brand-gold/40 mx-auto" />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {REELS.map((reel) => {
-              const isPlaying = playingReel === reel.id;
-              return (
-                <div
-                  key={reel.id}
-                  className="bg-white rounded-3xl overflow-hidden border border-brand-rose/30 shadow-xs group"
-                >
-                  <div className="aspect-video relative bg-black flex items-center justify-center">
-                    {isPlaying ? (
-                      <video
-                        src={reel.videoPlaceholderUrl}
-                        controls
-                        autoPlay
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <>
-                        <img
-                          src={reel.thumbnail}
-                          alt={reel.title}
-                          className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500"
-                          referrerPolicy="no-referrer"
-                        />
-                        <button
-                          id={`play-reel-${reel.id}`}
-                          onClick={() => setPlayingReel(reel.id)}
-                          className="absolute w-16 h-16 rounded-full bg-brand-gold/90 text-white shadow-lg hover:bg-brand-gold flex items-center justify-center hover:scale-110 transition-transform cursor-pointer"
-                          aria-label="Play video"
-                        >
-                          <Play className="w-6 h-6 fill-white ml-1" />
-                        </button>
-                        <span className="absolute bottom-3 right-3 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded font-mono">
-                          {reel.duration}
-                        </span>
-                      </>
-                    )}
-                  </div>
-                  <div className="p-5">
-                    <h3 className="font-serif text-base sm:text-lg text-brand-charcoal font-medium leading-snug">{reel.title}</h3>
-                    <p className="text-stone-400 text-xs mt-1">Cinematic walk-through • Verified Aura Experience</p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-        </div>
-      </section>
-
-      {/* Lightbox Popup Modal */}
+      {/* Full-Screen Lightbox Modal */}
       <AnimatePresence>
-        {lightboxIndex !== null && (
+        {activeLightboxIndex !== null && (
           <motion.div
-            id="lightbox-backdrop"
+            id="lightbox-modal"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={() => setLightboxIndex(null)}
-            className="fixed inset-0 z-100 bg-brand-charcoal/95 backdrop-blur-sm flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4"
+            onClick={() => setActiveLightboxIndex(null)}
           >
+            {/* Close Button */}
             <button
-              id="lightbox-close-btn"
-              onClick={() => setLightboxIndex(null)}
-              className="absolute top-6 right-6 w-12 h-12 rounded-full bg-white/10 text-white hover:bg-white/20 flex items-center justify-center transition-colors cursor-pointer"
-              aria-label="Close lightbox"
+              id="close-lightbox-btn"
+              onClick={() => setActiveLightboxIndex(null)}
+              className="absolute top-6 right-6 text-white/70 hover:text-white p-2.5 rounded-full bg-white/10 hover:bg-white/20 transition-colors cursor-pointer z-50"
+              aria-label="Close Lightbox"
             >
               <X className="w-6 h-6" />
             </button>
 
+            {/* Previous Button */}
             <button
-              id="lightbox-prev-btn"
-              onClick={prevLightbox}
-              className="absolute left-4 w-12 h-12 rounded-full bg-white/10 text-white hover:bg-white/20 flex items-center justify-center transition-colors cursor-pointer"
-              aria-label="Previous image"
+              id="prev-lightbox-btn"
+              onClick={(e) => { e.stopPropagation(); prevLightboxItem(); }}
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-white/80 hover:text-white p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors cursor-pointer z-50"
+              aria-label="Previous Image"
             >
               <ChevronLeft className="w-6 h-6" />
             </button>
 
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
+            {/* Image & Caption Display */}
+            <div 
+              className="max-w-4xl max-h-[85vh] flex flex-col items-center space-y-4 z-40"
               onClick={(e) => e.stopPropagation()}
-              className="max-w-3xl w-full flex flex-col space-y-4"
             >
-              <div className="aspect-square sm:aspect-video rounded-2xl overflow-hidden bg-stone-900 border border-white/10 flex items-center justify-center max-h-[70vh]">
-                <img
-                  src={filteredItems[lightboxIndex].imageUrl}
-                  alt={filteredItems[lightboxIndex].title}
-                  className="max-w-full max-h-full object-contain"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-
+              <img
+                src={filteredGallery[activeLightboxIndex].imageUrl}
+                alt={filteredGallery[activeLightboxIndex].title}
+                className="max-w-full max-h-[75vh] object-contain rounded-2xl shadow-2xl"
+              />
               <div className="text-center text-white space-y-1">
-                <span className="text-[10px] text-brand-rose font-medium tracking-widest uppercase">
-                  {filteredItems[lightboxIndex].category}
+                <span className="text-xs font-bold text-brand-rose uppercase tracking-widest block">
+                  {filteredGallery[activeLightboxIndex].category}
                 </span>
-                <h3 className="font-serif text-lg sm:text-xl font-light">
-                  {filteredItems[lightboxIndex].title}
-                </h3>
-                <p className="text-xs text-stone-400">
-                  Image {lightboxIndex + 1} of {filteredItems.length}
-                </p>
+                <h3 className="font-serif text-xl font-light">{filteredGallery[activeLightboxIndex].title}</h3>
+                {filteredGallery[activeLightboxIndex].caption && (
+                  <p className="text-xs text-stone-300 font-light max-w-md mx-auto">
+                    {filteredGallery[activeLightboxIndex].caption}
+                  </p>
+                )}
               </div>
-            </motion.div>
+            </div>
 
+            {/* Next Button */}
             <button
-              id="lightbox-next-btn"
-              onClick={nextLightbox}
-              className="absolute right-4 w-12 h-12 rounded-full bg-white/10 text-white hover:bg-white/20 flex items-center justify-center transition-colors cursor-pointer"
-              aria-label="Next image"
+              id="next-lightbox-btn"
+              onClick={(e) => { e.stopPropagation(); nextLightboxItem(); }}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-white/80 hover:text-white p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors cursor-pointer z-50"
+              aria-label="Next Image"
             >
               <ChevronRight className="w-6 h-6" />
             </button>
-
           </motion.div>
         )}
       </AnimatePresence>
-
     </div>
   );
 }

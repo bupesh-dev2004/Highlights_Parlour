@@ -294,7 +294,7 @@ export default function SocialCards({ cards, onCardClick }: SocialCardsProps) {
       </div>
 
       {needsPagination && (
-        <div className="flex items-center justify-center gap-4 mt-6 md:mt-8 z-30">
+        <div className="flex items-center justify-center gap-4 mt-9 sm:mt-6 md:mt-8 z-30">
           <button className={`${ARROW_CLASSES} w-10 h-10 md:w-12 md:h-12`} onClick={() => cycle("left")} aria-label="Previous">
             {chevron("left")}
           </button>

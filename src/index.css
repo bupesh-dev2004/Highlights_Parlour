@@ -127,8 +127,8 @@ body {
 
 .fan-card {
   position: absolute;
-  width: 10rem;
-  height: 14rem;
+  width: 8.5rem;
+  height: 12rem;
   transform-origin: center bottom;
   will-change: transform, opacity;
   user-select: none;

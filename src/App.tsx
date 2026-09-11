@@ -14,7 +14,7 @@ import Gallery from './components/Gallery';
 import Membership from './components/Membership';
 import Contact from './components/Contact';
 import BookingFlow from './components/BookingFlow';
-import StickyMobileBar from './components/StickyMobileBar';
+import FloatingSocialMenu from './components/FloatingSocialMenu';
 
 import { Service, Booking } from './types';
 
@@ -282,27 +282,15 @@ export default function App() {
             </AnimatePresence>
           </main>
 
-          {/* Sticky Mobile Action Bar */}
-          <StickyMobileBar onBookClick={handleReserveClick} />
-
-          {/* Floating WhatsApp Bubble */}
-          <a
-            id="floating-whatsapp-btn"
-            href="https://wa.me/13105550199?text=Hello%20Highlights%20Makeoverartistry"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="fixed bottom-20 md:bottom-6 right-6 z-40 bg-emerald-600 hover:bg-emerald-700 text-white p-3.5 rounded-full shadow-lg transition-transform hover:scale-110 flex items-center justify-center cursor-pointer"
-            aria-label="Chat on WhatsApp"
-          >
-            <MessageCircle className="w-6 h-6" />
-          </a>
+          {/* Floating Radial Social Menu */}
+          <FloatingSocialMenu />
 
           {/* Back-To-Top Button */}
           {showBackToTop && (
             <button
               id="back-to-top-btn"
               onClick={scrollToTop}
-              className="fixed bottom-36 md:bottom-20 right-6 z-40 bg-brand-charcoal/80 hover:bg-brand-charcoal text-white p-3 rounded-full shadow-md transition-all duration-300 cursor-pointer"
+              className="fixed bottom-22 right-6 z-40 bg-brand-charcoal/80 hover:bg-brand-charcoal text-white p-3 rounded-full shadow-md transition-all duration-300 cursor-pointer"
               aria-label="Back to top"
             >
               <ArrowUp className="w-4 h-4" />

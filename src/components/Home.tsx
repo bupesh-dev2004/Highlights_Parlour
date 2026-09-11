@@ -68,7 +68,7 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
     <div className="space-y-24 pb-20">
 
       {/* 1. Hero Banner */}
-      <section id="hero-banner" className="relative h-[90vh] flex items-start pt-16 sm:items-start sm:pt-[13vh] justify-center sm:justify-start overflow-hidden bg-brand-cream">
+      <section id="hero-banner" className="relative h-[90vh] flex items-start pt-10 sm:pt-[13vh] justify-center sm:justify-start overflow-hidden bg-brand-cream">
 
         {/* Background Video with Dark Soft Overlay */}
         <div className="absolute inset-0">
@@ -110,7 +110,7 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
               }
             }
           }}
-          className="relative w-full max-w-4xl mx-auto sm:ml-0 sm:mr-auto px-6 sm:pl-4 sm:pr-0 md:pl-6 lg:pl-8 text-center sm:text-left space-y-4 sm:space-y-6"
+          className="relative w-full max-w-4xl mx-auto sm:ml-0 sm:mr-auto px-4 sm:pl-4 sm:pr-0 md:pl-6 lg:pl-8 text-center sm:text-left space-y-3 sm:space-y-6"
         >
           {/* Tagline */}
           <div className="overflow-hidden">
@@ -171,23 +171,23 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
                 hidden: { y: "100%", opacity: 0 },
                 visible: { y: 0, opacity: 1, transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1] } }
               }}
-              className="flex flex-row justify-center sm:justify-start items-center gap-3 sm:gap-4 pt-1"
+              className="flex flex-row justify-center sm:justify-start items-center gap-2.5 sm:gap-4 pt-1"
             >
               <motion.button
                 id="hero-reserve-btn"
                 onClick={onReserveClick}
                 whileHover={{ scale: 1.03, y: -2 }}
                 whileTap={{ scale: 0.98 }}
-                className="bg-brand-gold-dark hover:bg-brand-gold text-white px-5 py-3 sm:px-8 sm:py-4 rounded-full text-[10px] sm:text-xs font-semibold tracking-widest uppercase transition-all duration-300 hover:shadow-lg cursor-pointer"
+                className="bg-brand-gold-dark hover:bg-brand-gold text-white px-3.5 py-2.5 sm:px-8 sm:py-4 rounded-full text-[9px] sm:text-xs font-semibold tracking-wider sm:tracking-widest uppercase transition-all duration-300 hover:shadow-lg cursor-pointer shrink-0"
               >
                 Reserve Your Ritual
               </motion.button>
               <motion.button
                 id="hero-services-btn"
-                onClick={() => setCurrentPage('services')}
+                onClick={() => setCurrentPage && setCurrentPage('services')}
                 whileHover={{ scale: 1.03, y: -2 }}
                 whileTap={{ scale: 0.98 }}
-                className="bg-white/10 sm:bg-brand-charcoal/10 hover:bg-white/20 sm:hover:bg-brand-charcoal/20 text-white sm:text-brand-charcoal border border-white/30 sm:border-brand-charcoal/30 backdrop-blur-xs px-5 py-3 sm:px-8 sm:py-4 rounded-full text-[10px] sm:text-xs font-semibold tracking-widest uppercase transition-all duration-300 cursor-pointer"
+                className="bg-white/10 sm:bg-brand-charcoal/10 hover:bg-white/20 sm:hover:bg-brand-charcoal/20 text-white sm:text-brand-charcoal border border-white/30 sm:border-brand-charcoal/30 backdrop-blur-xs px-3.5 py-2.5 sm:px-8 sm:py-4 rounded-full text-[9px] sm:text-xs font-semibold tracking-wider sm:tracking-widest uppercase transition-all duration-300 cursor-pointer shrink-0"
               >
                 Explore Services
               </motion.button>

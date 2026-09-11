@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, ChevronLeft, ChevronRight, Maximize2, Layers } from 'lucide-react';
 import { GALLERY_ITEMS, BEFORE_AFTER } from '../data';
@@ -48,6 +48,22 @@ export default function Gallery() {
     if (activeLightboxIndex === null) return;
     setActiveLightboxIndex((activeLightboxIndex - 1 + filteredGallery.length) % filteredGallery.length);
   };
+
+  // Keyboard accessibility for lightbox
+  useEffect(() => {
+    if (activeLightboxIndex === null) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setActiveLightboxIndex(null);
+      } else if (e.key === 'ArrowRight') {
+        nextLightboxItem();
+      } else if (e.key === 'ArrowLeft') {
+        prevLightboxItem();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [activeLightboxIndex, filteredGallery.length]);
 
   return (
     <div className="space-y-16 py-12 pb-24">

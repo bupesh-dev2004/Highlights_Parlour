@@ -3,9 +3,10 @@ import { motion } from 'motion/react';
 import { Award, Sparkles, ShieldCheck, Calendar, ArrowRight, Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import { SERVICES, TESTIMONIALS, GALLERY_ITEMS } from '../data';
 import { Service } from '../types';
+import SocialCards from './ui/card-fan-carousel';
 
 interface HomeProps {
-  setCurrentPage: (page: string) => void;
+  setCurrentPage?: (page: string) => void;
   onReserveClick: () => void;
   onBookService: (service: Service) => void;
 }
@@ -26,8 +27,11 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
   // Take first 6 popular services
   const popularServices = SERVICES.slice(0, 6);
 
-  // Take 6 gallery items for teaser
-  const galleryTeaser = GALLERY_ITEMS.slice(0, 6);
+  // Take gallery items for teaser carousel
+  const fanCarouselCards = GALLERY_ITEMS.map((item) => ({
+    imgUrl: item.imageUrl,
+    alt: item.title,
+  }));
 
   const nextTestimonial = () => {
     setActiveTestimonial((prev) => (prev + 1) % TESTIMONIALS.length);
@@ -64,7 +68,7 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
     <div className="space-y-24 pb-20">
 
       {/* 1. Hero Banner */}
-      <section id="hero-banner" className="relative h-[90vh] flex items-start pt-10 sm:items-start sm:pt-[10vh] justify-center sm:justify-start overflow-hidden bg-brand-cream">
+      <section id="hero-banner" className="relative h-[90vh] flex items-start pt-16 sm:items-start sm:pt-[13vh] justify-center sm:justify-start overflow-hidden bg-brand-cream">
 
         {/* Background Video with Dark Soft Overlay */}
         <div className="absolute inset-0">
@@ -115,7 +119,7 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
                 hidden: { y: "100%", opacity: 0 },
                 visible: { y: 0, opacity: 1, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } }
               }}
-              className="text-brand-rose sm:text-brand-gold-dark font-sans font-semibold text-[9px] sm:text-xs tracking-[0.25em] uppercase block"
+              className="text-brand-rose sm:text-brand-gold-dark font-sans font-semibold text-[10px] sm:text-sm tracking-[0.25em] uppercase block"
             >
               ✦ Welcome to Highlights Makeoverartistry ✦
             </motion.span>
@@ -129,7 +133,7 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
                   hidden: { y: "100%", opacity: 0 },
                   visible: { y: 0, opacity: 1, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } }
                 }}
-                className="font-serif text-xl sm:text-4xl md:text-5xl text-white sm:text-brand-charcoal font-light tracking-tight leading-tight"
+                className="font-serif text-2xl sm:text-5xl md:text-6xl text-white sm:text-brand-charcoal font-light tracking-tight leading-tight"
               >
                 Restore Your Natural
               </motion.h1>
@@ -140,7 +144,7 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
                   hidden: { y: "100%", opacity: 0 },
                   visible: { y: 0, opacity: 1, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } }
                 }}
-                className="font-serif text-xl sm:text-4xl md:text-5xl font-light tracking-tight leading-none"
+                className="font-serif text-2xl sm:text-5xl md:text-6xl font-light tracking-tight leading-none"
               >
                 <span className="font-serif italic text-brand-rose sm:text-brand-gold-dark">Inner Radiance</span>
               </motion.h1>
@@ -154,7 +158,7 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
                 hidden: { y: "100%", opacity: 0 },
                 visible: { y: 0, opacity: 1, transition: { duration: 1.1, ease: [0.16, 1, 0.3, 1] } }
               }}
-              className="text-stone-300 sm:text-stone-700 font-sans max-w-[460px] mx-auto sm:ml-0 sm:mr-auto text-xs sm:text-base font-medium leading-relaxed"
+              className="text-stone-300 sm:text-stone-700 font-sans max-w-[500px] mx-auto sm:ml-0 sm:mr-auto text-xs sm:text-lg font-medium leading-relaxed"
             >
               A high-end sanctuary in Beverly Hills. Experience personalized biological facials, couture hair coloring, and relaxing hot stone rituals.
             </motion.p>
@@ -167,14 +171,14 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
                 hidden: { y: "100%", opacity: 0 },
                 visible: { y: 0, opacity: 1, transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1] } }
               }}
-              className="flex flex-row justify-center sm:justify-start items-center gap-3 sm:gap-4"
+              className="flex flex-row justify-center sm:justify-start items-center gap-3 sm:gap-4 pt-1"
             >
               <motion.button
                 id="hero-reserve-btn"
                 onClick={onReserveClick}
                 whileHover={{ scale: 1.03, y: -2 }}
                 whileTap={{ scale: 0.98 }}
-                className="bg-brand-gold-dark hover:bg-brand-gold text-white px-5 py-2.5 sm:px-8 sm:py-4 rounded-full text-[9px] sm:text-xs font-semibold tracking-widest uppercase transition-all duration-300 hover:shadow-lg cursor-pointer"
+                className="bg-brand-gold-dark hover:bg-brand-gold text-white px-5 py-3 sm:px-8 sm:py-4 rounded-full text-[10px] sm:text-xs font-semibold tracking-widest uppercase transition-all duration-300 hover:shadow-lg cursor-pointer"
               >
                 Reserve Your Ritual
               </motion.button>
@@ -183,7 +187,7 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
                 onClick={() => setCurrentPage('services')}
                 whileHover={{ scale: 1.03, y: -2 }}
                 whileTap={{ scale: 0.98 }}
-                className="bg-white/10 sm:bg-brand-charcoal/10 hover:bg-white/20 sm:hover:bg-brand-charcoal/20 text-white sm:text-brand-charcoal border border-white/30 sm:border-brand-charcoal/30 backdrop-blur-xs px-5 py-2.5 sm:px-8 sm:py-4 rounded-full text-[9px] sm:text-xs font-semibold tracking-widest uppercase transition-all duration-300 cursor-pointer"
+                className="bg-white/10 sm:bg-brand-charcoal/10 hover:bg-white/20 sm:hover:bg-brand-charcoal/20 text-white sm:text-brand-charcoal border border-white/30 sm:border-brand-charcoal/30 backdrop-blur-xs px-5 py-3 sm:px-8 sm:py-4 rounded-full text-[10px] sm:text-xs font-semibold tracking-widest uppercase transition-all duration-300 cursor-pointer"
               >
                 Explore Services
               </motion.button>
@@ -200,123 +204,191 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
         </div>
       </section>
 
-      {/* 2. Short About Us preview */}
+      {/* 2. Brand Introduction (Post-Hero Transition) */}
       <motion.section
         id="about-preview"
-        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
-        initial={{ opacity: 0, y: 50 }}
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-10"
+        initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-100px" }}
+        viewport={{ once: true, margin: "-80px" }}
         transition={{ duration: 0.8, ease: 'easeOut' }}
       >
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-
-          <div className="lg:col-span-5 relative group">
-            <div className="absolute -top-4 -left-4 w-2/3 h-2/3 rounded-3xl bg-brand-blush/60 -z-1" />
-
-            {/* Golden Gradient Shine Border Wrapper */}
-            <div className="relative p-[3px] rounded-[32px] bg-gradient-to-tr from-amber-500 via-yellow-200 to-amber-600 shadow-md transition-all duration-500 group-hover:shadow-xl group-hover:scale-[1.01] animate-gold-flow">
-              <div className="bg-white rounded-[29px] p-8 flex items-center justify-center overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
+          {/* Editorial Artwork Frame */}
+          <div className="lg:col-span-5 relative group order-2 lg:order-1">
+            <div className="relative p-2 rounded-2xl bg-gradient-to-b from-stone-100 to-brand-blush/40 border border-brand-gold/25 shadow-xs transition-all duration-500 group-hover:shadow-md">
+              <div className="bg-white rounded-xl p-6 sm:p-10 flex items-center justify-center overflow-hidden">
                 <img
                   src="/relaxation.png"
-                  alt="The Art of Relaxation Logo"
-                  className="object-contain h-[350px] w-full mix-blend-multiply transform transition-transform duration-700 group-hover:scale-105"
+                  alt="The Art of Relaxation - Highlights Makeoverartistry"
+                  className="object-contain h-[280px] sm:h-[340px] w-full mix-blend-multiply transform transition-transform duration-700 group-hover:scale-105"
                   referrerPolicy="no-referrer"
+                  loading="lazy"
                 />
               </div>
             </div>
 
-            <div className="absolute -bottom-6 -right-6 bg-white border border-brand-blush p-6 rounded-2xl shadow-xs hidden sm:block max-w-[200px] text-center z-10">
-              <span className="block font-serif text-3xl font-semibold text-brand-gold">100%</span>
-              <span className="block text-[10px] text-stone-500 uppercase tracking-widest mt-1">Satisfaction Assured</span>
+            <div className="absolute -bottom-5 -right-3 sm:-right-5 bg-white border border-brand-gold/30 px-5 py-4 rounded-xl shadow-xs hidden sm:block max-w-[190px] text-center z-10">
+              <span className="block font-serif text-2xl sm:text-3xl font-light text-brand-gold-dark">100%</span>
+              <span className="block text-[9px] text-stone-500 uppercase tracking-[0.2em] mt-1 font-medium">Satisfaction Assured</span>
             </div>
           </div>
 
-          <div className="lg:col-span-7 space-y-6">
-            <span className="text-brand-gold font-sans font-semibold text-xs tracking-widest uppercase block">
-              ✦ The Art of Relaxation
-            </span>
-            <h2 className="font-serif text-3xl sm:text-4xl text-brand-charcoal font-light leading-tight">
-              Bespoke Beauty Treatments Designed to Elevate Your Wellness
-            </h2>
+          {/* Editorial Narrative */}
+          <div className="lg:col-span-7 space-y-6 order-1 lg:order-2">
+            <div className="space-y-2">
+              <span className="text-brand-gold-dark font-sans font-semibold text-xs tracking-[0.25em] uppercase block">
+                ✦ The Art of Refinement ✦
+              </span>
+              <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-brand-charcoal font-light leading-tight">
+                Bespoke Beauty Crafted to Elevate Your Radiance
+              </h2>
+            </div>
+
             <p className="text-stone-600 font-sans font-light leading-relaxed text-sm sm:text-base">
-              Founded on the belief that beauty is an integrated wellness experience, Aura offers high-performance care inside a serene, sensory oasis. Every treatment incorporates cruelty-free, biological active concentrates and masterfully calibrated hands.
+              At Highlights Makeoverartistry, beauty is an integrated wellness experience. Every bespoke treatment unites biological active concentrates, cruelty-free formulas, and masterfully calibrated hands inside an elegant, sensory sanctuary.
             </p>
+
             <p className="text-stone-500 font-sans font-light text-sm leading-relaxed">
-              Our experts specialize in modern hair balayage techniques, cellular skin therapies, restorative Himalayan rock-salt pedicures, and customized bridal services designed for photogenic longevity.
+              Our master artisans specialize in precision balayage, cellular skin therapies, couture bridal looks, and soothing rituals designed for timeless grace and confidence.
             </p>
-            <div className="pt-2">
+
+            <div className="pt-3 flex flex-wrap items-center gap-4">
               <button
                 id="about-read-more-btn"
                 onClick={() => {
                   setCurrentPage('about');
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
-                className="inline-flex items-center space-x-2 text-brand-gold hover:text-brand-gold-dark font-semibold text-xs tracking-widest uppercase transition-colors group cursor-pointer"
+                className="inline-flex items-center space-x-2 bg-brand-charcoal hover:bg-brand-charcoal/90 text-white px-6 py-3.5 rounded-full text-xs font-semibold tracking-widest uppercase transition-all duration-300 cursor-pointer hover:shadow-md"
               >
-                <span>Read Our Story</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                <span>Discover Our Story</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+
+              <button
+                id="about-explore-services-btn"
+                onClick={() => {
+                  setCurrentPage('services');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                className="inline-flex items-center space-x-2 border border-brand-gold/40 hover:border-brand-gold text-brand-charcoal hover:text-brand-gold-dark px-6 py-3.5 rounded-full text-xs font-semibold tracking-widest uppercase transition-all duration-300 cursor-pointer"
+              >
+                <span>View Full Menu</span>
               </button>
             </div>
           </div>
-
         </div>
       </motion.section>
 
-      {/* 3. Popular Services Grid */}
+      {/* 3. Verified Pillars (Why Highlights) */}
+      <motion.section
+        id="why-highlights"
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-80px" }}
+        transition={{ duration: 0.8, ease: 'easeOut' }}
+      >
+        <div className="bg-white/80 border border-brand-blush rounded-3xl p-6 sm:p-12 shadow-2xs">
+          <div className="text-center max-w-2xl mx-auto space-y-2 mb-10">
+            <span className="text-brand-gold-dark font-sans font-semibold text-xs tracking-[0.25em] uppercase block">
+              ✦ Certified Excellence ✦
+            </span>
+            <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl text-brand-charcoal font-light">
+              The Highlights Difference
+            </h2>
+            <div className="h-[1px] w-14 bg-brand-gold/40 mx-auto mt-2" />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+            {highlightItems.map((item, idx) => {
+              const IconComp = item.icon;
+              return (
+                <div 
+                  key={idx} 
+                  className="p-6 rounded-2xl bg-brand-cream/60 border border-brand-blush/80 hover:border-brand-gold/30 hover:bg-white transition-all duration-300 space-y-3"
+                >
+                  <div className="w-10 h-10 rounded-full bg-brand-blush flex items-center justify-center text-brand-gold-dark">
+                    <IconComp className="w-5 h-5" />
+                  </div>
+                  <h3 className="font-serif text-lg font-medium text-brand-charcoal">
+                    {item.title}
+                  </h3>
+                  <p className="text-stone-500 font-sans text-xs leading-relaxed font-light">
+                    {item.desc}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </motion.section>
+
+      {/* 4. Signature Services Menu Preview */}
       <motion.section
         id="popular-services"
-        className="bg-brand-blush/30 py-20"
-        initial={{ opacity: 0, y: 50 }}
+        className="bg-brand-blush/20 py-20 border-y border-brand-blush/50"
+        initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-100px" }}
+        viewport={{ once: true, margin: "-80px" }}
         transition={{ duration: 0.8, ease: 'easeOut' }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-
           <div className="text-center space-y-3">
-            <span className="text-brand-gold font-sans font-semibold text-xs tracking-widest uppercase block">
-              ✦ Guest Favorites
+            <span className="text-brand-gold-dark font-sans font-semibold text-xs tracking-[0.25em] uppercase block">
+              ✦ Curated Beauty Menu ✦
             </span>
-            <h2 className="font-serif text-3xl sm:text-4xl text-brand-charcoal font-light">
-              Our Most Popular Rituals
+            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-brand-charcoal font-light">
+              Guest Favorite Rituals
             </h2>
-            <div className="h-0.5 w-16 bg-brand-gold/40 mx-auto" />
+            <div className="h-[1px] w-16 bg-brand-gold/40 mx-auto" />
+            <p className="text-stone-500 font-sans font-light text-xs sm:text-sm max-w-lg mx-auto">
+              Precision styling, biological skin concentrates, and couture makeup tailored to your personal aesthetic.
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
             {popularServices.map((service) => (
               <div
                 key={service.id}
-                className="bg-white rounded-3xl overflow-hidden border border-brand-blush/50 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col group"
+                className="bg-white rounded-2xl overflow-hidden border border-brand-blush/80 hover:border-brand-gold/40 shadow-2xs hover:shadow-md transition-all duration-400 flex flex-col group"
               >
-                <div className="h-64 relative overflow-hidden shrink-0">
+                <div className="h-60 relative overflow-hidden shrink-0 bg-stone-100">
                   <img
                     src={service.image}
                     alt={service.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                     referrerPolicy="no-referrer"
+                    loading="lazy"
                   />
-                  <span className="absolute top-4 right-4 bg-white/90 backdrop-blur-xs px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-wider text-brand-gold">
+                  <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-semibold tracking-wider text-brand-gold-dark shadow-2xs border border-brand-blush">
                     ${service.price}
-                  </span>
+                  </div>
+                  <div className="absolute bottom-3 left-3 bg-brand-charcoal/80 backdrop-blur-xs px-2.5 py-1 rounded-md text-[10px] text-white tracking-widest uppercase font-medium">
+                    {service.duration}
+                  </div>
                 </div>
+
                 <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
                   <div className="space-y-2">
-                    <span className="text-[10px] text-brand-gold uppercase tracking-widest font-medium">
-                      {service.category} • {service.duration}
+                    <span className="text-[10px] text-brand-gold-dark uppercase tracking-[0.2em] font-semibold block">
+                      {service.category}
                     </span>
-                    <h3 className="font-serif text-xl font-medium text-brand-charcoal">{service.name}</h3>
+                    <h3 className="font-serif text-xl font-medium text-brand-charcoal group-hover:text-brand-gold-dark transition-colors">
+                      {service.name}
+                    </h3>
                     <p className="text-stone-500 text-xs font-light leading-relaxed line-clamp-2">
                       {service.description}
                     </p>
                   </div>
+
                   <button
                     id={`book-popular-${service.id}`}
                     onClick={() => onBookService(service)}
-                    className="w-full bg-brand-cream hover:bg-brand-blush border border-brand-gold/30 text-brand-gold hover:text-brand-gold-dark text-xs font-semibold py-3 rounded-xl uppercase tracking-widest transition-all cursor-pointer"
+                    className="w-full bg-brand-cream hover:bg-brand-charcoal text-brand-charcoal hover:text-white border border-brand-gold/30 hover:border-brand-charcoal text-xs font-semibold py-3 rounded-xl uppercase tracking-widest transition-all duration-300 cursor-pointer text-center"
                   >
-                    Book This Service
+                    Reserve Service
                   </button>
                 </div>
               </div>
@@ -330,138 +402,123 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
                 setCurrentPage('services');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className="inline-flex items-center space-x-2 bg-brand-charcoal hover:bg-brand-charcoal/90 text-white px-8 py-3.5 rounded-full text-xs font-semibold tracking-widest uppercase transition-colors cursor-pointer"
+              className="inline-flex items-center space-x-2 bg-brand-charcoal hover:bg-brand-charcoal/90 text-white px-8 py-3.5 rounded-full text-xs font-semibold tracking-widest uppercase transition-all duration-300 cursor-pointer shadow-xs hover:shadow-md"
             >
-              <span>View All Services</span>
+              <span>Explore Complete Services</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
-
         </div>
       </motion.section>
 
-      {/* 4. Gallery Teaser */}
+      {/* 5. Authentic Gallery Teaser (Moments of Transformation with Card Fan Carousel) */}
       <motion.section
         id="gallery-teaser"
-        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12"
-        initial={{ opacity: 0, y: 50 }}
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 overflow-visible"
+        initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-100px" }}
+        viewport={{ once: true, margin: "-80px" }}
         transition={{ duration: 0.8, ease: 'easeOut' }}
       >
         <div className="text-center space-y-3">
-          <span className="text-brand-gold font-sans font-semibold text-xs tracking-widest uppercase block">
-            ✦ Visual Inspiration
+          <span className="text-brand-gold-dark font-sans font-semibold text-xs tracking-[0.25em] uppercase block">
+            ✦ Artistry Portfolio ✦
           </span>
-          <h2 className="font-serif text-3xl sm:text-4xl text-brand-charcoal font-light">
-            An Inside Look at Aura Luxury
+          <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-brand-charcoal font-light">
+            Moments of Transformation
           </h2>
-          <div className="h-0.5 w-16 bg-brand-gold/40 mx-auto" />
+          <p className="text-stone-600 font-sans font-light text-sm sm:text-base max-w-xl mx-auto">
+            Explore authentic reflections of our craft — from bespoke balayage to radiant bridal transformations.
+          </p>
+          <div className="h-[1px] w-16 bg-brand-gold/40 mx-auto" />
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
-          {galleryTeaser.map((item) => (
-            <div
-              key={item.id}
-              onClick={() => {
+        {/* Interactive 3D Card Fan Carousel */}
+        <div className="w-full overflow-visible py-2">
+          <SocialCards
+            cards={fanCarouselCards}
+            onCardClick={() => {
+              if (setCurrentPage) {
                 setCurrentPage('gallery');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-              className="relative aspect-square rounded-3xl overflow-hidden shadow-xs hover:shadow-md cursor-pointer group"
-            >
-              <img
-                src={item.imageUrl}
-                alt={item.title}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                referrerPolicy="no-referrer"
-              />
-              <div className="absolute inset-0 bg-brand-charcoal/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6 text-white">
-                <span className="text-[10px] text-brand-rose font-medium tracking-widest uppercase">{item.category}</span>
-                <h4 className="font-serif text-base sm:text-lg font-light tracking-wide mt-1">{item.title}</h4>
-              </div>
-            </div>
-          ))}
+              }
+            }}
+          />
         </div>
 
         <div className="text-center pt-2">
           <button
             id="view-full-gallery-btn"
             onClick={() => {
-              setCurrentPage('gallery');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
+              if (setCurrentPage) {
+                setCurrentPage('gallery');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }
             }}
-            className="inline-flex items-center space-x-2 text-brand-gold hover:text-brand-gold-dark font-semibold text-xs tracking-widest uppercase transition-colors group cursor-pointer"
+            className="inline-flex items-center space-x-2 text-brand-charcoal hover:text-brand-gold-dark font-semibold text-xs tracking-widest uppercase transition-colors group cursor-pointer border-b border-brand-gold/40 pb-1"
           >
             <span>View Full Gallery</span>
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
           </button>
         </div>
       </motion.section>
 
-      {/* 5. Client Testimonials Slider */}
+      {/* 6. Client Testimonials (Verified Customer Feedback) */}
       <motion.section
         id="testimonials"
-        className="bg-brand-cream border-y border-brand-blush/60 py-20 relative overflow-hidden"
-        initial={{ opacity: 0, y: 50 }}
+        className="bg-brand-cream border-y border-brand-blush py-20 relative overflow-hidden"
+        initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-100px" }}
+        viewport={{ once: true, margin: "-80px" }}
         transition={{ duration: 0.8, ease: 'easeOut' }}
       >
-
-        {/* Subtle decorative circles */}
-        <div className="absolute -top-12 -left-12 w-48 h-48 rounded-full bg-brand-blush/40 blur-xl" />
-        <div className="absolute -bottom-12 -right-12 w-48 h-48 rounded-full bg-brand-rose/25 blur-xl" />
-
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-10 relative">
-
           <div className="space-y-2">
-            <span className="text-brand-gold font-sans font-semibold text-xs tracking-widest uppercase block">
-              ✦ Customer Stories
+            <span className="text-brand-gold-dark font-sans font-semibold text-xs tracking-[0.25em] uppercase block">
+              ✦ Verified Experiences ✦
             </span>
-            <h2 className="font-serif text-3xl text-brand-charcoal font-light">
-              Voices of True Comfort
+            <h2 className="font-serif text-3xl sm:text-4xl text-brand-charcoal font-light">
+              Words From Our Valued Guests
             </h2>
+            <div className="h-[1px] w-14 bg-brand-gold/40 mx-auto" />
           </div>
 
           {/* Testimonial Active Slider Card */}
-          <div className="bg-white rounded-3xl p-8 sm:p-12 border border-brand-blush shadow-xs space-y-6">
-
-            {/* Stars */}
+          <div className="bg-white rounded-3xl p-8 sm:p-12 border border-brand-blush/80 shadow-2xs space-y-6">
             <div className="flex justify-center space-x-1 text-brand-gold">
               {[...Array(TESTIMONIALS[activeTestimonial].rating)].map((_, i) => (
-                <Star key={i} className="w-5 h-5 fill-brand-gold" />
+                <Star key={i} className="w-4 h-4 fill-brand-gold text-brand-gold" />
               ))}
             </div>
 
-            <blockquote className="text-stone-600 font-serif text-lg sm:text-xl font-light italic leading-relaxed">
+            <blockquote className="text-stone-700 font-serif text-lg sm:text-xl font-light italic leading-relaxed">
               "{TESTIMONIALS[activeTestimonial].feedback}"
             </blockquote>
 
-            <div className="flex flex-col items-center space-y-2 pt-4">
+            <div className="flex flex-col items-center space-y-2 pt-2">
               <img
                 src={TESTIMONIALS[activeTestimonial].avatar}
                 alt={TESTIMONIALS[activeTestimonial].name}
-                className="w-14 h-14 rounded-full object-cover ring-2 ring-brand-blush"
+                className="w-13 h-13 rounded-full object-cover ring-2 ring-brand-blush"
                 referrerPolicy="no-referrer"
               />
               <div>
                 <cite className="block font-sans font-semibold text-sm text-brand-charcoal not-italic">
                   {TESTIMONIALS[activeTestimonial].name}
                 </cite>
-                <span className="block text-xs text-stone-400">
-                  {TESTIMONIALS[activeTestimonial].role}
+                <span className="block text-xs text-stone-500 font-light">
+                  {TESTIMONIALS[activeTestimonial].role} • {TESTIMONIALS[activeTestimonial].serviceReceived}
                 </span>
               </div>
             </div>
-
           </div>
 
-          {/* Navigation Arrows & Slider Dots */}
+          {/* Controls */}
           <div className="flex justify-between items-center max-w-xs mx-auto">
             <button
               id="prev-testimonial-btn"
               onClick={prevTestimonial}
-              className="w-10 h-10 rounded-full border border-brand-gold/30 flex items-center justify-center text-brand-gold hover:bg-brand-gold hover:text-white transition-colors cursor-pointer"
+              className="w-10 h-10 rounded-full border border-brand-gold/30 flex items-center justify-center text-brand-gold-dark hover:bg-brand-charcoal hover:text-white hover:border-brand-charcoal transition-colors cursor-pointer"
               aria-label="Previous testimonial"
             >
               <ChevronLeft className="w-5 h-5" />
@@ -472,8 +529,9 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
                   id={`testimonial-dot-${idx}`}
                   key={idx}
                   onClick={() => setActiveTestimonial(idx)}
-                  className={`w-2 h-2 rounded-full transition-all cursor-pointer ${activeTestimonial === idx ? 'w-6 bg-brand-gold' : 'bg-stone-300'
-                    }`}
+                  className={`h-2 rounded-full transition-all cursor-pointer ${
+                    activeTestimonial === idx ? 'w-6 bg-brand-gold-dark' : 'w-2 bg-stone-300'
+                  }`}
                   aria-label={`Go to testimonial ${idx + 1}`}
                 />
               ))}
@@ -481,64 +539,52 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
             <button
               id="next-testimonial-btn"
               onClick={nextTestimonial}
-              className="w-10 h-10 rounded-full border border-brand-gold/30 flex items-center justify-center text-brand-gold hover:bg-brand-gold hover:text-white transition-colors cursor-pointer"
+              className="w-10 h-10 rounded-full border border-brand-gold/30 flex items-center justify-center text-brand-gold-dark hover:bg-brand-charcoal hover:text-white hover:border-brand-charcoal transition-colors cursor-pointer"
               aria-label="Next testimonial"
             >
               <ChevronRight className="w-5 h-5" />
             </button>
           </div>
-
         </div>
       </motion.section>
 
-      {/* 6. Membership Promo Banner */}
+      {/* 7. Editorial Appointment Booking CTA */}
       <motion.section
-        id="membership-promo"
+        id="reservation-banner"
         className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
-        initial={{ opacity: 0, y: 50 }}
+        initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-100px" }}
+        viewport={{ once: true, margin: "-80px" }}
         transition={{ duration: 0.8, ease: 'easeOut' }}
       >
-        <div className="relative rounded-3xl overflow-hidden bg-brand-charcoal text-white p-8 sm:p-16 border border-brand-charcoal shadow-lg">
-
-          {/* Delicate golden accent patterns */}
-          <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-brand-gold opacity-15 skew-x-12 translate-x-16 pointer-events-none" />
-
-          <div className="relative z-10 max-w-2xl space-y-6">
-            <span className="text-brand-rose font-sans font-semibold text-xs tracking-widest uppercase block">
-              ✦ Exclusive Club Benefits
+        <div className="relative rounded-3xl overflow-hidden bg-brand-charcoal text-white p-8 sm:p-14 border border-stone-800 shadow-md">
+          <div className="relative z-10 max-w-2xl space-y-5">
+            <span className="text-brand-gold-light font-sans font-semibold text-xs tracking-[0.25em] uppercase block">
+              ✦ Seamless Digital Concierge ✦
             </span>
-            <h2 className="font-serif text-3xl sm:text-4xl font-light leading-tight">
-              Aura Memberships: Tailored Luxuries on Repeat
+            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-light leading-tight">
+              Ready to Experience Your Transformation?
             </h2>
             <p className="text-stone-300 font-sans font-light text-sm sm:text-base leading-relaxed">
-              Unlock priority bookings, complimentary spa rituals, and up to 20% savings on elite skincare products. Treat yourself to the regular restoration you deserve. Plans start at just $79/month.
+              Reserve your personalized session online in seconds or connect with our reception concierge on WhatsApp for tailored recommendations.
             </p>
-            <div className="pt-4 flex flex-col sm:flex-row gap-4">
+            <div className="pt-2 flex flex-wrap gap-4">
               <button
-                id="membership-promo-btn"
-                onClick={() => {
-                  setCurrentPage('membership');
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
-                className="bg-brand-rose hover:bg-brand-rose/90 text-brand-charcoal px-8 py-3.5 rounded-full text-xs font-semibold tracking-widest uppercase transition-colors cursor-pointer"
+                id="cta-reserve-ritual-btn"
+                onClick={onReserveClick}
+                className="bg-brand-gold hover:bg-brand-gold-dark text-white px-8 py-3.5 rounded-full text-xs font-semibold tracking-widest uppercase transition-all duration-300 cursor-pointer shadow-xs hover:shadow-md"
               >
-                Explore Member Plans
+                Book Appointment
               </button>
-              <button
-                id="loyalty-learn-btn"
-                onClick={() => {
-                  setCurrentPage('membership');
-                  setTimeout(() => {
-                    const el = document.getElementById('loyalty-section');
-                    if (el) el.scrollIntoView({ behavior: 'smooth' });
-                  }, 100);
-                }}
-                className="bg-transparent border border-white/40 hover:border-white text-white px-8 py-3.5 rounded-full text-xs font-semibold tracking-widest uppercase transition-colors cursor-pointer"
+              <a
+                id="cta-whatsapp-concierge-btn"
+                href="https://wa.me/13105550199?text=Hello%20Highlights%20Makeoverartistry,%20I%20would%20like%20to%20inquire%20about%20an%20appointment."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-white/10 hover:bg-white/20 text-white border border-white/30 px-8 py-3.5 rounded-full text-xs font-semibold tracking-widest uppercase transition-all duration-300 cursor-pointer flex items-center justify-center"
               >
-                Loyalty Point System
-              </button>
+                Chat on WhatsApp
+              </a>
             </div>
           </div>
         </div>

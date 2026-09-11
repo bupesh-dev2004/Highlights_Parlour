@@ -14,9 +14,9 @@ import {
   Crown, 
   CheckCircle2,
   Clock,
-  Sparkle
+  Sparkle,
+  User
 } from 'lucide-react';
-import { TESTIMONIALS, GALLERY_ITEMS } from '../data';
 
 interface AboutProps {
   setCurrentPage?: (page: string) => void;
@@ -110,32 +110,38 @@ export default function About({ setCurrentPage, onReserveClick }: AboutProps) {
     },
   ];
 
-  // Highlights Experience Steps
+  // Highlights Experience Steps (Customer Journey)
   const experienceSteps = [
     {
       step: '01',
       title: 'Step In',
       desc: 'Walk into a warm and welcoming environment.',
+      image: '/step-in-reception.png',
+      icon: User,
     },
     {
       step: '02',
       title: 'Feel Relaxed',
       desc: 'Take a moment for yourself.',
+      image: 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=800&q=80',
+      icon: Flower2,
     },
     {
       step: '03',
       title: 'Get Pampered',
       desc: 'Experience professional beauty care.',
+      image: '/get-pampered-makeup.png',
+      icon: Sparkles,
     },
     {
       step: '04',
       title: 'Step Out Confident',
       desc: 'Leave feeling refreshed and confident.',
+      image: '/step-out-confident.png',
+      icon: Heart,
     },
   ];
 
-  const galleryPreview = GALLERY_ITEMS.slice(0, 6);
-  const testimonialsPreview = TESTIMONIALS.slice(0, 3);
 
   return (
     <div className="w-full min-h-screen bg-brand-cream text-brand-charcoal overflow-x-hidden selection:bg-brand-rose selection:text-brand-charcoal">
@@ -152,7 +158,7 @@ export default function About({ setCurrentPage, onReserveClick }: AboutProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-16 lg:py-24 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center relative z-10">
           
           {/* Left Hero Column: Typographic Elegance */}
-          <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
+          <div className="lg:col-span-7 space-y-6 text-left">
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
@@ -169,17 +175,16 @@ export default function About({ setCurrentPage, onReserveClick }: AboutProps) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.1 }}
-              className="font-serif text-4xl sm:text-6xl lg:text-7xl text-brand-charcoal font-normal leading-[1.12] tracking-tight"
+              className="font-serif text-3xl sm:text-5xl lg:text-6xl text-brand-charcoal font-normal leading-tight tracking-tight"
             >
-              Where Beauty <br />
-              <span className="italic font-light text-brand-gold-dark">Meets Confidence</span>
+              Where Beauty <span className="italic font-light text-brand-gold-dark">Meets Confidence</span>
             </motion.h1>
 
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="text-stone-600 font-sans font-light text-base sm:text-lg lg:text-xl leading-relaxed max-w-xl mx-auto lg:mx-0"
+              className="text-stone-600 font-sans font-light text-sm sm:text-base lg:text-lg leading-relaxed max-w-xl"
             >
               At Highlights Parlour, we believe beauty is more than a look — it's the confidence you carry with you.
             </motion.p>
@@ -188,11 +193,11 @@ export default function About({ setCurrentPage, onReserveClick }: AboutProps) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.3 }}
-              className="pt-4 flex flex-wrap items-center justify-center lg:justify-start gap-4 sm:gap-5"
+              className="pt-2 flex flex-wrap items-center justify-start gap-3 sm:gap-4"
             >
               <button
                 onClick={scrollToStory}
-                className="px-8 py-4 rounded-full bg-gradient-to-r from-brand-gold via-[#D8B467] to-brand-gold-dark hover:from-brand-gold-dark hover:to-brand-gold text-white font-sans font-semibold text-xs sm:text-sm uppercase tracking-widest shadow-[0_10px_25px_rgba(197,160,89,0.35)] hover:shadow-[0_15px_30px_rgba(197,160,89,0.5)] transition-all duration-300 cursor-pointer flex items-center gap-2 group"
+                className="px-6 sm:px-8 py-3.5 sm:py-4 rounded-full bg-gradient-to-r from-brand-gold via-[#D8B467] to-brand-gold-dark hover:from-brand-gold-dark hover:to-brand-gold text-white font-sans font-semibold text-xs sm:text-sm uppercase tracking-widest shadow-[0_10px_25px_rgba(197,160,89,0.35)] hover:shadow-[0_15px_30px_rgba(197,160,89,0.5)] transition-all duration-300 cursor-pointer flex items-center gap-2 group"
               >
                 <span>Discover Our Story</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -200,25 +205,25 @@ export default function About({ setCurrentPage, onReserveClick }: AboutProps) {
 
               <button
                 onClick={() => navigateTo('services')}
-                className="px-7 py-4 rounded-full bg-white hover:bg-brand-blush/60 text-brand-charcoal border border-brand-gold/40 hover:border-brand-gold font-sans font-semibold text-xs sm:text-sm uppercase tracking-widest shadow-xs transition-all duration-300 cursor-pointer flex items-center gap-2"
+                className="px-6 sm:px-7 py-3.5 sm:py-4 rounded-full bg-white hover:bg-brand-blush/60 text-brand-charcoal border border-brand-gold/40 hover:border-brand-gold font-sans font-semibold text-xs sm:text-sm uppercase tracking-widest shadow-xs transition-all duration-300 cursor-pointer flex items-center gap-2"
               >
                 <span>Our Services</span>
               </button>
             </motion.div>
 
             {/* Micro Highlights Badges */}
-            <div className="pt-6 grid grid-cols-3 gap-4 border-t border-brand-blush max-w-lg mx-auto lg:mx-0">
+            <div className="pt-6 grid grid-cols-3 gap-4 border-t border-brand-blush max-w-lg">
               <div>
                 <span className="font-serif text-2xl sm:text-3xl font-bold text-brand-charcoal block">12+</span>
-                <span className="text-[11px] text-stone-500 uppercase tracking-wider font-sans">Years Legacy</span>
+                <span className="text-[10px] sm:text-[11px] text-stone-500 uppercase tracking-wider font-sans">Years Legacy</span>
               </div>
               <div>
                 <span className="font-serif text-2xl sm:text-3xl font-bold text-brand-charcoal block">18K+</span>
-                <span className="text-[11px] text-stone-500 uppercase tracking-wider font-sans">Delighted Guests</span>
+                <span className="text-[10px] sm:text-[11px] text-stone-500 uppercase tracking-wider font-sans">Delighted Guests</span>
               </div>
               <div>
                 <span className="font-serif text-2xl sm:text-3xl font-bold text-brand-gold-dark block">4.9★</span>
-                <span className="text-[11px] text-stone-500 uppercase tracking-wider font-sans">Verified Rating</span>
+                <span className="text-[10px] sm:text-[11px] text-stone-500 uppercase tracking-wider font-sans">Verified Rating</span>
               </div>
             </div>
           </div>
@@ -545,50 +550,252 @@ export default function About({ setCurrentPage, onReserveClick }: AboutProps) {
 
 
       {/* ==================================================
-          7. THE HIGHLIGHTS EXPERIENCE (Interactive Steps)
+          7. THE HIGHLIGHTS EXPERIENCE (Luxury Customer Journey)
           ================================================== */}
-      <section className="bg-brand-blush/40 border-y border-brand-blush py-20 lg:py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+      <section 
+        id="your-journey-section"
+        className="w-full relative bg-[#FBF7F1] border-y border-[#C9A15A]/20 py-24 sm:py-28 lg:py-36 overflow-hidden select-none"
+        style={{
+          backgroundImage: 'radial-gradient(ellipse at 50% 15%, rgba(220, 193, 139, 0.15) 0%, rgba(251, 247, 241, 0) 70%), radial-gradient(ellipse at 85% 85%, rgba(201, 161, 90, 0.08) 0%, rgba(251, 247, 241, 0) 60%)'
+        }}
+      >
+        {/* Subtle Botanical Line Art / Decorative SVG Accents */}
+        {/* Top-Right: Thin champagne/gold botanical leaves */}
+        <div className="absolute -top-6 -right-6 w-56 h-56 sm:w-72 sm:h-72 pointer-events-none opacity-30 text-[#C9A15A] z-0">
+          <svg viewBox="0 0 200 200" fill="none" stroke="currentColor" strokeWidth="1.2" className="w-full h-full">
+            <path d="M190,10 Q140,40 120,110 Q105,160 70,185" strokeDasharray="3 3" />
+            <path d="M165,25 Q135,20 125,50 C115,80 145,75 165,25 Z" fill="currentColor" fillOpacity="0.04" />
+            <path d="M142,65 Q115,70 100,100 C90,125 120,125 142,65 Z" fill="currentColor" fillOpacity="0.04" />
+            <path d="M110,115 Q80,120 75,150 C70,170 95,170 110,115 Z" fill="currentColor" fillOpacity="0.04" />
+            <path d="M178,50 Q160,80 185,95 C200,75 195,55 178,50 Z" fill="currentColor" fillOpacity="0.04" />
+          </svg>
+        </div>
+
+        {/* Bottom-Left: Subtle botanical / flower line art */}
+        <div className="absolute -bottom-8 -left-8 w-60 h-60 sm:w-72 sm:h-72 pointer-events-none opacity-25 text-[#C9A15A] z-0">
+          <svg viewBox="0 0 200 200" fill="none" stroke="currentColor" strokeWidth="1.2" className="w-full h-full">
+            <path d="M10,190 Q60,160 80,90 Q95,40 130,15" strokeDasharray="3 3" />
+            <path d="M35,175 Q65,180 75,150 C85,120 55,125 35,175 Z" fill="currentColor" fillOpacity="0.04" />
+            <path d="M58,135 Q85,130 100,100 C110,75 80,75 58,135 Z" fill="currentColor" fillOpacity="0.04" />
+            <path d="M90,85 Q120,80 125,50 C130,30 105,30 90,85 Z" fill="currentColor" fillOpacity="0.04" />
+          </svg>
+        </div>
+
+        {/* Bottom-Right: Flowing satin/fabric-like abstract shape */}
+        <div className="absolute bottom-0 right-0 w-80 h-44 pointer-events-none opacity-20 text-[#DCC18B] z-0">
+          <svg viewBox="0 0 300 150" fill="none" stroke="currentColor" strokeWidth="1" className="w-full h-full">
+            <path d="M0,150 C100,120 180,160 300,70" />
+            <path d="M30,150 C120,110 200,140 300,90" />
+            <path d="M60,150 C150,100 220,130 300,110" />
+          </svg>
+        </div>
+
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 relative z-10">
           
-          <div className="text-center space-y-3 max-w-2xl mx-auto">
-            <span className="text-brand-gold font-sans font-semibold text-xs tracking-widest uppercase block">
-              ✦ Your Journey ✦
-            </span>
-            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-brand-charcoal font-light">
+          {/* ====================================================
+              SECTION HEADER
+              ==================================================== */}
+          <div className="text-center space-y-4 max-w-3xl mx-auto mb-16 sm:mb-20 lg:mb-24">
+            {/* Small Eyebrow: text fades up, two gold lines extend outward smoothly */}
+            <div className="inline-flex items-center justify-center gap-3 sm:gap-4">
+              <motion.span 
+                initial={{ scaleX: 0 }}
+                whileInView={{ scaleX: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                style={{ originX: 1 }}
+                className="w-[45px] sm:w-[55px] h-[1px] bg-[#C9A15A]" 
+              />
+              <motion.span 
+                initial={{ opacity: 0, y: 12 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
+                className="text-[#C9A15A] font-sans font-semibold text-[11px] sm:text-xs tracking-[0.35em] uppercase"
+              >
+                YOUR JOURNEY
+              </motion.span>
+              <motion.span 
+                initial={{ scaleX: 0 }}
+                whileInView={{ scaleX: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                style={{ originX: 0 }}
+                className="w-[45px] sm:w-[55px] h-[1px] bg-[#C9A15A]" 
+              />
+            </div>
+
+            {/* Main Heading: 52-58px on desktop, elegant light serif */}
+            <motion.h2 
+              initial={{ opacity: 0, y: 25 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+              className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-[54px] text-[#24211F] font-normal tracking-tight leading-[1.15]"
+            >
               The Highlights Experience
-            </h2>
-            <p className="text-stone-600 font-sans font-light text-sm sm:text-base">
+            </motion.h2>
+
+            {/* Subtitle: 18-20px, soft warm gray, generous spacing */}
+            <motion.p 
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7, delay: 0.3, ease: "easeOut" }}
+              className="text-[#77716B] font-sans font-light text-base sm:text-lg lg:text-[19px] leading-relaxed max-w-2xl mx-auto pt-1"
+            >
               A serene 4-step ritual crafted to rejuvenate your senses from arrival to departure.
-            </p>
-            <div className="h-0.5 w-16 bg-brand-gold/50 mx-auto" />
+            </motion.p>
           </div>
 
-          <div className="relative">
-            <div className="hidden lg:block absolute top-1/2 left-10 right-10 h-0.5 bg-brand-gold/30 -translate-y-6 -z-0" />
+          {/* ====================================================
+              DESKTOP 4-STEP EXPERIENCE LAYOUT
+              ==================================================== */}
+          <div className="hidden lg:block relative mt-4">
+            
+            {/* Continuous Horizontal Gold Connector Line expanding from center */}
+            <div className="absolute top-[280px] left-[5%] right-[5%] z-10 pointer-events-none flex items-center justify-center">
+              <motion.div 
+                initial={{ scaleX: 0, opacity: 0 }}
+                whileInView={{ scaleX: 1, opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                style={{ originX: 0.5 }}
+                className="w-full h-[1px] bg-gradient-to-r from-transparent via-[#C9A15A]/60 to-transparent" 
+              />
+            </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 relative z-10">
-              {experienceSteps.map((step, idx) => (
-                <motion.div
-                  key={step.step}
-                  initial={{ opacity: 0, y: 25 }}
-                  whileInView={{ opacity: 1, y: 0 }}
+            {/* 3 Small Diamond / Star Separators with fade + scale */}
+            <div className="absolute top-[280px] left-0 right-0 z-15 pointer-events-none flex justify-between px-[22%] -translate-y-1/2">
+              {[0, 1, 2].map((idx) => (
+                <motion.span 
+                  key={idx}
+                  initial={{ opacity: 0, scale: 0 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: idx * 0.12 }}
-                  className="bg-white rounded-3xl p-8 border border-brand-gold/30 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col items-center text-center space-y-4 group hover:-translate-y-2"
+                  transition={{ duration: 0.4, delay: 0.5 + idx * 0.1, ease: "easeOut" }}
+                  className="text-[#C9A15A] text-xs transform rotate-45 select-none"
                 >
-                  <div className="w-14 h-14 rounded-full bg-brand-blush border-2 border-brand-gold/40 flex items-center justify-center font-serif text-xl font-bold text-brand-gold-dark group-hover:bg-brand-gold group-hover:text-white transition-colors duration-300 shadow-2xs">
-                    {step.step}
-                  </div>
-
-                  <h3 className="font-serif text-2xl font-normal text-brand-charcoal">
-                    {step.title}
-                  </h3>
-
-                  <p className="text-stone-600 font-sans text-xs sm:text-sm font-light leading-relaxed">
-                    {step.desc}
-                  </p>
-                </motion.div>
+                  ◆
+                </motion.span>
               ))}
+            </div>
+
+            {/* 4 Items Row (Seamless vertical composition, blending into cream) */}
+            <div className="grid grid-cols-4 gap-6 xl:gap-10 relative z-20">
+              {experienceSteps.map((step, idx) => {
+                const IconComponent = step.icon;
+                const baseDelay = idx * 0.1;
+
+                return (
+                  <motion.div
+                    key={step.step}
+                    initial={{ opacity: 0, y: 24 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, amount: 0.1 }}
+                    transition={{ duration: 0.7, delay: baseDelay, ease: [0.16, 1, 0.3, 1] }}
+                    className="flex flex-col items-center text-center group cursor-default"
+                  >
+                    {/* Tall Rounded-Arch Image Container */}
+                    <div className="relative w-full max-w-[290px] xl:max-w-[310px] h-[280px] rounded-t-[155px] rounded-b-2xl overflow-hidden shadow-[0_12px_28px_rgba(42,36,33,0.06)] ring-1 ring-[#C9A15A]/20 bg-[#F5DEC9]/20">
+                      <img 
+                        src={step.image} 
+                        alt={step.title}
+                        loading="lazy"
+                        className="w-full h-full object-cover object-center transition-all duration-700 ease-out group-hover:scale-[1.035] group-hover:brightness-[1.03]"
+                      />
+                      {/* Gentle warm tint overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#24211F]/30 via-transparent to-transparent opacity-40 group-hover:opacity-15 transition-opacity duration-500" />
+                    </div>
+
+                    {/* Circular White/Cream Icon Badge */}
+                    <div className="relative -mt-9 z-30 mb-5 transition-transform duration-500 ease-out group-hover:-translate-y-[3px]">
+                      <div className="w-[72px] h-[72px] rounded-full bg-[#FAF5EE] border border-[#C9A15A] shadow-[0_6px_20px_rgba(201,161,90,0.22)] flex items-center justify-center transition-all duration-500 ring-4 ring-[#FBF7F1] group-hover:shadow-[0_10px_26px_rgba(201,161,90,0.32)]">
+                        <IconComponent className="w-7 h-7 text-[#C9A15A] stroke-[1.4]" />
+                      </div>
+                    </div>
+
+                    {/* Step Number: 01, 02, 03, 04 in large elegant serif font */}
+                    <div className="font-serif text-[#C9A15A] text-2xl xl:text-[28px] font-normal tracking-wide mb-2.5">
+                      {step.step}
+                    </div>
+
+                    {/* Title: Elegant serif font, dark charcoal, ~28px */}
+                    <h3 className="font-serif text-[#24211F] text-2xl xl:text-[27px] font-normal tracking-tight leading-snug mb-3 group-hover:text-[#C9A15A] transition-colors duration-300">
+                      {step.title}
+                    </h3>
+
+                    {/* Gold Accent Underline: smoothly expands on hover */}
+                    <div className="w-[38px] h-[1.5px] bg-[#C9A15A] mx-auto mb-4 transition-all duration-500 ease-out group-hover:w-[52px]" />
+
+                    {/* Description: Modern clean sans-serif, max-w-[240px] */}
+                    <p className="font-sans text-[#77716B] font-light text-[15px] xl:text-base leading-[1.65] max-w-[240px] mx-auto">
+                      {step.desc}
+                    </p>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* ====================================================
+              TABLET & MOBILE RESPONSIVE LAYOUT
+              ==================================================== */}
+          <div className="block lg:hidden relative mt-4">
+            
+            {/* Responsive Grid: 2x2 on sm/md tablet, 1 column stack on mobile */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-12 sm:gap-10 max-w-2xl mx-auto">
+              {experienceSteps.map((step, idx) => {
+                const IconComponent = step.icon;
+                const mobileDelay = idx * 0.08;
+
+                return (
+                  <motion.div
+                    key={step.step}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, amount: 0.1 }}
+                    transition={{ duration: 0.6, delay: mobileDelay, ease: "easeOut" }}
+                    className="flex flex-col items-center text-center"
+                  >
+                    {/* Tall Rounded-Arch Image Container */}
+                    <div className="relative w-[260px] xs:w-[280px] h-[270px] rounded-t-[140px] rounded-b-2xl overflow-hidden shadow-[0_10px_25px_rgba(42,36,33,0.06)] ring-1 ring-[#C9A15A]/20 bg-[#F5DEC9]/20">
+                      <img 
+                        src={step.image} 
+                        alt={step.title}
+                        loading="lazy"
+                        className="w-full h-full object-cover object-center"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#24211F]/30 via-transparent to-transparent opacity-40" />
+                    </div>
+
+                    {/* Circular White/Cream Icon Badge */}
+                    <div className="relative -mt-9 z-20 mb-4">
+                      <div className="w-[68px] h-[68px] rounded-full bg-[#FAF5EE] border border-[#C9A15A] shadow-[0_6px_18px_rgba(201,161,90,0.22)] flex items-center justify-center ring-4 ring-[#FBF7F1]">
+                        <IconComponent className="w-6 h-6 text-[#C9A15A] stroke-[1.4]" />
+                      </div>
+                    </div>
+
+                    {/* Step Number */}
+                    <div className="font-serif text-[#C9A15A] text-2xl font-normal tracking-wide mb-2">
+                      {step.step}
+                    </div>
+
+                    {/* Title */}
+                    <h3 className="font-serif text-[#24211F] text-2xl font-normal leading-snug mb-2.5">
+                      {step.title}
+                    </h3>
+
+                    {/* Gold Accent Underline */}
+                    <div className="w-[36px] h-[1.5px] bg-[#C9A15A] mx-auto mb-3" />
+
+                    {/* Description */}
+                    <p className="font-sans text-[#77716B] font-light text-sm sm:text-[15px] leading-relaxed max-w-[240px] mx-auto">
+                      {step.desc}
+                    </p>
+                  </motion.div>
+                );
+              })}
             </div>
           </div>
 
@@ -596,133 +803,8 @@ export default function About({ setCurrentPage, onReserveClick }: AboutProps) {
       </section>
 
 
-      {/* ==================================================
-          8. SALON GALLERY ("Inside Highlights")
-          ================================================== */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28 space-y-12">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-brand-blush pb-8">
-          <div className="space-y-3">
-            <span className="text-brand-gold font-sans font-semibold text-xs tracking-widest uppercase block">
-              ✦ Visual Sanctuary ✦
-            </span>
-            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-brand-charcoal font-light">
-              Inside Highlights
-            </h2>
-            <p className="text-stone-600 font-sans font-light text-sm sm:text-base max-w-xl">
-              Glimpse into our serene salon spaces, master styling moments, and authentic customer transformations.
-            </p>
-          </div>
-
-          <button
-            onClick={() => navigateTo('gallery')}
-            className="inline-flex items-center gap-2 text-brand-gold-dark hover:text-brand-gold font-sans font-semibold text-xs sm:text-sm uppercase tracking-widest transition-colors cursor-pointer group"
-          >
-            <span>View Gallery</span>
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform" />
-          </button>
-        </div>
-
-        {/* Editorial Masonry Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {galleryPreview.map((item, idx) => (
-            <motion.div
-              key={item.id}
-              initial={{ opacity: 0, scale: 0.96 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: idx * 0.08 }}
-              onClick={() => navigateTo('gallery')}
-              className="group relative h-72 sm:h-80 rounded-3xl overflow-hidden shadow-sm border border-brand-gold/30 hover:border-brand-gold hover:shadow-xl transition-all duration-500 cursor-pointer"
-            >
-              <img
-                src={item.imageUrl}
-                alt={item.title}
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                loading="lazy"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-brand-charcoal/85 via-brand-charcoal/20 to-transparent opacity-80 group-hover:opacity-95 transition-opacity" />
-
-              <div className="absolute inset-x-0 bottom-0 p-6 space-y-1 text-white transform transition-transform duration-300">
-                <span className="text-[10px] text-brand-gold-light uppercase tracking-widest font-sans font-semibold block">
-                  {item.category}
-                </span>
-                <h3 className="font-serif text-xl font-normal leading-snug">
-                  {item.title}
-                </h3>
-                <p className="text-xs text-stone-300 font-sans font-light line-clamp-1">
-                  {item.caption}
-                </p>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </section>
 
 
-      {/* ==================================================
-          9. TESTIMONIALS ("Loved by Our Clients")
-          ================================================== */}
-      <section className="bg-brand-blush/40 border-y border-brand-blush py-20 lg:py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-          
-          <div className="text-center space-y-3 max-w-2xl mx-auto">
-            <span className="text-brand-gold font-sans font-semibold text-xs tracking-widest uppercase block">
-              ✦ Guest Impressions ✦
-            </span>
-            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-brand-charcoal font-light">
-              Loved by Our Clients
-            </h2>
-            <p className="text-stone-600 font-sans font-light text-sm sm:text-base">
-              Real reflections from guests who trusted us with their hair, skin, and milestone memories.
-            </p>
-            <div className="h-0.5 w-16 bg-brand-gold/50 mx-auto" />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {testimonialsPreview.map((item, idx) => (
-              <motion.div
-                key={item.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: idx * 0.1 }}
-                whileHover={{ y: -4 }}
-                className="bg-white rounded-3xl p-8 border border-brand-gold/30 hover:border-brand-gold shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between space-y-6"
-              >
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-1">
-                    {[...Array(item.rating || 5)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 text-amber-500 fill-amber-500" />
-                    ))}
-                  </div>
-
-                  <p className="font-sans text-xs sm:text-sm text-stone-600 font-light leading-relaxed italic">
-                    "{item.feedback}"
-                  </p>
-                </div>
-
-                <div className="flex items-center space-x-3 pt-4 border-t border-brand-blush">
-                  <img
-                    src={item.avatar}
-                    alt={item.name}
-                    className="w-11 h-11 rounded-full object-cover border border-brand-gold/40 shadow-2xs"
-                    loading="lazy"
-                  />
-                  <div>
-                    <h4 className="font-serif text-sm font-semibold text-brand-charcoal leading-tight">
-                      {item.name}
-                    </h4>
-                    <span className="text-[11px] text-brand-gold-dark font-sans">
-                      {item.role || item.serviceReceived}
-                    </span>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-
-        </div>
-      </section>
 
 
       {/* ==================================================

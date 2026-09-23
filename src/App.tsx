@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Calendar, X, Heart, MessageCircle, ArrowUp } from 'lucide-react';
+import { Calendar, X, Heart, MessageCircle } from 'lucide-react';
 
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -284,18 +284,6 @@ export default function App() {
 
           {/* Floating Radial Social Menu */}
           <FloatingSocialMenu />
-
-          {/* Back-To-Top Button */}
-          {showBackToTop && (
-            <button
-              id="back-to-top-btn"
-              onClick={scrollToTop}
-              className="fixed bottom-22 right-6 z-40 bg-brand-charcoal/80 hover:bg-brand-charcoal text-white p-3 rounded-full shadow-md transition-all duration-300 cursor-pointer"
-              aria-label="Back to top"
-            >
-              <ArrowUp className="w-4 h-4" />
-            </button>
-          )}
 
           {/* Footer */}
           <Footer setCurrentPage={handlePageChange} />

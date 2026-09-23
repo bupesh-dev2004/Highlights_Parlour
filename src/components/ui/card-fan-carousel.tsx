@@ -12,6 +12,8 @@ export interface CardItem {
 interface SocialCardsProps {
   cards: CardItem[];
   onCardClick?: (card: CardItem, index: number) => void;
+  autoPlay?: boolean;
+  autoPlayInterval?: number;
 }
 
 const MAX_VISIBLE = 7;
@@ -71,12 +73,18 @@ function getSlotConfig(totalCards: number, slot: number) {
 const ARROW_CLASSES =
   "relative flex items-center justify-center rounded-full border-[1.5px] border-[#C5A059]/40 bg-white/80 backdrop-blur-[16px] text-brand-charcoal cursor-pointer shrink-0 z-30 outline-none shadow-[0_4px_20px_rgba(197,160,89,0.15)] hover:border-[#C5A059] hover:bg-white hover:text-brand-gold-dark active:scale-95 transition-all duration-300 before:content-[''] before:absolute before:inset-[3px] before:rounded-full before:border before:border-[#C5A059]/20 before:pointer-events-none";
 
-export default function SocialCards({ cards, onCardClick }: SocialCardsProps) {
+export default function SocialCards({ 
+  cards, 
+  onCardClick,
+  autoPlay = true,
+  autoPlayInterval = 3200,
+}: SocialCardsProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const isAnimating = useRef(false);
   const hasEntered = useRef(false);
   const directionRef = useRef<"left" | "right" | null>(null);
   const prevVisible = useRef<Set<number>>(new Set());
+  const isHovered = useRef(false);
 
   const totalCards = cards.length;
   const needsPagination = totalCards > MAX_VISIBLE;
@@ -102,6 +110,19 @@ export default function SocialCards({ cards, onCardClick }: SocialCardsProps) {
       direction === "right" ? (prev + 1) % totalCards : (prev - 1 + totalCards) % totalCards
     );
   }, [totalCards, needsPagination]);
+
+  // Smooth Auto-scroll Timer
+  useEffect(() => {
+    if (!autoPlay || !needsPagination) return;
+
+    const timer = setInterval(() => {
+      if (!isHovered.current && !isAnimating.current) {
+        cycle("right");
+      }
+    }, autoPlayInterval);
+
+    return () => clearInterval(timer);
+  }, [autoPlay, autoPlayInterval, needsPagination, cycle]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -225,6 +246,7 @@ export default function SocialCards({ cards, onCardClick }: SocialCardsProps) {
 
     const enterHandlers = visibleEntries.map(({ el, slot }) => {
       const handler = () => {
+        isHovered.current = true;
         if (isAnimating.current) return;
         if (leaveTimer) { clearTimeout(leaveTimer); leaveTimer = null; }
         if (activeSlot !== slot) { activeSlot = slot; updateHoverLayout(slot); }
@@ -233,7 +255,13 @@ export default function SocialCards({ cards, onCardClick }: SocialCardsProps) {
       return { el, handler };
     });
 
+    const onMouseEnter = () => {
+      isHovered.current = true;
+    };
+    container.addEventListener("mouseenter", onMouseEnter);
+
     const onMouseLeave = () => {
+      isHovered.current = false;
       if (isAnimating.current) return;
       if (leaveTimer) clearTimeout(leaveTimer);
       leaveTimer = setTimeout(() => { activeSlot = null; updateHoverLayout(null); }, 50);
@@ -245,6 +273,7 @@ export default function SocialCards({ cards, onCardClick }: SocialCardsProps) {
 
     return () => {
       enterHandlers.forEach(({ el, handler }) => el.removeEventListener("mouseenter", handler));
+      container.removeEventListener("mouseenter", onMouseEnter);
       container.removeEventListener("mouseleave", onMouseLeave);
       window.removeEventListener("resize", onResize);
       if (leaveTimer) clearTimeout(leaveTimer);

@@ -46,19 +46,19 @@ export default function Header({
           <button
             id="logo-btn"
             onClick={() => handleNavClick('home')}
-            className="flex items-center space-x-3 shrink-0 group cursor-pointer focus-visible:ring-2 focus-visible:ring-brand-gold focus-visible:outline-none rounded-full py-1 pr-2"
+            className="flex items-center space-x-3 shrink-0 group cursor-pointer focus-visible:ring-2 focus-visible:ring-brand-gold focus-visible:outline-none rounded-full group transition-opacity"
             aria-label="Highlights Makeoverartistry Home"
           >
             <img 
               src="/logo.jpg" 
               alt="Highlights Logo" 
-              className="w-12 h-12 sm:w-13 sm:h-13 rounded-full object-cover shrink-0 border border-brand-gold/40 shadow-2xs group-hover:scale-105 transition-transform duration-300" 
+              className="w-12 h-12 sm:w-13 sm:h-13 rounded-full object-cover shrink-0 border border-brand-gold/40 shadow-2xs group-hover:scale-105 transition-transform duration-300 block" 
             />
             <div className="text-left hidden sm:flex flex-col justify-center">
-              <span className="font-serif text-base sm:text-lg font-light tracking-[0.14em] text-brand-charcoal leading-none">
+              <span className="font-serif text-base sm:text-lg font-light tracking-[0.14em] text-brand-charcoal leading-tight">
                 HIGHLIGHTS
               </span>
-              <span className="text-[8px] sm:text-[9px] text-brand-gold font-sans font-semibold tracking-[0.25em] uppercase block mt-1 leading-none">
+              <span className="text-[8px] sm:text-[9px] text-brand-gold font-sans font-semibold tracking-[0.25em] uppercase block leading-tight">
                 ✦ Makeoverartistry ✦
               </span>
             </div>

@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Award, Sparkles, ShieldCheck, Calendar, ArrowRight, Star, ChevronLeft, ChevronRight } from 'lucide-react';
-import { SERVICES, TESTIMONIALS, GALLERY_ITEMS } from '../data';
-import { Service } from '../types';
+import { SERVICES, GALLERY_ITEMS } from '../data';
+import { Service, Testimonial } from '../types';
+import { getStoredReviews } from '../lib/reviewStorage';
 import SocialCards from './ui/card-fan-carousel';
 
 interface HomeProps {
@@ -12,6 +13,7 @@ interface HomeProps {
 }
 
 export default function Home({ setCurrentPage, onReserveClick, onBookService }: HomeProps) {
+  const [reviewsList, setReviewsList] = useState<Testimonial[]>([]);
   const [activeTestimonial, setActiveTestimonial] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -24,6 +26,17 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Load reviews dynamically from persistent review store & listen for updates
+  useEffect(() => {
+    const load = () => {
+      setReviewsList(getStoredReviews());
+    };
+    load();
+
+    window.addEventListener('highlights_reviews_updated', load);
+    return () => window.removeEventListener('highlights_reviews_updated', load);
+  }, []);
+
   // Take first 6 popular services
   const popularServices = SERVICES.slice(0, 6);
 
@@ -33,12 +46,14 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
     alt: item.title,
   }));
 
+  const totalReviews = reviewsList.length || 1;
+
   const nextTestimonial = () => {
-    setActiveTestimonial((prev) => (prev + 1) % TESTIMONIALS.length);
+    setActiveTestimonial((prev) => (prev + 1) % totalReviews);
   };
 
   const prevTestimonial = () => {
-    setActiveTestimonial((prev) => (prev - 1 + TESTIMONIALS.length) % TESTIMONIALS.length);
+    setActiveTestimonial((prev) => (prev - 1 + totalReviews) % totalReviews);
   };
 
   const highlightItems = [
@@ -433,8 +448,14 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
           <div className="h-[1px] w-16 bg-brand-gold/40 mx-auto" />
         </div>
 
-        {/* Interactive 3D Card Fan Carousel */}
-        <div className="w-full overflow-visible py-2">
+        {/* Interactive 3D Card Fan Carousel with Subtle Professional Fade-In Effect */}
+        <motion.div 
+          className="w-full overflow-visible py-2"
+          initial={{ opacity: 0, scale: 0.96 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
+        >
           <SocialCards
             cards={fanCarouselCards}
             onCardClick={() => {
@@ -444,7 +465,7 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
               }
             }}
           />
-        </div>
+        </motion.div>
 
         <div className="text-center pt-2">
           <button
@@ -463,7 +484,7 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
         </div>
       </motion.section>
 
-      {/* 6. Client Testimonials (Verified Customer Feedback) */}
+      {/* 6. Client Testimonials (Verified Customer Feedback with Smooth Auto-Scroll Carousel) */}
       <motion.section
         id="testimonials"
         className="bg-brand-cream border-y border-brand-blush py-20 relative overflow-hidden"
@@ -472,77 +493,86 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
         viewport={{ once: true, margin: "-80px" }}
         transition={{ duration: 0.8, ease: 'easeOut' }}
       >
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-10 relative">
-          <div className="space-y-2">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10 relative">
+          <div className="text-center space-y-2 max-w-3xl mx-auto">
             <span className="text-brand-gold-dark font-sans font-semibold text-xs tracking-[0.25em] uppercase block">
               ✦ Verified Experiences ✦
             </span>
-            <h2 className="font-serif text-3xl sm:text-4xl text-brand-charcoal font-light">
+            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-brand-charcoal font-light">
               Words From Our Valued Guests
             </h2>
-            <div className="h-[1px] w-14 bg-brand-gold/40 mx-auto" />
+            <p className="text-stone-500 font-sans font-light text-xs sm:text-sm max-w-md mx-auto">
+              Real testimonials submitted by clients celebrating their glow, balayage, and salon retreats.
+            </p>
+            <div className="h-[1px] w-14 bg-brand-gold/40 mx-auto mt-2" />
           </div>
 
-          {/* Testimonial Active Slider Card */}
-          <div className="bg-white rounded-3xl p-8 sm:p-12 border border-brand-blush/80 shadow-2xs space-y-6">
-            <div className="flex justify-center space-x-1 text-brand-gold">
-              {[...Array(TESTIMONIALS[activeTestimonial].rating)].map((_, i) => (
-                <Star key={i} className="w-4 h-4 fill-brand-gold text-brand-gold" />
+          {/* Smooth Continuous Auto-Scroll Carousel */}
+          <div className="relative w-full overflow-hidden py-4">
+            {/* Soft Edge Gradient Masks for luxury editorial aesthetic */}
+            <div className="pointer-events-none absolute left-0 inset-y-0 w-12 sm:w-24 bg-gradient-to-r from-brand-cream to-transparent z-10" />
+            <div className="pointer-events-none absolute right-0 inset-y-0 w-12 sm:w-24 bg-gradient-to-l from-brand-cream to-transparent z-10" />
+
+            <div className="animate-marquee-scroll flex gap-6 items-stretch">
+              {/* Duplicate array ensures uninterrupted continuous ticker loop */}
+              {[...(reviewsList.length ? reviewsList : []), ...(reviewsList.length ? reviewsList : [])].map((item, index) => (
+                <div
+                  key={`${item.id}-${index}`}
+                  className="w-[280px] sm:w-[340px] md:w-[380px] shrink-0 bg-white rounded-3xl p-6 sm:p-7 border border-brand-blush shadow-2xs hover:shadow-md transition-all duration-300 flex flex-col justify-between space-y-4 group cursor-default"
+                >
+                  <div className="space-y-3">
+                    <div className="flex text-brand-gold space-x-1">
+                      {[...Array(item.rating)].map((_, i) => (
+                        <Star key={i} className="w-4 h-4 fill-brand-gold text-brand-gold" />
+                      ))}
+                    </div>
+
+                    <blockquote className="text-stone-700 font-serif text-sm sm:text-base font-light italic leading-relaxed line-clamp-4">
+                      "{item.feedback}"
+                    </blockquote>
+                  </div>
+
+                  <div className="pt-3 border-t border-brand-blush/60 flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <img
+                        src={item.avatar}
+                        alt={item.name}
+                        className="w-10 h-10 rounded-full object-cover ring-2 ring-brand-blush shrink-0"
+                        referrerPolicy="no-referrer"
+                        loading="lazy"
+                      />
+                      <div className="text-left">
+                        <cite className="block font-sans font-semibold text-xs sm:text-sm text-brand-charcoal not-italic leading-tight">
+                          {item.name}
+                        </cite>
+                        <span className="block text-[10px] text-brand-gold font-medium mt-0.5">
+                          {item.serviceReceived}
+                        </span>
+                      </div>
+                    </div>
+                    <span className="text-[10px] text-emerald-700 font-semibold tracking-wider uppercase shrink-0">
+                      ✓ Verified
+                    </span>
+                  </div>
+                </div>
               ))}
-            </div>
-
-            <blockquote className="text-stone-700 font-serif text-lg sm:text-xl font-light italic leading-relaxed">
-              "{TESTIMONIALS[activeTestimonial].feedback}"
-            </blockquote>
-
-            <div className="flex flex-col items-center space-y-2 pt-2">
-              <img
-                src={TESTIMONIALS[activeTestimonial].avatar}
-                alt={TESTIMONIALS[activeTestimonial].name}
-                className="w-13 h-13 rounded-full object-cover ring-2 ring-brand-blush"
-                referrerPolicy="no-referrer"
-              />
-              <div>
-                <cite className="block font-sans font-semibold text-sm text-brand-charcoal not-italic">
-                  {TESTIMONIALS[activeTestimonial].name}
-                </cite>
-                <span className="block text-xs text-stone-500 font-light">
-                  {TESTIMONIALS[activeTestimonial].role} • {TESTIMONIALS[activeTestimonial].serviceReceived}
-                </span>
-              </div>
             </div>
           </div>
 
-          {/* Controls */}
-          <div className="flex justify-between items-center max-w-xs mx-auto">
+          {/* Action button to read or submit more reviews */}
+          <div className="text-center pt-2">
             <button
-              id="prev-testimonial-btn"
-              onClick={prevTestimonial}
-              className="w-10 h-10 rounded-full border border-brand-gold/30 flex items-center justify-center text-brand-gold-dark hover:bg-brand-charcoal hover:text-white hover:border-brand-charcoal transition-colors cursor-pointer"
-              aria-label="Previous testimonial"
+              id="view-all-reviews-btn"
+              onClick={() => {
+                if (setCurrentPage) {
+                  setCurrentPage('reviews');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+              }}
+              className="inline-flex items-center space-x-2 text-brand-charcoal hover:text-brand-gold-dark font-semibold text-xs tracking-widest uppercase transition-colors group cursor-pointer border-b border-brand-gold/40 pb-1"
             >
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-            <div className="flex space-x-2">
-              {TESTIMONIALS.map((_, idx) => (
-                <button
-                  id={`testimonial-dot-${idx}`}
-                  key={idx}
-                  onClick={() => setActiveTestimonial(idx)}
-                  className={`h-2 rounded-full transition-all cursor-pointer ${
-                    activeTestimonial === idx ? 'w-6 bg-brand-gold-dark' : 'w-2 bg-stone-300'
-                  }`}
-                  aria-label={`Go to testimonial ${idx + 1}`}
-                />
-              ))}
-            </div>
-            <button
-              id="next-testimonial-btn"
-              onClick={nextTestimonial}
-              className="w-10 h-10 rounded-full border border-brand-gold/30 flex items-center justify-center text-brand-gold-dark hover:bg-brand-charcoal hover:text-white hover:border-brand-charcoal transition-colors cursor-pointer"
-              aria-label="Next testimonial"
-            >
-              <ChevronRight className="w-5 h-5" />
+              <span>Explore All Reviews & Submit Yours</span>
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
             </button>
           </div>
         </div>

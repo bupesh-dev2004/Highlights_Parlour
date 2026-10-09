@@ -6,7 +6,7 @@ interface StickyMobileBarProps {
 
 export default function StickyMobileBar({ onBookClick }: StickyMobileBarProps) {
   return (
-    <div 
+    <div
       id="sticky-mobile-bar"
       className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-brand-cream/95 backdrop-blur-md border-t border-brand-blush/80 px-3 pt-2 pb-[max(0.6rem,env(safe-area-inset-bottom))] shadow-[0_-4px_20px_rgba(0,0,0,0.08)] flex items-center justify-between gap-2"
     >

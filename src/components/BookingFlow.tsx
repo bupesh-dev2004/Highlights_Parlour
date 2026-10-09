@@ -35,14 +35,6 @@ export default function BookingFlow({ preSelectedService, clearPreSelectedServic
     }
   }, [preSelectedService]);
 
-  const toggleServiceSelection = (service: Service) => {
-    if (selectedServices.find((s) => s.id === service.id)) {
-      setSelectedServices(selectedServices.filter((s) => s.id !== service.id));
-    } else {
-      setSelectedServices([...selectedServices, service]);
-    }
-  };
-
   const calculateTotal = () => {
     return selectedServices.reduce((sum, s) => sum + s.price, 0);
   };
@@ -56,24 +48,12 @@ export default function BookingFlow({ preSelectedService, clearPreSelectedServic
     return Object.keys(errs).length === 0;
   };
 
-  const validateStep2 = () => {
-    if (selectedServices.length === 0) {
-      setErrors({ services: 'Please select at least one service to proceed' });
-      return false;
-    }
-    setErrors({});
-    return true;
-  };
-
   const handleNextStep = () => {
     if (step === 1 && validateStep1()) {
       setStep(2);
       window.scrollTo({ top: 0, behavior: 'smooth' });
-    } else if (step === 2 && validateStep2()) {
+    } else if (step === 2) {
       setStep(3);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    } else if (step === 3) {
-      setStep(4);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
@@ -122,8 +102,8 @@ export default function BookingFlow({ preSelectedService, clearPreSelectedServic
 
   const whatsappMessage = submittedBooking
     ? encodeURIComponent(
-        `Hello Highlights Makeoverartistry! I have booked an appointment.\n\nBooking ID: ${submittedBooking.id}\nName: ${submittedBooking.customerDetails.name}\nDate: ${submittedBooking.date} at ${submittedBooking.time}\nServices: ${submittedBooking.services.map(s => s.name).join(', ')}\nTotal: $${submittedBooking.totalPrice}`
-      )
+      `Hello Highlights Makeoverartistry! I have booked an appointment.\n\nBooking ID: ${submittedBooking.id}\nName: ${submittedBooking.customerDetails.name}\nDate: ${submittedBooking.date} at ${submittedBooking.time}${submittedBooking.services.length > 0 ? `\nServices: ${submittedBooking.services.map(s => s.name).join(', ')}\nTotal: $${submittedBooking.totalPrice}` : ''}`
+    )
     : '';
 
   return (
@@ -146,14 +126,13 @@ export default function BookingFlow({ preSelectedService, clearPreSelectedServic
         <div className="bg-white border border-brand-blush rounded-2xl p-4 shadow-2xs">
           <div className="flex justify-between items-center text-xs font-semibold text-stone-500 pb-2">
             <span className={step >= 1 ? 'text-brand-gold font-bold' : ''}>1. Contact Info</span>
-            <span className={step >= 2 ? 'text-brand-gold font-bold' : ''}>2. Services</span>
-            <span className={step >= 3 ? 'text-brand-gold font-bold' : ''}>3. Date & Stylist</span>
-            <span className={step >= 4 ? 'text-brand-gold font-bold' : ''}>4. Review</span>
+            <span className={step >= 2 ? 'text-brand-gold font-bold' : ''}>2. Date & Stylist</span>
+            <span className={step >= 3 ? 'text-brand-gold font-bold' : ''}>3. Review</span>
           </div>
           <div className="w-full h-1.5 bg-stone-100 rounded-full overflow-hidden">
             <div
               className="h-full bg-brand-gold transition-all duration-500 ease-out"
-              style={{ width: `${(step / 4) * 100}%` }}
+              style={{ width: `${(step / 3) * 100}%` }}
             />
           </div>
         </div>
@@ -228,7 +207,7 @@ export default function BookingFlow({ preSelectedService, clearPreSelectedServic
       ) : (
         /* Multi-step Form Wizard */
         <div className="bg-white border border-brand-blush rounded-3xl p-6 sm:p-10 shadow-sm space-y-8">
-          
+
           {/* STEP 1: Customer Contact Info */}
           {step === 1 && (
             <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
@@ -282,60 +261,11 @@ export default function BookingFlow({ preSelectedService, clearPreSelectedServic
             </motion.div>
           )}
 
-          {/* STEP 2: Service Selection */}
+          {/* STEP 2: Date & Time Selection */}
           {step === 2 && (
             <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
               <div className="space-y-1">
-                <h2 className="font-serif text-2xl font-light text-brand-charcoal">2. Select Your Services</h2>
-                <p className="text-stone-500 text-xs font-light">Choose one or more treatments for your session.</p>
-              </div>
-
-              {errors.services && (
-                <div className="bg-rose-50 border border-rose-200 p-3 rounded-xl flex items-center space-x-2 text-rose-600 text-xs">
-                  <AlertCircle className="w-4 h-4 shrink-0" />
-                  <span>{errors.services}</span>
-                </div>
-              )}
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[380px] overflow-y-auto pr-1">
-                {SERVICES.map((serv) => {
-                  const isSelected = selectedServices.some((s) => s.id === serv.id);
-                  return (
-                    <div
-                      key={serv.id}
-                      onClick={() => toggleServiceSelection(serv)}
-                      className={`p-4 rounded-2xl border cursor-pointer transition-all flex items-start space-x-3 ${
-                        isSelected
-                          ? 'border-brand-gold bg-brand-blush/40 shadow-2xs'
-                          : 'border-stone-200 bg-white hover:border-brand-gold/50'
-                      }`}
-                    >
-                      <img src={serv.image} alt={serv.name} className="w-14 h-14 rounded-xl object-cover shrink-0" />
-                      <div className="flex-1 space-y-1">
-                        <div className="flex justify-between items-baseline">
-                          <h4 className="font-serif text-sm font-semibold text-brand-charcoal">{serv.name}</h4>
-                          <span className="text-xs font-bold text-brand-gold-dark">${serv.price}</span>
-                        </div>
-                        <p className="text-[11px] text-stone-500 font-light line-clamp-1">{serv.description}</p>
-                        <span className="text-[10px] text-stone-400 font-mono">{serv.duration}</span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              <div className="bg-stone-50 p-4 rounded-2xl flex justify-between items-center text-sm font-serif">
-                <span>Total Selected ({selectedServices.length}):</span>
-                <span className="font-bold text-brand-gold-dark text-base">${calculateTotal()}</span>
-              </div>
-            </motion.div>
-          )}
-
-          {/* STEP 3: Date & Time Selection */}
-          {step === 3 && (
-            <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
-              <div className="space-y-1">
-                <h2 className="font-serif text-2xl font-light text-brand-charcoal">3. Date & Time Selection</h2>
+                <h2 className="font-serif text-2xl font-light text-brand-charcoal">2. Date & Time Selection</h2>
                 <p className="text-stone-500 text-xs font-light">Pick your preferred appointment date and time slot.</p>
               </div>
 
@@ -384,11 +314,11 @@ export default function BookingFlow({ preSelectedService, clearPreSelectedServic
             </motion.div>
           )}
 
-          {/* STEP 4: Review & Final Confirmation */}
-          {step === 4 && (
+          {/* STEP 3: Review & Final Confirmation */}
+          {step === 3 && (
             <form onSubmit={handleFinalBookingSubmit} className="space-y-6">
               <div className="space-y-1">
-                <h2 className="font-serif text-2xl font-light text-brand-charcoal">4. Review & Confirm Booking</h2>
+                <h2 className="font-serif text-2xl font-light text-brand-charcoal">3. Review & Confirm Booking</h2>
                 <p className="text-stone-500 text-xs font-light">Verify your reservation details before confirming.</p>
               </div>
 
@@ -415,20 +345,28 @@ export default function BookingFlow({ preSelectedService, clearPreSelectedServic
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <span className="text-xs text-stone-400 uppercase tracking-wider block">Services Summary:</span>
-                  {selectedServices.map((s) => (
-                    <div key={s.id} className="flex justify-between text-xs text-stone-700">
-                      <span>{s.name}</span>
-                      <span className="font-semibold">${s.price}</span>
-                    </div>
-                  ))}
-                </div>
+                {selectedServices.length > 0 && (
+                  <div className="space-y-2">
+                    <span className="text-xs text-stone-400 uppercase tracking-wider block">Services Summary:</span>
+                    {selectedServices.map((s) => (
+                      <div key={s.id} className="flex justify-between text-xs text-stone-700">
+                        <span>{s.name}</span>
+                        <span className="font-semibold">${s.price}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
 
-                <div className="pt-3 border-t border-brand-blush/60 flex justify-between items-center text-base font-serif font-bold text-brand-gold-dark">
-                  <span>Total Amount Due at Salon:</span>
-                  <span>${calculateTotal()}</span>
-                </div>
+                {calculateTotal() > 0 ? (
+                  <div className="pt-3 border-t border-brand-blush/60 flex justify-between items-center text-base font-serif font-bold text-brand-gold-dark">
+                    <span>Total Amount Due at Salon:</span>
+                    <span>${calculateTotal()}</span>
+                  </div>
+                ) : (
+                  <div className="pt-2 text-[11px] text-stone-400 font-light italic">
+                    Services and treatments will be selected and confirmed directly with your artisan during your visit.
+                  </div>
+                )}
               </div>
 
               <button
@@ -462,7 +400,7 @@ export default function BookingFlow({ preSelectedService, clearPreSelectedServic
               </button>
             ) : <div />}
 
-            {step < 4 && (
+            {step < 3 && (
               <button
                 type="button"
                 onClick={handleNextStep}

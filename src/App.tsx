@@ -35,7 +35,7 @@ function getPageFromPath(path: string): string {
 }
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState<string>(() => 
+  const [currentPage, setCurrentPage] = useState<string>(() =>
     getPageFromPath(window.location.pathname)
   );
   const [preSelectedService, setPreSelectedService] = useState<Service | null>(null);
@@ -161,7 +161,7 @@ export default function App() {
                   className="absolute inset-0 rounded-full border border-dashed border-brand-gold/45"
                 />
                 <div className="absolute inset-2 rounded-full border border-brand-rose/25 shadow-lg shadow-brand-gold/5" />
-                
+
                 <motion.img
                   initial={{ scale: 0.85, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
@@ -221,10 +221,10 @@ export default function App() {
           className="flex flex-col min-h-screen bg-brand-cream text-brand-charcoal overflow-x-hidden selection:bg-brand-rose selection:text-brand-charcoal pb-0"
         >
           {/* Header */}
-          <Header 
-            currentPage={currentPage} 
-            setCurrentPage={handlePageChange} 
-            onReserveClick={handleReserveClick} 
+          <Header
+            currentPage={currentPage}
+            setCurrentPage={handlePageChange}
+            onReserveClick={handleReserveClick}
             localBookingsCount={localBookings.length}
             onBookingsClick={() => setShowBookingsTray(true)}
           />
@@ -241,25 +241,29 @@ export default function App() {
                 className="w-full"
               >
                 {currentPage === 'home' && (
-                  <Home 
-                    setCurrentPage={handlePageChange} 
-                    onReserveClick={handleReserveClick} 
-                    onBookService={handleBookService} 
+                  <Home
+                    setCurrentPage={handlePageChange}
+                    onReserveClick={handleReserveClick}
+                    onBookService={handleBookService}
                   />
                 )}
                 {currentPage === 'about' && (
-                  <About 
-                    setCurrentPage={handlePageChange} 
-                    onReserveClick={handleReserveClick} 
+                  <About
+                    setCurrentPage={handlePageChange}
+                    onReserveClick={handleReserveClick}
                   />
                 )}
                 {currentPage === 'services' && (
-                  <Services onBookService={handleBookService} />
+                  <Services 
+                    onBookService={handleBookService} 
+                    onReserveClick={handleReserveClick}
+                    setCurrentPage={handlePageChange}
+                  />
                 )}
                 {currentPage === 'packages' && (
-                  <Packages 
-                    onReserveClick={handleReserveClick} 
-                    onBookService={handleBookService} 
+                  <Packages
+                    onReserveClick={handleReserveClick}
+                    onBookService={handleBookService}
                   />
                 )}
                 {currentPage === 'gallery' && <Gallery />}
@@ -272,9 +276,9 @@ export default function App() {
                 {currentPage === 'membership' && <Membership />}
                 {currentPage === 'contact' && <Contact />}
                 {currentPage === 'booking' && (
-                  <BookingFlow 
-                    preSelectedService={preSelectedService} 
-                    clearPreSelectedService={() => setPreSelectedService(null)} 
+                  <BookingFlow
+                    preSelectedService={preSelectedService}
+                    clearPreSelectedService={() => setPreSelectedService(null)}
                     onSuccess={handleBookingSuccess}
                   />
                 )}
@@ -329,8 +333,8 @@ export default function App() {
                   <div className="flex-1 overflow-y-auto py-4 space-y-4 pr-1">
                     {localBookings.length > 0 ? (
                       localBookings.map((b) => (
-                        <div 
-                          key={b.id} 
+                        <div
+                          key={b.id}
                           className="bg-white border border-brand-blush/80 rounded-2xl p-4 space-y-3.5 relative shadow-2xs"
                         >
                           <button

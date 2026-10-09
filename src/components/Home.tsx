@@ -320,8 +320,8 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
             {highlightItems.map((item, idx) => {
               const IconComp = item.icon;
               return (
-                <div 
-                  key={idx} 
+                <div
+                  key={idx}
                   className="p-6 rounded-2xl bg-brand-cream/60 border border-brand-blush/80 hover:border-brand-gold/30 hover:bg-white transition-all duration-300 space-y-3"
                 >
                   <div className="w-10 h-10 rounded-full bg-brand-blush flex items-center justify-center text-brand-gold-dark">
@@ -449,7 +449,7 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
         </div>
 
         {/* Interactive 3D Card Fan Carousel with Subtle Professional Fade-In Effect */}
-        <motion.div 
+        <motion.div
           className="w-full overflow-visible py-2"
           initial={{ opacity: 0, scale: 0.96 }}
           whileInView={{ opacity: 1, scale: 1 }}

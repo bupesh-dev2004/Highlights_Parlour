@@ -39,20 +39,20 @@ export default function Header({
 
   return (
     <header id="app-header" className="fixed top-0 inset-x-0 z-50 w-full bg-brand-cream/95 backdrop-blur-md border-b border-brand-blush/80 shadow-md transition-all duration-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16 sm:h-20">
 
           {/* 1. Brand / Logo Section */}
           <button
             id="logo-btn"
             onClick={() => handleNavClick('home')}
-            className="flex items-center space-x-3 shrink-0 group cursor-pointer focus-visible:ring-2 focus-visible:ring-brand-gold focus-visible:outline-none rounded-full group transition-opacity"
+            className="flex items-center space-x-2 sm:space-x-3 shrink-0 group cursor-pointer focus-visible:ring-2 focus-visible:ring-brand-gold focus-visible:outline-none rounded-full group transition-opacity"
             aria-label="Highlights Makeoverartistry Home"
           >
             <img 
               src="/logo.jpg" 
               alt="Highlights Logo" 
-              className="w-12 h-12 sm:w-13 sm:h-13 rounded-full object-cover shrink-0 border border-brand-gold/40 shadow-2xs group-hover:scale-105 transition-transform duration-300 block" 
+              className="w-10 h-10 sm:w-13 sm:h-13 rounded-full object-cover shrink-0 border border-brand-gold/40 shadow-2xs group-hover:scale-105 transition-transform duration-300 block" 
             />
             <div className="text-left hidden sm:flex flex-col justify-center">
               <span className="font-serif text-base sm:text-lg font-light tracking-[0.14em] text-brand-charcoal leading-tight">
@@ -97,16 +97,16 @@ export default function Header({
           </nav>
 
           {/* 3. Action CTAs Section */}
-          <div className="flex items-center space-x-2.5 sm:space-x-3 shrink-0">
+          <div className="flex items-center space-x-1.5 sm:space-x-3 shrink-0">
             {localBookingsCount > 0 && (
               <button
                 id="header-bookings-btn"
                 onClick={onBookingsClick}
-                className="relative flex items-center justify-center w-10 h-10 rounded-full border border-brand-rose/40 hover:border-brand-gold text-brand-gold hover:bg-brand-blush/30 transition-all duration-200 cursor-pointer focus-visible:ring-2 focus-visible:ring-brand-gold focus-visible:outline-none"
+                className="relative flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-brand-rose/40 hover:border-brand-gold text-brand-gold hover:bg-brand-blush/30 transition-all duration-200 cursor-pointer focus-visible:ring-2 focus-visible:ring-brand-gold focus-visible:outline-none"
                 title="View your active bookings"
                 aria-label="Active bookings"
               >
-                <Calendar className="w-4.5 h-4.5" />
+                <Calendar className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
                 <span className="absolute -top-1 -right-1 bg-brand-rose text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center animate-pulse">
                   {localBookingsCount}
                 </span>
@@ -116,20 +116,21 @@ export default function Header({
             <button
               id="reserve-now-nav-btn"
               onClick={onReserveClick}
-              className="flex items-center space-x-2 bg-brand-gold hover:bg-brand-gold-dark text-white px-4 sm:px-5 py-2.5 rounded-full text-xs font-semibold tracking-widest uppercase transition-all duration-300 shadow-2xs hover:shadow-md cursor-pointer hover:-translate-y-0.5 active:translate-y-0 shrink-0 focus-visible:ring-2 focus-visible:ring-brand-gold focus-visible:outline-none"
+              className="flex items-center space-x-1.5 sm:space-x-2 bg-brand-gold hover:bg-brand-gold-dark text-white px-3 sm:px-5 py-2 sm:py-2.5 rounded-full text-[11px] sm:text-xs font-semibold tracking-wider sm:tracking-widest uppercase transition-all duration-300 shadow-2xs hover:shadow-md cursor-pointer hover:-translate-y-0.5 active:translate-y-0 shrink-0 focus-visible:ring-2 focus-visible:ring-brand-gold focus-visible:outline-none"
             >
-              <Calendar className="w-4 h-4 shrink-0" />
-              <span className="whitespace-nowrap">Book Appointment</span>
+              <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+              <span className="whitespace-nowrap hidden xs:inline">Book Appointment</span>
+              <span className="whitespace-nowrap inline xs:hidden">Book</span>
             </button>
 
             {/* Mobile / Tablet Hamburger Toggle */}
             <button
               id="mobile-menu-toggle"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="xl:hidden text-brand-charcoal hover:text-brand-gold p-2 focus:outline-none cursor-pointer rounded-xl hover:bg-brand-blush/40 transition-colors flex items-center justify-center"
+              className="xl:hidden text-brand-charcoal hover:text-brand-gold p-1.5 sm:p-2 focus:outline-none cursor-pointer rounded-xl hover:bg-brand-blush/40 transition-colors flex items-center justify-center"
               aria-label="Toggle menu"
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {mobileMenuOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6" />}
             </button>
           </div>
 

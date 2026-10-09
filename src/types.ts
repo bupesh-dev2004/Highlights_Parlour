@@ -1,12 +1,46 @@
 export interface Service {
   id: string;
   name: string;
-  category: 'Haircut & Hairstyling' | 'Hair Color & Highlights' | 'Facial & Cleanup' | 'Hair Spa' | 'Bridal Makeup' | 'Party Makeup' | 'Manicure & Pedicure' | 'Waxing' | 'Threading' | 'Nail Art' | 'Skin Treatments' | 'Men’s Grooming';
+  category: 
+    | 'Threading' 
+    | 'Facials' 
+    | 'Pedicure & Manicure' 
+    | 'Hair Cut' 
+    | 'Hair Spa' 
+    | 'Waxing'
+    | 'Haircut & Hairstyling' 
+    | 'Hair Color & Highlights' 
+    | 'Facial & Cleanup' 
+    | 'Bridal Makeup' 
+    | 'Party Makeup' 
+    | 'Manicure & Pedicure' 
+    | 'Nail Art' 
+    | 'Skin Treatments' 
+    | 'Men’s Grooming';
   description: string;
   duration: string; // e.g., "60 mins"
   price: number; // in USD or INR
   image: string;
   features?: string[];
+}
+
+export interface SalonServiceItem {
+  id: string;
+  name: string;
+  price: number; // in INR (₹)
+  duration?: string;
+  description?: string;
+  popular?: boolean;
+}
+
+export interface SalonServiceCategory {
+  id: string;
+  name: 'Threading' | 'Facials' | 'Pedicure & Manicure' | 'Hair Cut' | 'Hair Spa' | 'Waxing';
+  tagline: string;
+  subtitle: string;
+  iconName: 'Sparkles' | 'Flower2' | 'HandMetal' | 'Scissors' | 'Waves' | 'Flame';
+  image: string;
+  services: SalonServiceItem[];
 }
 
 export interface PackageItem {

@@ -46,10 +46,10 @@ export default function Footer({ setCurrentPage }: FooterProps) {
   return (
     <footer id="app-footer" className="bg-brand-charcoal text-white pt-16 pb-12 border-t border-brand-charcoal">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-        
+
         {/* Main Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8">
-          
+
           {/* Column 1: Brand Info */}
           <div className="lg:col-span-4 space-y-4">
             <div className="flex items-center space-x-3">
@@ -71,44 +71,44 @@ export default function Footer({ setCurrentPage }: FooterProps) {
             {/* Social Media Links with Original Brand Icons */}
             <div className="flex items-center space-x-3 pt-2">
               {/* WhatsApp */}
-              <a 
-                href="https://wa.me/13105550199?text=Hello%20Highlights%20Makeoverartistry" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="w-9 h-9 rounded-full bg-white/10 hover:bg-emerald-600 flex items-center justify-center transition-all duration-300 text-white hover:scale-110 shadow-xs cursor-pointer" 
+              <a
+                href="https://wa.me/13105550199?text=Hello%20Highlights%20Makeoverartistry"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-9 h-9 rounded-full bg-white/10 hover:bg-emerald-600 flex items-center justify-center transition-all duration-300 text-white hover:scale-110 shadow-xs cursor-pointer"
                 aria-label="WhatsApp"
               >
                 <WhatsAppIcon className="w-4 h-4" />
               </a>
 
               {/* Instagram */}
-              <a 
-                href="https://instagram.com" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="w-9 h-9 rounded-full bg-white/10 hover:bg-gradient-to-tr hover:from-amber-500 hover:via-rose-500 hover:to-purple-600 flex items-center justify-center transition-all duration-300 text-white hover:scale-110 shadow-xs cursor-pointer" 
+              <a
+                href="https://instagram.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-9 h-9 rounded-full bg-white/10 hover:bg-gradient-to-tr hover:from-amber-500 hover:via-rose-500 hover:to-purple-600 flex items-center justify-center transition-all duration-300 text-white hover:scale-110 shadow-xs cursor-pointer"
                 aria-label="Instagram"
               >
                 <InstagramIcon className="w-4 h-4" />
               </a>
 
               {/* Facebook */}
-              <a 
-                href="https://facebook.com" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="w-9 h-9 rounded-full bg-white/10 hover:bg-[#1877F2] flex items-center justify-center transition-all duration-300 text-white hover:scale-110 shadow-xs cursor-pointer" 
+              <a
+                href="https://facebook.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-9 h-9 rounded-full bg-white/10 hover:bg-[#1877F2] flex items-center justify-center transition-all duration-300 text-white hover:scale-110 shadow-xs cursor-pointer"
                 aria-label="Facebook"
               >
                 <FacebookIcon className="w-4 h-4" />
               </a>
 
               {/* YouTube */}
-              <a 
-                href="https://youtube.com" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="w-9 h-9 rounded-full bg-white/10 hover:bg-[#FF0000] flex items-center justify-center transition-all duration-300 text-white hover:scale-110 shadow-xs cursor-pointer" 
+              <a
+                href="https://youtube.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-9 h-9 rounded-full bg-white/10 hover:bg-[#FF0000] flex items-center justify-center transition-all duration-300 text-white hover:scale-110 shadow-xs cursor-pointer"
                 aria-label="YouTube"
               >
                 <YoutubeIcon className="w-4 h-4" />

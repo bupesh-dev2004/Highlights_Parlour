@@ -25,9 +25,8 @@ export default function Membership() {
           {MEMBERSHIPS.map((plan) => (
             <div
               key={plan.tier}
-              className={`rounded-3xl p-8 border ${plan.color} shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between relative group ${
-                plan.popular ? 'ring-2 ring-brand-gold shadow-md' : ''
-              }`}
+              className={`rounded-3xl p-8 border ${plan.color} shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between relative group ${plan.popular ? 'ring-2 ring-brand-gold shadow-md' : ''
+                }`}
             >
               {plan.popular && (
                 <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-brand-gold text-white text-[10px] font-bold uppercase tracking-widest px-4 py-1 rounded-full shadow-xs">

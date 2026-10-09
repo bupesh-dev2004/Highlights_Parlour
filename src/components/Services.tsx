@@ -1,322 +1,707 @@
-import React from 'react';
-import { motion } from 'motion/react';
-import { Clock, CheckCircle2, Calendar, Sparkles, ArrowRight, Gift, ChevronUp, ChevronDown } from 'lucide-react';
-import { SERVICES, FAQS } from '../data';
-import { Service } from '../types';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import {
+  Sparkles,
+  Scissors,
+  Waves,
+  Flame,
+  Flower2,
+  HandMetal,
+  Phone,
+  Calendar,
+  ArrowRight,
+  ShieldCheck,
+  Star,
+  Info,
+  ChevronDown,
+  Sparkle,
+  Leaf
+} from 'lucide-react';
+import {
+  SALON_PRICE_CATEGORIES,
+  SALON_PHONE_NUMBER,
+  SALON_PHONE_TEL,
+  SALON_PRICE_DISCLAIMER,
+  FAQS
+} from '../data';
+import { SalonServiceCategory, SalonServiceItem, Service } from '../types';
 
 interface ServicesProps {
   onBookService: (service: Service) => void;
+  onReserveClick?: () => void;
+  setCurrentPage?: (page: string) => void;
 }
 
-export default function Services({ onBookService }: ServicesProps) {
-  const [openFaq, setOpenFaq] = React.useState<string | null>(null);
+// Icon mapping for categories
+const CATEGORY_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+  Sparkles,
+  Flower2,
+  HandMetal,
+  Scissors,
+  Waves,
+  Flame,
+};
+
+export default function Services({ onBookService, onReserveClick, setCurrentPage }: ServicesProps) {
+  const [activeCategoryTab, setActiveCategoryTab] = useState<string>('all');
+  const [openFaq, setOpenFaq] = useState<string | null>(null);
 
   const toggleFaq = (id: string) => {
     setOpenFaq(prev => (prev === id ? null : id));
   };
 
-  const comboDeals = [
-    {
-      title: 'Aura Radiance Duet',
-      subtitle: 'The Ultimate Glow & Hair Lift',
-      price: 220,
-      value: 265,
-      duration: '135 mins',
-      includes: [
-        'Radiance Glow Gold Facial (75m)',
-        'Signature Cut & Blow Dry (60m)',
-        'Complimentary Organic Honey Mask upgrade',
-      ],
-      description: 'Our signature glow facial combined with couture hair restoration cut. The perfect pre-gala preparation.',
-      badge: 'Most Popular'
-    },
-    {
-      title: 'Therapeutic Zen Harmony',
-      subtitle: 'Full Body Deep Release',
-      price: 240,
-      value: 285,
-      duration: '150 mins',
-      includes: [
-        'Deep Tissue Zen Massage (75m)',
-        'Aura Signature Pedicure (60m)',
-        'Complimentary Warm Lavender Scrub & Oil Pack',
-      ],
-      description: 'Melt deep physical exhaustion with full body aromatherapy manipulation followed by our signature milk-and-sugarcane pedicure.',
-      badge: 'Best Value'
-    },
-  ];
-
-  const handleComboBook = (combo: typeof comboDeals[0]) => {
-    const virtualService: Service = {
-      id: `combo-${combo.title.toLowerCase().replace(/\s+/g, '-')}`,
-      name: `[COMBO] ${combo.title} (${combo.subtitle})`,
-      category: 'Hair Spa',
-      description: combo.description,
-      duration: combo.duration,
-      price: combo.price,
-      image: 'https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=600&q=80'
+  // Convert SalonServiceItem to full Service format for booking flow when user books
+  const handleSelectService = (item: SalonServiceItem, category: SalonServiceCategory) => {
+    const fullService: Service = {
+      id: `salon-${item.id}`,
+      name: item.name,
+      category: category.name as Service['category'],
+      description: item.description || `${item.name} treatment under ${category.name}.`,
+      duration: item.duration || '30 mins',
+      price: item.price,
+      image: category.image,
+      features: [
+        `Category: ${category.name}`,
+        'Sterilized equipment & organic skin-friendly formulations',
+        'Certified beauty artisan care'
+      ]
     };
-    onBookService(virtualService);
+
+    onBookService(fullService);
+  };
+
+  // Filtered categories
+  const displayedCategories = activeCategoryTab === 'all'
+    ? SALON_PRICE_CATEGORIES
+    : SALON_PRICE_CATEGORIES.filter(c => c.id === activeCategoryTab);
+
+  const scrollToMenu = () => {
+    const el = document.getElementById('warm-editorial-menu');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   return (
-    <div className="w-full min-h-screen bg-brand-cream pb-24 overflow-x-hidden">
-      
-      {/* 1. SERVICES HERO / INTRO */}
-      <section className="w-full pt-10 pb-12 px-4 sm:px-6 lg:px-12 text-center">
-        <div className="max-w-4xl mx-auto space-y-4">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-blush/60 border border-brand-gold/30">
-            <Sparkles className="w-3.5 h-3.5 text-brand-gold" />
-            <span className="text-brand-gold-dark font-sans font-semibold text-xs tracking-[0.25em] uppercase">
-              Artisan Beauty Menu
-            </span>
-          </div>
+    <div className="w-full min-h-screen bg-[#FDFBF7] text-[#2A2421] selection:bg-[#E29578] selection:text-white overflow-x-hidden">
 
-          <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl text-brand-charcoal font-light leading-tight tracking-tight">
-            Services Tailored to Your Radiance
-          </h1>
+      {/* ========================================================================= */}
+      {/* 1. WELCOMING HERO AREA (WARM IVORY / CORAL / ASYMMETRICAL ORGANIC IMAGE)   */}
+      {/* ========================================================================= */}
+      <section className="relative w-full pt-8 pb-12 sm:pt-16 sm:pb-20 lg:pt-20 lg:pb-24 px-4 sm:px-6 lg:px-12 bg-gradient-to-b from-[#FAF4ED] via-[#FDFBF7] to-[#FDFBF7] overflow-hidden border-b border-[#E8DACB]/60">
 
-          <p className="text-stone-600 font-sans font-normal max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
-            Explore our complete collection of biological facials, couture hair coloring, bridal packages, and hand-crafted spa rituals designed exclusively for you.
-          </p>
+        {/* Subtle warm watercolor blurs */}
+        <div className="absolute -top-24 left-1/4 w-72 sm:w-96 h-72 sm:h-96 bg-[#F5DBCB]/30 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-1/2 right-0 w-80 sm:w-[450px] h-80 sm:h-[450px] bg-[#E5EBE3]/45 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="flex items-center justify-center gap-3 pt-2">
-            <span className="h-px w-12 bg-brand-gold/40" />
-            <span className="w-2 h-2 rotate-45 border border-brand-gold/60 bg-brand-gold/20" />
-            <span className="h-px w-12 bg-brand-gold/40" />
-          </div>
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 lg:gap-16 items-center">
+
+          {/* Left Column: Heading, Welcoming Narrative & CTAs */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7 }}
+            className="lg:col-span-7 space-y-4 sm:space-y-6 text-center lg:text-left"
+          >
+            {/* Delicate Tag */}
+            <div className="inline-flex items-center gap-2 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-[#FAF0ED] border border-[#E8BAB0]/70 text-[#C96850]">
+              <Sparkle className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#C96850] shrink-0" />
+              <span className="font-sans font-semibold text-[10px] sm:text-[11px] uppercase tracking-[0.2em] sm:tracking-[0.22em]">
+                Highlights Makeoverartistry • Salon Menu
+              </span>
+            </div>
+
+            {/* Editorial Heading */}
+            <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl text-[#2A2421] font-light leading-[1.18] sm:leading-[1.15] tracking-tight">
+              A Gentle Sanctuary for <br className="hidden sm:inline" />
+              <span className="italic font-normal text-[#C96850]">
+                Everyday Radiance
+              </span>
+            </h1>
+
+            {/* Welcoming Introduction */}
+            <p className="text-[#6B5E55] font-sans font-light text-xs sm:text-base lg:text-lg leading-relaxed max-w-xl mx-auto lg:mx-0">
+              Welcome to our bespoke salon service menu. From artisan threading and clarifying organic facials to precision shears, restorative hair spas, and delicate waxing—explore treatments crafted to nurture your glow with gentle touch and transparent rates.
+            </p>
+
+            {/* Action Buttons */}
+            <div className="pt-2 flex flex-col xs:flex-row items-center justify-center lg:justify-start gap-3 sm:gap-4 w-full">
+              <button
+                id="hero-explore-menu-btn"
+                onClick={scrollToMenu}
+                className="w-full xs:w-auto px-6 sm:px-7 py-3 sm:py-3.5 rounded-full bg-[#C96850] hover:bg-[#B3563F] text-white font-sans font-semibold text-xs sm:text-sm tracking-wider uppercase transition-all duration-300 shadow-[0_6px_20px_rgba(201,104,80,0.25)] hover:shadow-[0_8px_25px_rgba(201,104,80,0.35)] cursor-pointer flex items-center justify-center gap-2 group hover:-translate-y-0.5 active:translate-y-0"
+              >
+                <span>Explore Services</span>
+                <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" />
+              </button>
+
+              <a
+                id="hero-call-now-btn"
+                href={SALON_PHONE_TEL}
+                className="w-full xs:w-auto px-6 py-3 sm:py-3.5 rounded-full bg-white hover:bg-[#FAF4ED] text-[#2A2421] border border-[#D5C2B1] font-sans font-semibold text-xs sm:text-sm tracking-wider uppercase transition-all duration-300 shadow-2xs hover:shadow-xs cursor-pointer flex items-center justify-center gap-2"
+                aria-label={`Call salon directly at ${SALON_PHONE_NUMBER}`}
+              >
+                <Phone className="w-3.5 h-3.5 text-[#6B8E76] shrink-0" />
+                <span>Call {SALON_PHONE_NUMBER}</span>
+              </a>
+            </div>
+
+            {/* Delicate Botanical Pillars */}
+            <div className="pt-2 sm:pt-4 flex flex-wrap items-center justify-center lg:justify-start gap-3 sm:gap-5 text-[11px] sm:text-xs text-[#7A6D63] font-sans">
+              <span className="flex items-center gap-1.5">
+                <Leaf className="w-3.5 h-3.5 text-[#6B8E76] shrink-0" />
+                <span>Sanitized Single-Use Linen</span>
+              </span>
+              <span className="text-[#D5C2B1]">•</span>
+              <span className="flex items-center gap-1.5">
+                <Star className="w-3.5 h-3.5 text-[#C96850] shrink-0" />
+                <span>Certified Makeover Artisans</span>
+              </span>
+              <span className="text-[#D5C2B1] hidden sm:inline">•</span>
+              <span className="flex items-center gap-1.5">
+                <ShieldCheck className="w-3.5 h-3.5 text-[#6B8E76] shrink-0" />
+                <span>Transparent Rupee Tariffs</span>
+              </span>
+            </div>
+
+          </motion.div>
+
+          {/* Right Column: Salon Image in an Asymmetrical/Organic Rounded Frame */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="lg:col-span-5 relative flex justify-center items-center w-full px-2 sm:px-0"
+          >
+            {/* Background offset organic backdrop */}
+            <div className="absolute -inset-2 sm:-inset-3 bg-gradient-to-tr from-[#F5DBCB] to-[#E5EBE3] rounded-[2rem] sm:rounded-[3rem] rotate-2 -z-10 opacity-70" />
+            <div className="absolute -inset-1 border border-[#D5C2B1]/60 rounded-[1.9rem] sm:rounded-[2.8rem] -rotate-1 -z-10" />
+
+            {/* Featured Salon Photo in responsive soft silhouette */}
+            <div className="relative w-full max-w-[340px] sm:max-w-[420px] aspect-[4/5] sm:aspect-auto sm:h-[420px] rounded-[1.8rem] sm:rounded-[2.6rem] overflow-hidden shadow-[0_15px_35px_rgba(74,58,49,0.08)] border-2 border-white">
+              <img
+                src="/step-out-confident.png"
+                alt="Highlights Makeoverartistry Salon Experience"
+                className="w-full h-full object-cover object-top hover:scale-105 transition-transform duration-700"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#2A2421]/50 via-transparent to-transparent pointer-events-none" />
+
+              {/* Floating Badge */}
+              <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4 bg-white/95 backdrop-blur-md px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-2xl border border-[#E8DACB] shadow-sm flex items-center justify-between">
+                <div>
+                  <span className="font-serif text-xs sm:text-sm font-semibold text-[#2A2421] block">Highlights Artistry</span>
+                  <span className="text-[10px] sm:text-[11px] text-[#7A6D63] font-sans">Crafted with care in our tranquil studio</span>
+                </div>
+                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#FAF0ED] flex items-center justify-center text-[#C96850] shrink-0">
+                  <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
         </div>
       </section>
 
-      {/* 2. FULL-WIDTH STACKING SERVICE CARDS */}
-      <section className="w-full px-4 sm:px-6 lg:px-12 py-6">
-        <div className="w-full max-w-[1500px] mx-auto space-y-12">
-          {SERVICES.map((service, index) => {
-            // Sticky top position with slight cascade offset so cards stack gracefully
-            const topOffset = 96 + Math.min(index * 12, 60);
+      {/* ========================================================================= */}
+      {/* 2. SLIM DECORATIVE BANNER / SEPARATOR                                     */}
+      {/* ========================================================================= */}
+      <div className="w-full bg-[#F3ECE3] border-y border-[#E5DACD] py-3 px-3 sm:px-4 overflow-hidden">
+        <div className="max-w-7xl mx-auto flex items-center justify-center text-[10px] sm:text-xs text-[#6B5E55] font-sans tracking-wider sm:tracking-widest uppercase">
+          <div className="flex items-center justify-center gap-3 sm:gap-8 flex-wrap text-center">
+            <span className="flex items-center gap-1.5 whitespace-nowrap">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#C96850]" />
+              <span>Threading</span>
+            </span>
+            <span className="flex items-center gap-1.5 whitespace-nowrap">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#6B8E76]" />
+              <span>Facials</span>
+            </span>
+            <span className="flex items-center gap-1.5 whitespace-nowrap">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#C96850]" />
+              <span>Pedicure &amp; Manicure</span>
+            </span>
+            <span className="flex items-center gap-1.5 whitespace-nowrap">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#6B8E76]" />
+              <span>Hair Cut</span>
+            </span>
+            <span className="flex items-center gap-1.5 whitespace-nowrap">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#C96850]" />
+              <span>Hair Spa</span>
+            </span>
+            <span className="flex items-center gap-1.5 whitespace-nowrap">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#6B8E76]" />
+              <span>Waxing</span>
+            </span>
+          </div>
+        </div>
+      </div>
 
-            return (
-              <div
-                key={service.id}
-                className="sticky transition-all duration-300 w-full"
-                style={{
-                  top: `${topOffset}px`,
-                  zIndex: 10 + index,
-                }}
+      {/* ========================================================================= */}
+      {/* 3. WARM EDITORIAL SERVICE MENU WITH DISTINCT CATEGORY TREATMENTS          */}
+      {/* ========================================================================= */}
+      <section
+        id="warm-editorial-menu"
+        className="w-full max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 py-12 sm:py-20 lg:py-24 space-y-10 sm:space-y-16"
+      >
+
+        {/* Section Header & Category Filter Buttons */}
+        <div className="space-y-4 sm:space-y-6">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6 pb-4 sm:pb-6 border-b border-[#E8DACB]">
+            <div className="space-y-1 text-center md:text-left">
+              <span className="text-[#C96850] font-sans font-semibold text-xs tracking-[0.25em] uppercase block">
+                ✦ Tariff &amp; Menu ✦
+              </span>
+              <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl text-[#2A2421] font-light">
+                Complete Salon Services &amp; Price List
+              </h2>
+              <p className="text-[#6B5E55] font-sans text-xs sm:text-sm font-light max-w-xl mx-auto md:mx-0">
+                Browse our complete rate card below. Every service is priced transparently in Indian Rupees (₹).
+              </p>
+            </div>
+
+            {/* Category Quick Pills */}
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1.5 pt-1 scrollbar-none w-full md:w-auto -mx-3.5 px-3.5 md:mx-0 md:px-0">
+              <button
+                id="filter-all-services"
+                onClick={() => setActiveCategoryTab('all')}
+                className={`px-3.5 sm:px-4 py-2 rounded-full text-[11px] sm:text-xs font-semibold tracking-wider uppercase whitespace-nowrap transition-all duration-200 cursor-pointer shrink-0 ${activeCategoryTab === 'all'
+                    ? 'bg-[#2A2421] text-white shadow-xs'
+                    : 'bg-[#F2ECE4] text-[#6B5E55] hover:bg-[#EBE2D8]'
+                  }`}
               >
-                <div className="w-[96%] sm:w-[92%] lg:w-[88%] mx-auto bg-white rounded-3xl sm:rounded-4xl border border-brand-gold/35 shadow-[0_20px_50px_rgba(42,36,33,0.10)] hover:shadow-[0_25px_60px_rgba(197,160,89,0.20)] transition-all duration-500 overflow-hidden backdrop-blur-md">
-                  
-                  <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[440px]">
-                    
-                    {/* LEFT COLUMN: Service Info & Details (7 cols on lg) */}
-                    <div className="lg:col-span-7 p-6 sm:p-10 lg:p-12 flex flex-col justify-between space-y-6 bg-gradient-to-br from-white via-brand-cream/30 to-brand-blush/20">
-                      <div className="space-y-4">
-                        
-                        {/* Category & Badge */}
-                        <div className="flex flex-wrap items-center gap-3">
-                          <span className="px-3.5 py-1 rounded-full text-[11px] font-sans font-bold tracking-widest uppercase bg-brand-blush text-brand-gold-dark border border-brand-gold/30 shadow-2xs">
-                            {service.category}
+                All (6 Categories)
+              </button>
+              {SALON_PRICE_CATEGORIES.map((cat) => (
+                <button
+                  key={cat.id}
+                  id={`filter-pill-${cat.id}`}
+                  onClick={() => setActiveCategoryTab(cat.id)}
+                  className={`px-3 sm:px-3.5 py-2 rounded-full text-[11px] sm:text-xs font-medium tracking-wider uppercase whitespace-nowrap transition-all duration-200 cursor-pointer shrink-0 ${activeCategoryTab === cat.id
+                      ? 'bg-[#C96850] text-white shadow-xs'
+                      : 'bg-[#F2ECE4] text-[#6B5E55] hover:bg-[#EBE2D8]'
+                    }`}
+                >
+                  {cat.name}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Categories Presentation - Varied Editorial Layouts (Fully responsive 1-col on mobile) */}
+        <div className="space-y-12 sm:space-y-16 lg:space-y-20">
+          {displayedCategories.map((cat, idx) => {
+            const Icon = CATEGORY_ICONS[cat.iconName] || Sparkles;
+
+            // VARIATION 1: THREADING & WAXING (Clean Responsive Menu with Delicate Borders)
+            if (cat.id === 'threading' || cat.id === 'waxing') {
+              return (
+                <div
+                  key={cat.id}
+                  id={`section-${cat.id}`}
+                  className="bg-white rounded-2xl sm:rounded-4xl p-4 sm:p-8 lg:p-10 border border-[#E8DACB] shadow-[0_8px_25px_rgba(100,80,70,0.04)] space-y-4 sm:space-y-6"
+                >
+                  {/* Category Title Header */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 sm:pb-5 border-b border-[#F0E6DC] gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-[#FAF0ED] text-[#C96850] flex items-center justify-center border border-[#E8BAB0]/50 shrink-0">
+                        <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
+                      </div>
+                      <div>
+                        <h3 className="font-serif text-xl sm:text-2xl lg:text-3xl text-[#2A2421] font-normal leading-tight">
+                          {cat.name}
+                        </h3>
+                        <p className="text-[11px] sm:text-xs text-[#7A6D63] font-sans font-light mt-0.5">
+                          {cat.subtitle}
+                        </p>
+                      </div>
+                    </div>
+
+                    <span className="text-[10px] sm:text-[11px] font-sans uppercase tracking-wider sm:tracking-widest text-[#6B8E76] font-semibold bg-[#EAF0EB] px-3 py-1 rounded-full border border-[#D0DFD3] self-start sm:self-auto">
+                      {cat.services.length} Items Available
+                    </span>
+                  </div>
+
+                  {/* 1-Col on mobile, 2-Col on md+ screens */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-2 sm:gap-y-3 pt-1">
+                    {cat.services.map((item) => (
+                      <div
+                        key={item.id}
+                        onClick={() => handleSelectService(item, cat)}
+                        className="py-2.5 sm:py-3 px-3 -mx-1 sm:-mx-2 rounded-xl sm:rounded-2xl hover:bg-[#FAF6F2] transition-colors flex items-center justify-between gap-3 sm:gap-4 group cursor-pointer"
+                        title="Click to schedule this treatment"
+                      >
+                        <div className="space-y-0.5 flex-1 min-w-0 pr-2">
+                          <span className="font-serif text-sm sm:text-base lg:text-lg text-[#2A2421] group-hover:text-[#C96850] transition-colors font-medium block leading-snug">
+                            {item.name}
                           </span>
-                          <span className="text-teal-700 text-xs font-medium flex items-center gap-1.5 bg-teal-50/80 px-2.5 py-0.5 rounded-full border border-teal-200/50">
-                            <span className="w-1.5 h-1.5 rounded-full bg-teal-600 animate-pulse" />
-                            Highlights Signature
-                          </span>
+                          {item.description && (
+                            <p className="text-[11px] sm:text-xs text-[#7A6D63] font-sans font-light line-clamp-1">
+                              {item.description}
+                            </p>
+                          )}
                         </div>
 
-                        {/* Title */}
-                        <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl text-brand-charcoal font-normal leading-snug">
-                          {service.name}
-                        </h2>
+                        {/* Price formatted in Indian Rupees (₹) */}
+                        <div className="text-right shrink-0">
+                          <span className="font-serif text-base sm:text-lg font-bold text-[#2A2421] group-hover:text-[#C96850] transition-colors whitespace-nowrap">
+                            ₹{item.price}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
 
-                        {/* Description */}
-                        <p className="text-stone-600 font-sans text-sm sm:text-base font-light leading-relaxed max-w-2xl">
-                          {service.description}
+                  <div className="pt-2 text-[10px] sm:text-[11px] text-[#8C7D73] font-sans flex flex-col xs:flex-row items-start xs:items-center justify-between border-t border-[#F0E6DC]/80 gap-1">
+                    <span>Precision cotton thread &amp; gentle hygienic waxing care</span>
+                    <span className="text-[#6B8E76] font-medium">Click any item to select for reservation</span>
+                  </div>
+                </div>
+              );
+            }
+
+            // VARIATION 2: FACIALS (Responsive 1-Col on Mobile, 2-Col on sm, 3-Col on lg)
+            if (cat.id === 'facials') {
+              return (
+                <div
+                  key={cat.id}
+                  id={`section-${cat.id}`}
+                  className="bg-gradient-to-br from-[#FCFBF8] to-[#F8F5EE] rounded-2xl sm:rounded-4xl p-4 sm:p-8 lg:p-10 border border-[#DFD3C4] shadow-[0_10px_30px_rgba(100,80,70,0.05)] space-y-4 sm:space-y-6"
+                >
+                  {/* Category Title Header */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 sm:pb-5 border-b border-[#E8DEC0]/80 gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-[#EAF0EB] text-[#4E755A] flex items-center justify-center border border-[#CFDFD2] shrink-0">
+                        <Flower2 className="w-4 h-4 sm:w-5 sm:h-5" />
+                      </div>
+                      <div>
+                        <h3 className="font-serif text-xl sm:text-2xl lg:text-3xl text-[#2A2421] font-normal leading-tight">
+                          {cat.name}
+                        </h3>
+                        <p className="text-[11px] sm:text-xs text-[#7A6D63] font-sans font-light mt-0.5">
+                          {cat.subtitle}
                         </p>
+                      </div>
+                    </div>
 
-                        {/* Key Features Pill List */}
-                        {service.features && service.features.length > 0 && (
-                          <div className="pt-3">
-                            <span className="text-[11px] uppercase tracking-wider text-brand-charcoal/60 font-semibold block mb-2.5">
-                              Included Amenities & Treatment Highlights:
+                    <span className="text-[10px] sm:text-[11px] font-sans uppercase tracking-wider sm:tracking-widest text-[#C96850] font-semibold bg-[#FAF0ED] px-3.5 py-1 rounded-full border border-[#E8BAB0] self-start sm:self-auto">
+                      11 Glow Formulations
+                    </span>
+                  </div>
+
+                  {/* Responsive Facial Cards: 1 col on mobile, 2 on tablet, 3 on desktop */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4 pt-1">
+                    {cat.services.map((item) => (
+                      <div
+                        key={item.id}
+                        onClick={() => handleSelectService(item, cat)}
+                        className="bg-white rounded-2xl p-4 sm:p-5 border border-[#EAE0D4] hover:border-[#C96850]/60 hover:shadow-sm transition-all duration-300 flex flex-col justify-between space-y-2.5 sm:space-y-3 group cursor-pointer"
+                      >
+                        <div className="space-y-1">
+                          <div className="flex items-start justify-between gap-2">
+                            <h4 className="font-serif text-base sm:text-lg text-[#2A2421] group-hover:text-[#C96850] transition-colors font-medium leading-snug">
+                              {item.name}
+                            </h4>
+                            <span className="font-serif text-base sm:text-lg font-bold text-[#C96850] shrink-0 whitespace-nowrap">
+                              ₹{item.price}
                             </span>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                              {service.features.map((feat, idx) => (
-                                <div key={idx} className="flex items-center space-x-2 text-xs sm:text-sm text-stone-700 bg-white/70 backdrop-blur-xs px-3 py-2 rounded-xl border border-brand-blush-dark/40">
-                                  <CheckCircle2 className="w-4 h-4 text-brand-gold shrink-0" />
-                                  <span className="font-sans font-medium">{feat}</span>
-                                </div>
-                              ))}
-                            </div>
                           </div>
+                          {item.description && (
+                            <p className="text-xs text-[#6B5E55] font-sans font-light leading-relaxed line-clamp-2">
+                              {item.description}
+                            </p>
+                          )}
+                        </div>
+
+                        <div className="pt-2 border-t border-[#F5EFE8] flex items-center justify-between text-[11px] text-[#7A6D63]">
+                          <span>Active glow therapy</span>
+                          <span className="text-[#C96850] font-medium opacity-80 group-hover:opacity-100 flex items-center gap-0.5">
+                            Select <span>→</span>
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="pt-2 text-[10px] sm:text-[11px] text-[#8C7D73] font-sans flex flex-col xs:flex-row items-start xs:items-center justify-between border-t border-[#E8DEC0]/80 gap-1">
+                    <span>Formulated with herbal botanicals, diamond dust &amp; O3+ concentrates</span>
+                    <span className="text-[#4E755A] font-medium">Suitable for all skin tones</span>
+                  </div>
+                </div>
+              );
+            }
+
+            // VARIATION 3: HAIR CUT & HAIR SPA (Editorial Split Cards with Clean Rows)
+            if (cat.id === 'hair-cut' || cat.id === 'hair-spa') {
+              return (
+                <div
+                  key={cat.id}
+                  id={`section-${cat.id}`}
+                  className="bg-white rounded-2xl sm:rounded-4xl p-4 sm:p-8 lg:p-10 border border-[#E8DACB] shadow-[0_8px_25px_rgba(100,80,70,0.04)] space-y-4 sm:space-y-6"
+                >
+                  {/* Category Title Header */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 sm:pb-5 border-b border-[#F0E6DC] gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-[#F6F0EA] text-[#6B5E55] flex items-center justify-center border border-[#E0D4C6] shrink-0">
+                        <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
+                      </div>
+                      <div>
+                        <h3 className="font-serif text-xl sm:text-2xl lg:text-3xl text-[#2A2421] font-normal leading-tight">
+                          {cat.name}
+                        </h3>
+                        <p className="text-[11px] sm:text-xs text-[#7A6D63] font-sans font-light mt-0.5">
+                          {cat.subtitle}
+                        </p>
+                      </div>
+                    </div>
+
+                    <span className="text-[10px] sm:text-[11px] font-sans uppercase tracking-wider sm:tracking-widest text-[#7A6D63] font-semibold bg-[#F4EDE5] px-3 py-1 rounded-full border border-[#E5DACD] self-start sm:self-auto">
+                      {cat.tagline}
+                    </span>
+                  </div>
+
+                  {/* Clean List Items with generous whitespace */}
+                  <div className="divide-y divide-[#F2E8DC]/80">
+                    {cat.services.map((item) => (
+                      <div
+                        key={item.id}
+                        onClick={() => handleSelectService(item, cat)}
+                        className="py-3 sm:py-4 px-2 sm:px-3 -mx-1 sm:-mx-2 rounded-xl sm:rounded-2xl hover:bg-[#FAF6F2] transition-colors flex items-center justify-between gap-3 sm:gap-6 group cursor-pointer"
+                      >
+                        <div className="space-y-0.5 flex-1 min-w-0 pr-2">
+                          <span className="font-serif text-sm sm:text-base lg:text-lg text-[#2A2421] group-hover:text-[#C96850] transition-colors font-medium block leading-snug">
+                            {item.name}
+                          </span>
+                          {item.description && (
+                            <p className="text-[11px] sm:text-xs text-[#7A6D63] font-sans font-light leading-relaxed line-clamp-2 sm:line-clamp-none">
+                              {item.description}
+                            </p>
+                          )}
+                        </div>
+
+                        <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+                          <span className="font-serif text-base sm:text-lg lg:text-xl font-bold text-[#2A2421] group-hover:text-[#C96850] transition-colors whitespace-nowrap">
+                            ₹{item.price}
+                          </span>
+                          <span className="text-xs text-[#C96850] font-medium hidden sm:inline">
+                            Select
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="pt-2 text-[10px] sm:text-[11px] text-[#8C7D73] font-sans flex flex-col xs:flex-row items-start xs:items-center justify-between border-t border-[#F0E6DC]/80 gap-1">
+                    <span>Includes customized hair wash consultation &amp; blow-dry finish</span>
+                    <span className="text-[#6B8E76] font-medium">Professional L'Oréal &amp; Schwarzkopf products</span>
+                  </div>
+                </div>
+              );
+            }
+
+            // VARIATION 4: PEDICURE & MANICURE (Soft Sage Accent Panel - 1 col mobile, 2 col md+)
+            return (
+              <div
+                key={cat.id}
+                id={`section-${cat.id}`}
+                className="bg-[#F7F9F6] rounded-2xl sm:rounded-4xl p-4 sm:p-8 lg:p-10 border border-[#D5E0D7] shadow-[0_8px_25px_rgba(80,100,85,0.04)] space-y-4 sm:space-y-6"
+              >
+                {/* Category Title Header */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 sm:pb-5 border-b border-[#DDE7DF] gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-[#E5EFE7] text-[#4E755A] flex items-center justify-center border border-[#CCDDCF] shrink-0">
+                      <HandMetal className="w-4 h-4 sm:w-5 sm:h-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-serif text-xl sm:text-2xl lg:text-3xl text-[#2A2421] font-normal leading-tight">
+                        {cat.name}
+                      </h3>
+                      <p className="text-[11px] sm:text-xs text-[#6B7E70] font-sans font-light mt-0.5">
+                        {cat.subtitle}
+                      </p>
+                    </div>
+                  </div>
+
+                  <span className="text-[10px] sm:text-[11px] font-sans uppercase tracking-wider sm:tracking-widest text-[#4E755A] font-semibold bg-[#E5EFE7] px-3 py-1 rounded-full border border-[#CCDDCF] self-start sm:self-auto">
+                    Restorative Care
+                  </span>
+                </div>
+
+                {/* 1-Col on mobile, 2-Col on md+ screens */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 pt-1">
+                  {cat.services.map((item) => (
+                    <div
+                      key={item.id}
+                      onClick={() => handleSelectService(item, cat)}
+                      className="bg-white rounded-2xl p-4 sm:p-6 border border-[#D8E4DA] hover:border-[#4E755A] transition-all flex flex-col justify-between space-y-3 sm:space-y-4 group cursor-pointer shadow-2xs"
+                    >
+                      <div className="space-y-1 sm:space-y-1.5">
+                        <div className="flex items-start justify-between gap-3">
+                          <h4 className="font-serif text-base sm:text-lg lg:text-xl text-[#2A2421] group-hover:text-[#4E755A] transition-colors font-medium leading-snug">
+                            {item.name}
+                          </h4>
+                          <span className="font-serif text-base sm:text-lg lg:text-xl font-bold text-[#4E755A] whitespace-nowrap">
+                            ₹{item.price}
+                          </span>
+                        </div>
+                        {item.description && (
+                          <p className="text-xs text-[#6B5E55] font-sans font-light leading-relaxed">
+                            {item.description}
+                          </p>
                         )}
                       </div>
 
-                      {/* Bottom Info bar */}
-                      <div className="pt-4 border-t border-brand-blush flex items-center justify-between text-xs text-stone-500 font-sans">
-                        <span>Complimentary organic consultation included</span>
-                        <span className="hidden sm:inline-block text-brand-gold-dark font-medium">Verified Salon Quality</span>
+                      <div className="pt-2 sm:pt-3 border-t border-[#F0F5F1] flex items-center justify-between text-[11px] text-[#6B7E70]">
+                        <span>Botanical salt soak &amp; massage</span>
+                        <span className="text-[#4E755A] font-medium flex items-center gap-1">
+                          Select for booking →
+                        </span>
                       </div>
                     </div>
+                  ))}
+                </div>
 
-                    {/* RIGHT COLUMN: Large Prominent Image & Action Bar (5 cols on lg) */}
-                    <div className="lg:col-span-5 relative flex flex-col justify-between p-6 sm:p-8 bg-brand-cream/50 border-t lg:border-t-0 lg:border-l border-brand-blush-dark/40">
-                      
-                      {/* Service Image */}
-                      <div className="relative w-full h-64 sm:h-72 lg:h-80 rounded-2xl sm:rounded-3xl overflow-hidden shadow-inner group">
-                        <img
-                          src={service.image}
-                          alt={service.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                          loading="lazy"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-brand-charcoal/60 via-transparent to-black/10 pointer-events-none" />
-
-                        {/* Floating Price Pill */}
-                        <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-md px-4 py-1.5 rounded-full border border-brand-gold/40 shadow-lg flex items-center space-x-1.5">
-                          <span className="text-xs text-stone-500 font-sans">From</span>
-                          <span className="text-lg font-serif font-bold text-brand-charcoal">${service.price}</span>
-                        </div>
-
-                        {/* Duration Pill */}
-                        <div className="absolute bottom-4 left-4 bg-brand-charcoal/85 backdrop-blur-xs text-white text-xs px-3.5 py-1.5 rounded-full flex items-center space-x-1.5 border border-white/10 shadow-md">
-                          <Clock className="w-3.5 h-3.5 text-brand-gold" />
-                          <span className="font-sans">{service.duration}</span>
-                        </div>
-                      </div>
-
-                      {/* Booking Action Button */}
-                      <div className="pt-6">
-                        <button
-                          id={`book-service-${service.id}`}
-                          onClick={() => onBookService(service)}
-                          className="w-full py-4 px-6 rounded-full bg-gradient-to-r from-brand-gold via-[#D8B467] to-brand-gold-dark hover:from-brand-gold-dark hover:to-brand-gold text-white font-sans font-semibold text-xs sm:text-sm uppercase tracking-widest shadow-[0_10px_25px_rgba(197,160,89,0.4)] hover:shadow-[0_15px_30px_rgba(197,160,89,0.55)] transition-all duration-300 cursor-pointer flex items-center justify-center gap-2 group transform active:scale-[0.99]"
-                        >
-                          <Calendar className="w-4 h-4 text-white transition-transform group-hover:rotate-12" />
-                          <span>Book This Service</span>
-                          <ArrowRight className="w-4 h-4 ml-1 opacity-80 group-hover:translate-x-1 transition-transform" />
-                        </button>
-                      </div>
-
-                    </div>
-
-                  </div>
+                <div className="pt-2 text-[10px] sm:text-[11px] text-[#6B7E70] font-sans flex flex-col xs:flex-row items-start xs:items-center justify-between border-t border-[#DDE7DF] gap-1">
+                  <span>Hygienic foot tubs, sterile clippers &amp; nourishing foot scrub</span>
+                  <span className="font-medium text-[#4E755A]">Instant nail relief</span>
                 </div>
               </div>
             );
           })}
         </div>
-      </section>
 
-      {/* 3. BESPOKE COMBOS & LUXURY PACKAGES */}
-      <section className="w-full px-4 sm:px-6 lg:px-12 pt-24">
-        <div className="w-[96%] sm:w-[92%] lg:w-[88%] mx-auto bg-brand-blush/40 rounded-4xl p-8 sm:p-12 lg:p-16 border border-brand-gold/30 shadow-sm space-y-12">
-          
-          <div className="text-center space-y-3 max-w-2xl mx-auto">
-            <span className="text-brand-gold-dark font-sans font-semibold text-xs tracking-widest uppercase block">
-              ✦ Tailored Packages ✦
-            </span>
-            <h2 className="font-serif text-3xl sm:text-4xl text-brand-charcoal font-light">
-              Bespoke Combos & Luxury Packages
+        {/* ========================================================================= */}
+        {/* 4. PRICE DISCLAIMER NOTICE                                                */}
+        {/* ========================================================================= */}
+        <div
+          id="warm-price-disclaimer"
+          className="bg-[#FAF4ED] border border-[#E5DACD] rounded-2xl p-4 sm:p-5 max-w-3xl mx-auto flex items-center justify-center gap-3 text-center sm:text-left shadow-2xs"
+        >
+          <div className="w-8 h-8 rounded-full bg-white border border-[#E0D2C2] flex items-center justify-center text-[#C96850] shrink-0">
+            <Info className="w-4 h-4" />
+          </div>
+          <div className="text-xs sm:text-sm font-sans text-[#5E5249]">
+            <span className="font-semibold text-[#C96850] uppercase tracking-wider mr-1.5">Notice:</span>
+            <span>"{SALON_PRICE_DISCLAIMER}"</span>
+            <span className="block sm:inline sm:ml-2 text-[#7A6D63] text-xs">All prices listed in Indian Rupees (₹).</span>
+          </div>
+        </div>
+
+        {/* ========================================================================= */}
+        {/* 5. SOFT SAGE APPOINTMENT CALLOUT (NEAR BOTTOM OF PAGE)                    */}
+        {/* ========================================================================= */}
+        <section
+          id="soft-sage-appointment-callout"
+          className="relative bg-gradient-to-br from-[#EAF0EB] via-[#F2F7F3] to-[#E5EFE7] rounded-2xl sm:rounded-4xl border border-[#C5D7C9] p-6 sm:p-12 lg:p-14 shadow-[0_12px_35px_rgba(78,117,90,0.08)] overflow-hidden"
+        >
+          {/* Delicate botanical watermarks */}
+          <div className="absolute top-0 right-0 w-48 sm:w-64 h-48 sm:h-64 bg-[#DCE8DE]/60 rounded-full blur-2xl pointer-events-none -translate-y-1/2 translate-x-1/4" />
+          <div className="absolute bottom-0 left-0 w-48 sm:w-64 h-48 sm:h-64 bg-[#D8E6DA]/50 rounded-full blur-2xl pointer-events-none translate-y-1/2 -translate-x-1/4" />
+
+          <div className="relative max-w-4xl mx-auto text-center space-y-4 sm:space-y-6">
+
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/80 border border-[#BDD2C1] text-[#42664D] shadow-2xs">
+              <Leaf className="w-3.5 h-3.5 text-[#4E755A] shrink-0" />
+              <span className="font-sans font-semibold text-[10px] sm:text-[11px] uppercase tracking-[0.2em]">
+                Direct Parlour Desk
+              </span>
+            </div>
+
+            <h2 className="font-serif text-2xl sm:text-4xl lg:text-5xl text-[#243528] font-normal leading-tight">
+              Book Your Appointment
             </h2>
-            <p className="text-stone-600 font-sans font-light max-w-xl mx-auto text-xs sm:text-sm">
-              Combine our highly rated services into structured, curated blocks of pure pampering and receive bundled savings.
+
+            <p className="text-[#4E5F52] font-sans font-light text-xs sm:text-base max-w-xl mx-auto leading-relaxed">
+              We look forward to welcoming you into our parlour. Connect directly via our telephone line or reserve through our digital schedule.
+            </p>
+
+            {/* Prominent Phone Number Display */}
+            <div className="pt-1 sm:pt-2">
+              <span className="text-[10px] sm:text-[11px] font-sans uppercase tracking-widest text-[#5C7061] block mb-1">
+                Concierge Contact Line
+              </span>
+              <a
+                id="sage-callout-phone-display"
+                href={SALON_PHONE_TEL}
+                className="font-serif text-2xl sm:text-4xl lg:text-5xl font-bold text-[#2A4030] hover:text-[#C96850] transition-colors tracking-wider font-mono inline-block break-all"
+              >
+                {SALON_PHONE_NUMBER}
+              </a>
+            </div>
+
+            {/* Clickable Call and Reservation Buttons */}
+            <div className="pt-2 flex flex-col xs:flex-row items-center justify-center gap-3 sm:gap-4 w-full">
+              {/* Clickable Call Button */}
+              <a
+                id="sage-callout-call-button"
+                href={SALON_PHONE_TEL}
+                className="w-full xs:w-auto px-6 sm:px-8 py-3.5 rounded-full bg-[#4E755A] hover:bg-[#3D5F47] text-white font-sans font-semibold text-xs sm:text-sm uppercase tracking-wider transition-all duration-300 shadow-[0_6px_20px_rgba(78,117,90,0.3)] hover:shadow-[0_8px_25px_rgba(78,117,90,0.4)] cursor-pointer flex items-center justify-center gap-2"
+                aria-label={`Call ${SALON_PHONE_NUMBER}`}
+              >
+                <Phone className="w-4 h-4 text-white fill-current shrink-0" />
+                <span>Call {SALON_PHONE_NUMBER}</span>
+              </a>
+
+              {/* Digital Scheduling Button */}
+              {onReserveClick && (
+                <button
+                  id="sage-callout-reserve-online-btn"
+                  onClick={onReserveClick}
+                  className="w-full xs:w-auto px-6 sm:px-7 py-3.5 rounded-full bg-white hover:bg-[#FAF4ED] text-[#243528] border border-[#BDD2C1] font-sans font-semibold text-xs sm:text-sm uppercase tracking-wider transition-all duration-300 shadow-2xs cursor-pointer flex items-center justify-center gap-2"
+                >
+                  <Calendar className="w-4 h-4 text-[#4E755A] shrink-0" />
+                  <span>Reserve Online</span>
+                </button>
+              )}
+            </div>
+
+            {/* Subtle Guarantees */}
+            <div className="pt-2 sm:pt-4 flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-[11px] sm:text-xs text-[#526656] font-sans">
+              <span className="flex items-center gap-1.5">
+                <ShieldCheck className="w-4 h-4 text-[#4E755A] shrink-0" />
+                <span>Hygienic Sanitized Stations</span>
+              </span>
+              <span className="hidden sm:inline text-[#B5C9B9]">•</span>
+              <span className="flex items-center gap-1.5">
+                <Sparkles className="w-4 h-4 text-[#4E755A] shrink-0" />
+                <span>Personalized Consultation</span>
+              </span>
+            </div>
+
+          </div>
+        </section>
+
+        {/* ========================================================================= */}
+        {/* 6. COMMON QUERIES (SOFT WARM ACCORDION)                                    */}
+        {/* ========================================================================= */}
+        <section id="warm-faq-section" className="pt-2 sm:pt-6 max-w-3xl mx-auto space-y-4 sm:space-y-6">
+          <div className="text-center space-y-1">
+            <span className="text-[#C96850] font-sans font-semibold text-xs tracking-[0.25em] uppercase block">
+              ✦ Guidance ✦
+            </span>
+            <h3 className="font-serif text-2xl sm:text-3xl text-[#2A2421] font-light">
+              Frequently Asked Questions
+            </h3>
+            <p className="text-[#6B5E55] font-sans text-xs font-light">
+              Answers regarding our salon services, prep tips, and bookings.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {comboDeals.map((combo, index) => (
-              <div
-                key={index}
-                className="bg-white rounded-3xl p-8 border border-brand-gold/30 hover:border-brand-gold shadow-sm relative flex flex-col justify-between space-y-6 group hover:shadow-md transition-all"
-              >
-                <span className="absolute -top-3 left-8 bg-brand-gold text-white text-[9px] uppercase tracking-widest px-3.5 py-1 rounded-full font-bold shadow-sm">
-                  {combo.badge}
-                </span>
-
-                <div className="space-y-4 pt-1">
-                  <div className="flex justify-between items-baseline">
-                    <div>
-                      <h3 className="font-serif text-2xl font-normal text-brand-charcoal">{combo.title}</h3>
-                      <p className="text-xs text-brand-gold-dark font-medium mt-0.5">{combo.subtitle}</p>
-                    </div>
-                    <div className="text-right">
-                      <span className="block text-2xl font-serif font-bold text-brand-charcoal">${combo.price}</span>
-                      <span className="block text-[11px] text-stone-400 line-through">Value: ${combo.value}</span>
-                    </div>
-                  </div>
-
-                  <p className="text-stone-600 text-xs sm:text-sm font-light leading-relaxed">
-                    {combo.description}
-                  </p>
-
-                  <div className="h-px bg-brand-blush" />
-
-                  <div className="space-y-2.5">
-                    <span className="block text-[10px] uppercase text-stone-400 tracking-wider font-semibold">Ritual includes:</span>
-                    <ul className="space-y-2 text-xs sm:text-sm text-stone-700">
-                      {combo.includes.map((incl, idx) => (
-                        <li key={idx} className="flex items-center space-x-2">
-                          <CheckCircle2 className="w-4 h-4 text-brand-gold shrink-0" />
-                          <span>{incl}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-
-                <div className="pt-4 border-t border-stone-100 flex items-center justify-between gap-4">
-                  <div className="flex items-center space-x-1.5 text-stone-500 text-xs">
-                    <Clock className="w-4 h-4 text-brand-gold" />
-                    <span>Est: {combo.duration}</span>
-                  </div>
-                  <button
-                    id={`book-combo-${index}`}
-                    onClick={() => handleComboBook(combo)}
-                    className="bg-brand-charcoal hover:bg-brand-gold text-white text-xs font-semibold uppercase tracking-widest px-6 py-3.5 rounded-full transition-all cursor-pointer flex items-center space-x-2 shadow-md hover:shadow-lg"
-                  >
-                    <Gift className="w-4 h-4" />
-                    <span>Book Combo</span>
-                  </button>
-                </div>
-
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 4. FREQUENTLY ASKED QUESTIONS */}
-      <section id="faq-section" className="w-full px-4 sm:px-6 lg:px-12 pt-20">
-        <div className="w-[96%] sm:w-[92%] lg:w-[88%] max-w-4xl mx-auto space-y-10">
-          <div className="text-center space-y-3">
-            <span className="text-brand-gold-dark font-sans font-semibold text-xs tracking-widest uppercase block">
-              ✦ Answered Queries ✦
-            </span>
-            <h2 className="font-serif text-3xl text-brand-charcoal font-light">
-              Frequently Asked Questions
-            </h2>
-            <div className="h-0.5 w-16 bg-brand-gold/40 mx-auto" />
-          </div>
-
-          <div className="space-y-4">
+          <div className="space-y-2.5 sm:space-y-3">
             {FAQS.map((faq) => {
               const isOpen = openFaq === faq.id;
               return (
                 <div
                   key={faq.id}
-                  className="bg-white rounded-2xl border border-brand-gold/30 hover:border-brand-gold shadow-2xs overflow-hidden transition-all duration-300"
+                  className="bg-white rounded-xl sm:rounded-2xl border border-[#E8DACB] overflow-hidden transition-all duration-200 shadow-2xs"
                 >
                   <button
-                    id={`faq-btn-${faq.id}`}
+                    id={`faq-warm-btn-${faq.id}`}
                     onClick={() => toggleFaq(faq.id)}
-                    className="w-full px-6 py-5 flex justify-between items-center text-left text-brand-charcoal hover:text-brand-gold-dark focus:outline-none cursor-pointer"
+                    className="w-full px-4 sm:px-5 py-3.5 sm:py-4.5 flex justify-between items-center text-left text-[#2A2421] hover:text-[#C96850] cursor-pointer gap-2"
                   >
-                    <span className="font-serif font-normal text-base sm:text-lg pr-4">{faq.question}</span>
-                    {isOpen ? (
-                      <ChevronUp className="w-5 h-5 text-brand-gold shrink-0" />
-                    ) : (
-                      <ChevronDown className="w-5 h-5 text-brand-gold shrink-0" />
-                    )}
+                    <span className="font-serif text-sm sm:text-base font-normal pr-2">{faq.question}</span>
+                    <ChevronDown className={`w-4 h-4 text-[#7A6D63] shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180 text-[#C96850]' : ''}`} />
                   </button>
 
                   {isOpen && (
@@ -326,7 +711,7 @@ export default function Services({ onBookService }: ServicesProps) {
                       exit={{ height: 0, opacity: 0 }}
                       transition={{ duration: 0.2 }}
                     >
-                      <div className="px-6 pb-6 text-xs sm:text-sm text-stone-600 font-light leading-relaxed border-t border-brand-blush pt-4">
+                      <div className="px-4 sm:px-5 pb-4 sm:pb-5 text-xs sm:text-sm text-[#6B5E55] font-light leading-relaxed border-t border-[#F2ECE4] pt-3">
                         {faq.answer}
                       </div>
                     </motion.div>
@@ -335,7 +720,8 @@ export default function Services({ onBookService }: ServicesProps) {
               );
             })}
           </div>
-        </div>
+        </section>
+
       </section>
 
     </div>

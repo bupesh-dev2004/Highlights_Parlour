@@ -16,12 +16,44 @@ export const SALON_PRICE_CATEGORIES: SalonServiceCategory[] = [
     tagline: 'Artisan Thread Mapping',
     subtitle: 'Flawless shaping and precision facial hair removal using sanitized antibacterial cotton thread.',
     iconName: 'Sparkles',
-    image: 'https://images.unsplash.com/photo-1588516903720-8ceb67f9ef84?auto=format&fit=crop&w=800&q=80',
+    image: '/threading-eyebrow.jpg',
     services: [
-      { id: 'th-eyebrow', name: 'Eyebrow', price: 40, duration: '10 mins', description: 'Precision arch mapping and clean, symmetry-tailored eyebrow shaping.' },
-      { id: 'th-forehead', name: 'Forehead', price: 20, duration: '5 mins', description: 'Gentle forehead clearing to accentuate your natural brow line and facial clarity.' },
-      { id: 'th-upper-lips', name: 'Upper Lips', price: 30, duration: '5 mins', description: 'Ultra-gentle upper lip thread removal with soothing aloe finish.' },
-      { id: 'th-full-face', name: 'Full Face', price: 100, duration: '25 mins', description: 'Comprehensive facial threading covering brows, forehead, upper lips, chin, and side locks.' }
+      {
+        id: 'th-eyebrow',
+        name: 'Eyebrow',
+        price: 40,
+        duration: '10 mins',
+        description: 'Precision arch mapping and clean, symmetry-tailored eyebrow shaping.',
+        image: '/eyebrow-threading.jpg',
+        gallery: ['/eyebrow-threading.jpg', '/eyebrow-threading-2.png']
+      },
+      {
+        id: 'th-forehead',
+        name: 'Forehead',
+        price: 20,
+        duration: '5 mins',
+        description: 'Gentle forehead clearing to accentuate your natural brow line and facial clarity.',
+        image: '/forehead-threading.jpg',
+        gallery: ['/forehead-threading.jpg', '/forehead-threading-2.jpg']
+      },
+      {
+        id: 'th-upper-lips',
+        name: 'Upper Lips',
+        price: 30,
+        duration: '5 mins',
+        description: 'Ultra-gentle upper lip thread removal with soothing aloe finish.',
+        image: '/upper-lips-threading.png',
+        gallery: ['/upper-lips-threading.png', '/upper-lips-threading-2.png']
+      },
+      {
+        id: 'th-full-face',
+        name: 'Full Face',
+        price: 100,
+        duration: '25 mins',
+        description: 'Comprehensive facial threading covering brows, forehead, upper lips, chin, and side locks.',
+        image: '/full-face-threading.png',
+        gallery: ['/full-face-threading.png', '/full-face-threading-2.png']
+      }
     ]
   },
   {
@@ -32,17 +64,105 @@ export const SALON_PRICE_CATEGORIES: SalonServiceCategory[] = [
     iconName: 'Flower2',
     image: 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=800&q=80',
     services: [
-      { id: 'fa-cleanup-detan', name: 'Cleanup De-tan', price: 300, duration: '35 mins', description: 'Express tan removal with botanical steam extraction and cooling herbal hydration.' },
-      { id: 'fa-fruit', name: 'Fruit Facial', price: 500, duration: '45 mins', description: 'Active organic fruit enzymes rich in natural vitamins for supple, vibrant skin.' },
-      { id: 'fa-papaya', name: 'Papaya Facial', price: 600, duration: '50 mins', description: 'Papain enzyme brightening treatment targeting blemishes, spots, and uneven texture.' },
-      { id: 'fa-golden-glow', name: 'Golden Glow Facial', price: 750, duration: '60 mins', description: 'Pure gold extract massage reviving tired skin into a warm, lit-from-within glow.' },
-      { id: 'fa-diamond-brightening', name: 'Diamond Brightening Facial', price: 850, duration: '60 mins', description: 'Micronized diamond dust polish providing crisp optical clarity and deep luminosity.' },
-      { id: 'fa-pearl-whitening', name: 'Pearl Whitening Facial', price: 899, duration: '60 mins', description: 'Crushed pearl minerals restoring hydration balance and evening out sun-damaged skin.' },
-      { id: 'fa-vlcc', name: 'VLCC Facial', price: 750, duration: '55 mins', description: 'Signature professional VLCC botanical blend for cellular detox and firm pore toning.' },
-      { id: 'fa-herbal', name: 'Herbal Facial', price: 699, duration: '50 mins', description: 'Pure Ayurvedic herb extracts and cooling aloe vera soothing sensitive and stressed skin.' },
-      { id: 'fa-charcoal-detan', name: 'Charcoal De-tan Facial', price: 650, duration: '50 mins', description: 'Activated bamboo charcoal mask drawing out urban pollutants, blackheads, and stubborn tan.' },
-      { id: 'fa-organic-bridal', name: 'Organic Bridal Facial', price: 1000, duration: '75 mins', description: 'Intensive luxury bridal ritual using organic concentrates for flawless ceremony-ready skin.' },
-      { id: 'fa-o3-professional', name: 'Professional O3 Facial', price: 1200, duration: '80 mins', description: 'Clinical-grade O3+ active oxygen infusion restoring deep cellular vitality and crystal radiance.' }
+      {
+        id: 'fa-cleanup-detan',
+        name: 'Cleanup De-tan',
+        price: 300,
+        duration: '35 mins',
+        description: 'Express tan removal with botanical steam extraction and cooling herbal hydration.',
+        image: '/cleanup-detan.png',
+        gallery: ['/cleanup-detan.png', '/cleanup-detan-2.png']
+      },
+      {
+        id: 'fa-fruit',
+        name: 'Fruit Facial',
+        price: 500,
+        duration: '45 mins',
+        description: 'Active organic fruit enzymes rich in natural vitamins for supple, vibrant skin.',
+        image: '/fruit-facial.png',
+        gallery: ['/fruit-facial.png', '/fruit-facial-2.png']
+      },
+      {
+        id: 'fa-papaya',
+        name: 'Papaya Facial',
+        price: 600,
+        duration: '50 mins',
+        description: 'Papain enzyme brightening treatment targeting blemishes, spots, and uneven texture.',
+        image: '/papaya-facial.png',
+        gallery: ['/papaya-facial.png', '/papaya-facial-2.jpg']
+      },
+      {
+        id: 'fa-golden-glow',
+        name: 'Golden Glow Facial',
+        price: 750,
+        duration: '60 mins',
+        description: 'Pure gold extract massage reviving tired skin into a warm, lit-from-within glow.',
+        image: '/golden-glow-facial.png',
+        gallery: ['/golden-glow-facial.png', '/golden-glow-facial-2.png']
+      },
+      {
+        id: 'fa-diamond-brightening',
+        name: 'Diamond Brightening Facial',
+        price: 850,
+        duration: '60 mins',
+        description: 'Micronized diamond dust polish providing crisp optical clarity and deep luminosity.',
+        image: '/diamond-facial.png',
+        gallery: ['/diamond-facial.png', '/diamond-facial-2.png']
+      },
+      {
+        id: 'fa-pearl-whitening',
+        name: 'Pearl Whitening Facial',
+        price: 899,
+        duration: '60 mins',
+        description: 'Crushed pearl minerals restoring hydration balance and evening out sun-damaged skin.',
+        image: '/pearl-whitening-facial.png',
+        gallery: ['/pearl-whitening-facial.png', '/pearl-whitening-facial-2.png']
+      },
+      {
+        id: 'fa-vlcc',
+        name: 'VLCC Facial',
+        price: 750,
+        duration: '55 mins',
+        description: 'Signature professional VLCC botanical blend for cellular detox and firm pore toning.',
+        image: '/vlcc-facial.png',
+        gallery: ['/vlcc-facial.png', '/vlcc-facial-2.jpg']
+      },
+      {
+        id: 'fa-herbal',
+        name: 'Herbal Facial',
+        price: 699,
+        duration: '50 mins',
+        description: 'Pure Ayurvedic herb extracts and cooling aloe vera soothing sensitive and stressed skin.',
+        image: '/herbal-facial.png',
+        gallery: ['/herbal-facial.png', '/herbal-facial-2.png']
+      },
+      {
+        id: 'fa-charcoal-detan',
+        name: 'Charcoal De-tan Facial',
+        price: 650,
+        duration: '50 mins',
+        description: 'Activated bamboo charcoal mask drawing out urban pollutants, blackheads, and stubborn tan.',
+        image: '/charcoal-detan-facial.png',
+        gallery: ['/charcoal-detan-facial.png', '/charcoal-detan-facial-2.png']
+      },
+      {
+        id: 'fa-organic-bridal',
+        name: 'Organic Bridal Facial',
+        price: 1000,
+        duration: '75 mins',
+        description: 'Intensive luxury bridal ritual using organic concentrates for flawless ceremony-ready skin.',
+        image: '/organic-bridal-facial.jpg',
+        gallery: ['/organic-bridal-facial.jpg', '/organic-bridal-facial-2.png']
+      },
+      {
+        id: 'fa-o3-professional',
+        name: 'Professional O3 Facial',
+        price: 1200,
+        duration: '80 mins',
+        description: 'Clinical-grade O3+ active oxygen infusion restoring deep cellular vitality and crystal radiance.',
+        image: '/o3-professional-facial.png',
+        gallery: ['/o3-professional-facial.png', '/o3-professional-facial-2.png']
+      }
     ]
   },
   {
@@ -63,14 +183,62 @@ export const SALON_PRICE_CATEGORIES: SalonServiceCategory[] = [
     tagline: 'Couture Precision Shears',
     subtitle: 'Personalized face-framing silhouettes, dynamic movement layers, and modern precision trims.',
     iconName: 'Scissors',
-    image: 'https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?auto=format&fit=crop&w=800&q=80',
+    image: '/hair-cut-category.png',
     services: [
-      { id: 'hc-straight', name: 'Straight Cut', price: 100, duration: '20 mins', description: 'Clean blunt end trim maintaining length with healthy, uniform density.' },
-      { id: 'hc-baby', name: 'Baby Cut', price: 100, duration: '20 mins', description: 'Patient, gentle haircut designed specifically for toddlers and little ones in comfort.' },
-      { id: 'hc-u-cut', name: 'U Cut', price: 200, duration: '30 mins', description: 'Softly curved graceful U-profile creating natural hair swing and effortless elegance.' },
-      { id: 'hc-v-cut', name: 'V Cut', price: 150, duration: '30 mins', description: 'Distinct tapered V-profile emphasizing hair length and sharp architectural lines.' },
-      { id: 'hc-layers', name: 'Layers Cut', price: 350, duration: '45 mins', description: 'Cascading texturized layers delivering natural volume, bounce, and fluid movement.' },
-      { id: 'hc-butterfly', name: 'Butterfly Cut', price: 500, duration: '50 mins', description: 'Trendsetting voluminous butterfly layers with face-framing curtain flow.' }
+      {
+        id: 'hc-straight',
+        name: 'Straight Cut',
+        price: 100,
+        duration: '20 mins',
+        description: 'Clean blunt end trim maintaining length with healthy, uniform density.',
+        image: '/straight-cut.png',
+        gallery: ['/straight-cut.png', '/straight-cut-2.png']
+      },
+      {
+        id: 'hc-baby',
+        name: 'Baby Cut',
+        price: 100,
+        duration: '20 mins',
+        description: 'Patient, gentle haircut designed specifically for toddlers and little ones in comfort.',
+        image: '/baby-cut.png',
+        gallery: ['/baby-cut.png', '/baby-cut-2.png']
+      },
+      {
+        id: 'hc-u-cut',
+        name: 'U Cut',
+        price: 200,
+        duration: '30 mins',
+        description: 'Softly curved graceful U-profile creating natural hair swing and effortless elegance.',
+        image: '/u-cut.png',
+        gallery: ['/u-cut.png', '/u-cut-2.png']
+      },
+      {
+        id: 'hc-v-cut',
+        name: 'V Cut',
+        price: 150,
+        duration: '30 mins',
+        description: 'Distinct tapered V-profile emphasizing hair length and sharp architectural lines.',
+        image: '/v-cut.png',
+        gallery: ['/v-cut.png', '/v-cut-2.jpg']
+      },
+      {
+        id: 'hc-layers',
+        name: 'Layers Cut',
+        price: 350,
+        duration: '45 mins',
+        description: 'Cascading texturized layers delivering natural volume, bounce, and fluid movement.',
+        image: '/layers-cut.png',
+        gallery: ['/layers-cut.png', '/layers-cut-2.jpg']
+      },
+      {
+        id: 'hc-butterfly',
+        name: 'Butterfly Cut',
+        price: 500,
+        duration: '50 mins',
+        description: 'Trendsetting voluminous butterfly layers with face-framing curtain flow.',
+        image: '/butterfly-cut.png',
+        gallery: ['/butterfly-cut.png', '/butterfly-cut-2.png']
+      }
     ]
   },
   {
@@ -81,9 +249,33 @@ export const SALON_PRICE_CATEGORIES: SalonServiceCategory[] = [
     iconName: 'Waves',
     image: 'https://images.unsplash.com/photo-1519699047748-de8e457a634e?auto=format&fit=crop&w=800&q=80',
     services: [
-      { id: 'hs-shampoo-wash', name: 'Hair Spa with Shampoo Wash', price: 599, duration: '45 mins', description: 'Purifying scalp wash, rich herbal hair cream treatment, and relaxing warm towel steam.' },
-      { id: 'hs-loreal', name: "Hair Spa (L'Oréal)", price: 899, duration: '60 mins', description: "Original L'Oréal Professionnel Creambath nourishing dry and sensitized hair with deep hydration." },
-      { id: 'hs-schwarzkopf', name: 'Advanced Hair Spa (Schwarzkopf Professional)', price: 1000, duration: '65 mins', description: 'Schwarzkopf Professional Bonacure cellular repair ampoule treatment restoring damaged hair integrity.' }
+      {
+        id: 'hs-shampoo-wash',
+        name: 'Hair Spa with Shampoo Wash',
+        price: 599,
+        duration: '45 mins',
+        description: 'Purifying scalp wash, rich herbal hair cream treatment, and relaxing warm towel steam.',
+        image: '/hair-spa-shampoo-wash.png',
+        gallery: ['/hair-spa-shampoo-wash.png', '/hair-spa-shampoo-wash-2.jpg']
+      },
+      {
+        id: 'hs-loreal',
+        name: "Hair Spa (L'Oréal)",
+        price: 899,
+        duration: '60 mins',
+        description: "Original L'Oréal Professionnel Creambath nourishing dry and sensitized hair with deep hydration.",
+        image: '/hair-spa-loreal.png',
+        gallery: ['/hair-spa-loreal.png', '/hair-spa-loreal-2.png']
+      },
+      {
+        id: 'hs-schwarzkopf',
+        name: 'Advanced Hair Spa (Schwarzkopf Professional)',
+        price: 1000,
+        duration: '65 mins',
+        description: 'Schwarzkopf Professional Bonacure cellular repair ampoule treatment restoring damaged hair integrity.',
+        image: '/hair-spa-schwarzkopf.png',
+        gallery: ['/hair-spa-schwarzkopf.png', '/hair-spa-schwarzkopf-2.png']
+      }
     ]
   },
   {
@@ -94,12 +286,60 @@ export const SALON_PRICE_CATEGORIES: SalonServiceCategory[] = [
     iconName: 'Flame',
     image: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=800&q=80',
     services: [
-      { id: 'wx-upper-lips', name: 'Upper Lips', price: 40, duration: '5 mins', description: 'Quick, delicate waxing removing fine facial hair with soothing finish.' },
-      { id: 'wx-forehead', name: 'Forehead', price: 60, duration: '10 mins', description: 'Clean hairline waxing leaving forehead smooth and radiant.' },
-      { id: 'wx-under-arms', name: 'Under Arms', price: 89, duration: '15 mins', description: 'Gentle underarm wax ensuring clean, velvety smooth skin.' },
-      { id: 'wx-half-hand', name: 'Half Hand', price: 150, duration: '20 mins', description: 'Half arm waxing from elbow to wrist with skin-soothing lotion.' },
-      { id: 'wx-full-hand', name: 'Full Hand', price: 200, duration: '30 mins', description: 'Complete arm waxing including hands and fingers with post-wax skin nutrition.' },
-      { id: 'wx-half-leg', name: 'Half Leg', price: 200, duration: '25 mins', description: 'Half leg waxing from knee down to ankle.' },
+      {
+        id: 'wx-upper-lips',
+        name: 'Upper Lips',
+        price: 40,
+        duration: '5 mins',
+        description: 'Quick, delicate waxing removing fine facial hair with soothing finish.',
+        image: '/waxing-upper-lips.png',
+        gallery: ['/waxing-upper-lips.png', '/waxing-upper-lips-2.png']
+      },
+      {
+        id: 'wx-forehead',
+        name: 'Forehead',
+        price: 60,
+        duration: '10 mins',
+        description: 'Clean hairline waxing leaving forehead smooth and radiant.',
+        image: '/waxing-forehead.png',
+        gallery: ['/waxing-forehead.png', '/waxing-forehead-2.png']
+      },
+      {
+        id: 'wx-under-arms',
+        name: 'Under Arms',
+        price: 89,
+        duration: '15 mins',
+        description: 'Gentle underarm wax ensuring clean, velvety smooth skin.',
+        image: '/waxing-under-arms.png',
+        gallery: ['/waxing-under-arms.png', '/waxing-under-arms-2.png']
+      },
+      {
+        id: 'wx-half-hand',
+        name: 'Half Hand',
+        price: 150,
+        duration: '20 mins',
+        description: 'Half arm waxing from elbow to wrist with skin-soothing lotion.',
+        image: '/waxing-half-hand.png',
+        gallery: ['/waxing-half-hand.png', '/waxing-half-hand-2.png']
+      },
+      {
+        id: 'wx-full-hand',
+        name: 'Full Hand',
+        price: 200,
+        duration: '30 mins',
+        description: 'Complete arm waxing including hands and fingers with post-wax skin nutrition.',
+        image: '/waxing-full-hand.png',
+        gallery: ['/waxing-full-hand.png', '/waxing-full-hand-2.png']
+      },
+      {
+        id: 'wx-half-leg',
+        name: 'Half Leg',
+        price: 200,
+        duration: '25 mins',
+        description: 'Half leg waxing from knee down to ankle.',
+        image: '/waxing-half-leg.png',
+        gallery: ['/waxing-half-leg.png', '/waxing-half-leg-2.png']
+      },
       { id: 'wx-full-leg', name: 'Full Leg', price: 250, duration: '40 mins', description: 'Full leg waxing finished with cooling botanical gel to hydrate and calm.' },
       { id: 'wx-full-face', name: 'Full Face', price: 150, duration: '25 mins', description: 'Gentle full face waxing eliminating peach fuzz for immaculate skin glow.' }
     ]

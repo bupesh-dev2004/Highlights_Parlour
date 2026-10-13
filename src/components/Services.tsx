@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Sparkles,
@@ -20,7 +20,9 @@ import {
   X,
   Check,
   Clock,
-  HeartHandshake
+  HeartHandshake,
+  Tag,
+  Eye
 } from 'lucide-react';
 import {
   SALON_PRICE_CATEGORIES,
@@ -47,6 +49,35 @@ const CATEGORY_ICONS: Record<string, React.ComponentType<{ className?: string }>
   Flame,
 };
 
+// Curated high quality gallery images per category from existing project / category assets
+const CATEGORY_GALLERY_IMAGES: Record<string, string[]> = {
+  threading: [
+    '/threading-eyebrow.jpg',
+    'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=900&q=80'
+  ],
+  facials: [
+    'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=900&q=80',
+    'https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?auto=format&fit=crop&w=900&q=80',
+    'https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=900&q=80'
+  ],
+  'pedicure-manicure': [
+    'https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=900&q=80',
+    'https://images.unsplash.com/photo-1519014816548-bf5fe059798b?auto=format&fit=crop&w=900&q=80'
+  ],
+  'hair-cut': [
+    'https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?auto=format&fit=crop&w=900&q=80',
+    'https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=900&q=80'
+  ],
+  'hair-spa': [
+    'https://images.unsplash.com/photo-1519699047748-de8e457a634e?auto=format&fit=crop&w=900&q=80',
+    'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=900&q=80'
+  ],
+  waxing: [
+    'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=900&q=80',
+    'https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?auto=format&fit=crop&w=900&q=80'
+  ]
+};
+
 export default function Services({ onBookService, onReserveClick, setCurrentPage }: ServicesProps) {
   const [activeCategoryTab, setActiveCategoryTab] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -54,12 +85,77 @@ export default function Services({ onBookService, onReserveClick, setCurrentPage
   const [openFaq, setOpenFaq] = useState<string | null>(null);
   const [bookedFeedbackId, setBookedFeedbackId] = useState<string | null>(null);
 
+  // Service details view state
+  const [activeServiceDetail, setActiveServiceDetail] = useState<{
+    item: SalonServiceItem;
+    category: SalonServiceCategory;
+  } | null>(null);
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0);
+
+  const modalRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLElement | null>(null);
+
+  // Close modal handler
+  const handleCloseModal = () => {
+    setActiveServiceDetail(null);
+    setSelectedImageIndex(0);
+    if (triggerRef.current) {
+      triggerRef.current.focus();
+    }
+  };
+
+  // Open modal handler
+  const handleOpenDetail = (
+    item: SalonServiceItem,
+    category: SalonServiceCategory,
+    e?: React.MouseEvent<HTMLElement>
+  ) => {
+    if (e) {
+      triggerRef.current = e.currentTarget;
+    }
+    setActiveServiceDetail({ item, category });
+    setSelectedImageIndex(0);
+  };
+
+  // Handle ESC key and focus trapping / lock body scroll
+  useEffect(() => {
+    if (!activeServiceDetail) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        handleCloseModal();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    // Prevent background scrolling while modal is open
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    // Focus primary interactive element in modal
+    const timer = setTimeout(() => {
+      const closeBtn = document.getElementById('close-service-modal-btn');
+      if (closeBtn) {
+        closeBtn.focus();
+      }
+    }, 50);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = prevOverflow;
+      clearTimeout(timer);
+    };
+  }, [activeServiceDetail]);
+
   const toggleFaq = (id: string) => {
     setOpenFaq(prev => (prev === id ? null : id));
   };
 
   // Convert SalonServiceItem to full Service format for booking flow when user books
   const handleSelectService = (item: SalonServiceItem, category: SalonServiceCategory) => {
+    const serviceImage = item.image || category.image;
     const fullService: Service = {
       id: `salon-${item.id}`,
       name: item.name,
@@ -67,7 +163,7 @@ export default function Services({ onBookService, onReserveClick, setCurrentPage
       description: item.description || `${item.name} treatment under ${category.name}.`,
       duration: item.duration || '30 mins',
       price: item.price,
-      image: category.image,
+      image: serviceImage,
       features: [
         `Category: ${category.name}`,
         'Sterilized equipment & organic skin-friendly formulations',
@@ -218,17 +314,22 @@ export default function Services({ onBookService, onReserveClick, setCurrentPage
             <div className="absolute -inset-2 sm:-inset-3 bg-gradient-to-tr from-[#F5DBCB] to-[#E5EBE3] rounded-[2rem] sm:rounded-[3rem] rotate-2 -z-10 opacity-70" />
             <div className="absolute -inset-1 border border-[#D5C2B1]/60 rounded-[1.9rem] sm:rounded-[2.8rem] -rotate-1 -z-10" />
 
-            {/* Featured Salon Photo in responsive soft silhouette */}
-            <div className="relative w-full max-w-[340px] sm:max-w-[420px] aspect-[4/5] sm:aspect-auto sm:h-[420px] rounded-[1.8rem] sm:rounded-[2.6rem] overflow-hidden shadow-[0_15px_35px_rgba(74,58,49,0.08)] border-2 border-white">
+            {/* Featured Salon Art Silhouette with Refined Decorative Frame */}
+            <div className="relative w-full max-w-[340px] sm:max-w-[420px] aspect-[4/5] sm:aspect-auto sm:h-[420px] rounded-[1.8rem] sm:rounded-[2.6rem] overflow-hidden shadow-[0_15px_35px_rgba(74,58,49,0.08)] border border-[#C96850]/30 ring-1 ring-[#E8DACB] bg-gradient-to-b from-[#FAF4ED] via-[#FDFBF7] to-[#F3ECE3] flex items-center justify-center p-6 group">
+              {/* Refined delicate inner decorative inset border */}
+              <div className="absolute inset-2 sm:inset-3 rounded-[1.4rem] sm:rounded-[2.2rem] border border-[#C96850]/20 pointer-events-none transition-colors duration-500 group-hover:border-[#C96850]/35" />
+
+              {/* Soft luminous halo behind the emblem */}
+              <div className="absolute w-56 h-56 rounded-full bg-gradient-to-tr from-[#E8BA9B]/40 to-[#D4AF37]/20 blur-2xl pointer-events-none" />
+
               <img
-                src="/step-out-confident.png"
-                alt="Highlights Makeoverartistry Salon Experience"
-                className="w-full h-full object-cover object-top hover:scale-105 transition-transform duration-700"
+                src="/service-hero-art-transparent.png"
+                alt="Highlights Makeoverartistry Luxury Royal Glow"
+                className="relative z-10 w-full max-w-[270px] sm:max-w-[310px] h-auto object-contain drop-shadow-[0_10px_20px_rgba(180,120,40,0.18)] hover:scale-105 transition-transform duration-700"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#2A2421]/50 via-transparent to-transparent pointer-events-none" />
 
               {/* Floating Badge */}
-              <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4 bg-white/95 backdrop-blur-md px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-2xl border border-[#E8DACB] shadow-sm flex items-center justify-between">
+              <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4 bg-white/95 backdrop-blur-md px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-2xl border border-[#E8DACB] shadow-sm flex items-center justify-between z-20">
                 <div>
                   <span className="font-serif text-xs sm:text-sm font-semibold text-[#2A2421] block">Highlights Artistry</span>
                   <span className="text-[10px] sm:text-[11px] text-[#7A6D63] font-sans">Crafted with care in our tranquil studio</span>
@@ -412,6 +513,22 @@ export default function Services({ onBookService, onReserveClick, setCurrentPage
               ))}
             </div>
           </div>
+
+          {/* Intuitive Guest Guidance Banner: Click/Tap Service to View Photos & Details */}
+          <div className="flex items-center justify-between gap-3 px-4 sm:px-5 py-2.5 sm:py-3 rounded-2xl bg-[#FAF3EC] border border-[#E8DACB] text-[#5E5249] shadow-2xs">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <span className="w-6 h-6 rounded-full bg-[#C96850]/15 text-[#C96850] flex items-center justify-center shrink-0">
+                <Sparkle className="w-3.5 h-3.5" />
+              </span>
+              <p className="text-xs sm:text-[13px] font-sans font-light leading-snug">
+                <strong className="font-semibold text-[#2A2421]">Tip:</strong> Click or tap any service name to explore treatment photos, inclusions, and full details.
+              </p>
+            </div>
+            <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-sans uppercase tracking-wider text-[#C96850] font-semibold shrink-0">
+              <span>View Details</span>
+              <ArrowRight className="w-3 h-3" />
+            </span>
+          </div>
         </div>
 
         {/* Empty Search Fallback */}
@@ -488,12 +605,28 @@ export default function Services({ onBookService, onReserveClick, setCurrentPage
                       return (
                         <div
                           key={item.id}
-                          className="py-3 px-3.5 -mx-1 sm:-mx-2 rounded-xl sm:rounded-2xl hover:bg-[#FAF6F2] transition-colors flex items-center justify-between gap-3 sm:gap-4 group border border-transparent hover:border-[#E8DACB]/60"
+                          className="py-3 px-3.5 -mx-1 sm:-mx-2 rounded-xl sm:rounded-2xl hover:bg-[#FAF6F2] hover:shadow-2xs transition-all flex items-center justify-between gap-3 sm:gap-4 group border border-transparent hover:border-[#E8DACB]/80"
                         >
-                          <div className="space-y-0.5 flex-1 min-w-0 pr-2">
-                            <div className="flex items-center gap-2">
-                              <span className="font-serif text-sm sm:text-base lg:text-lg text-[#2A2421] group-hover:text-[#C96850] transition-colors font-medium block leading-snug">
-                                {item.name}
+                          <div
+                            onClick={(e) => handleOpenDetail(item, cat, e)}
+                            className="space-y-0.5 flex-1 min-w-0 pr-2 cursor-pointer group/clickable"
+                            role="button"
+                            tabIndex={0}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                handleOpenDetail(item, cat);
+                              }
+                            }}
+                            aria-label={`View photos and details for ${item.name}`}
+                          >
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="font-serif text-sm sm:text-base lg:text-lg text-[#2A2421] group-hover/clickable:text-[#C96850] transition-colors font-medium text-left leading-snug inline-flex items-center gap-1.5">
+                                <span>{item.name}</span>
+                                <span className="inline-flex items-center gap-0.5 text-[10px] font-sans font-normal text-[#C96850] opacity-0 group-hover/clickable:opacity-100 sm:opacity-70 transition-opacity bg-[#FAF0ED] px-1.5 py-0.5 rounded-full border border-[#E8BAB0]/60">
+                                  <span>Details</span>
+                                  <ArrowRight className="w-2.5 h-2.5" />
+                                </span>
                               </span>
                               {item.duration && (
                                 <span className="text-[10px] text-[#8C7D73] font-sans font-light flex items-center gap-0.5 whitespace-nowrap">
@@ -503,7 +636,7 @@ export default function Services({ onBookService, onReserveClick, setCurrentPage
                               )}
                             </div>
                             {item.description && (
-                              <p className="text-[11px] sm:text-xs text-[#7A6D63] font-sans font-light line-clamp-1">
+                              <p className="text-[11px] sm:text-xs text-[#7A6D63] font-sans font-light line-clamp-1 group-hover/clickable:text-[#5E5249]">
                                 {item.description}
                               </p>
                             )}
@@ -608,9 +741,19 @@ export default function Services({ onBookService, onReserveClick, setCurrentPage
                                     <span>Signature Ritual</span>
                                   </span>
                                 )}
-                                <h4 className="font-serif text-base sm:text-lg text-[#2A2421] group-hover:text-[#C96850] transition-colors font-medium leading-snug">
-                                  {item.name}
-                                </h4>
+                                <button
+                                  type="button"
+                                  onClick={(e) => handleOpenDetail(item, cat, e)}
+                                  className="font-serif text-base sm:text-lg text-[#2A2421] hover:text-[#C96850] focus-visible:text-[#C96850] focus-visible:outline-2 focus-visible:outline-[#C96850] focus-visible:outline-offset-2 rounded-xs transition-colors font-medium text-left leading-snug cursor-pointer group/title inline-flex items-center gap-1.5"
+                                  title={`View details for ${item.name}`}
+                                  aria-haspopup="dialog"
+                                >
+                                  <span>{item.name}</span>
+                                  <span className="inline-flex items-center gap-0.5 text-[9px] font-sans font-normal text-[#C96850] opacity-0 group-hover:opacity-100 sm:opacity-75 transition-opacity bg-[#FAF0ED] px-1.5 py-0.5 rounded-full border border-[#E8BAB0]/60">
+                                    <span>Details</span>
+                                    <ArrowRight className="w-2.5 h-2.5" />
+                                  </span>
+                                </button>
                               </div>
                               <span className="font-serif text-base sm:text-lg font-bold text-[#C96850] shrink-0 whitespace-nowrap">
                                 ₹{item.price}
@@ -709,12 +852,28 @@ export default function Services({ onBookService, onReserveClick, setCurrentPage
                       return (
                         <div
                           key={item.id}
-                          className="py-3 sm:py-4 px-2 sm:px-3 -mx-1 sm:-mx-2 rounded-xl sm:rounded-2xl hover:bg-[#FAF6F2] transition-colors flex items-center justify-between gap-3 sm:gap-6 group"
+                          className="py-3 sm:py-4 px-2 sm:px-3.5 -mx-1 sm:-mx-2 rounded-xl sm:rounded-2xl hover:bg-[#FAF6F2] hover:shadow-2xs transition-all flex items-center justify-between gap-3 sm:gap-6 group border border-transparent hover:border-[#E8DACB]/70"
                         >
-                          <div className="space-y-0.5 flex-1 min-w-0 pr-2">
-                            <div className="flex items-center gap-2">
-                              <span className="font-serif text-sm sm:text-base lg:text-lg text-[#2A2421] group-hover:text-[#C96850] transition-colors font-medium block leading-snug">
-                                {item.name}
+                          <div
+                            onClick={(e) => handleOpenDetail(item, cat, e)}
+                            className="space-y-0.5 flex-1 min-w-0 pr-2 cursor-pointer group/clickable"
+                            role="button"
+                            tabIndex={0}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                handleOpenDetail(item, cat);
+                              }
+                            }}
+                            aria-label={`View photos and details for ${item.name}`}
+                          >
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="font-serif text-sm sm:text-base lg:text-lg text-[#2A2421] group-hover/clickable:text-[#C96850] transition-colors font-medium text-left leading-snug inline-flex items-center gap-1.5">
+                                <span>{item.name}</span>
+                                <span className="inline-flex items-center gap-0.5 text-[10px] font-sans font-normal text-[#C96850] opacity-0 group-hover/clickable:opacity-100 sm:opacity-70 transition-opacity bg-[#FAF0ED] px-1.5 py-0.5 rounded-full border border-[#E8BAB0]/60">
+                                  <span>Details</span>
+                                  <ArrowRight className="w-2.5 h-2.5" />
+                                </span>
                               </span>
                               {item.duration && (
                                 <span className="text-[10px] text-[#8C7D73] font-sans font-light flex items-center gap-0.5 whitespace-nowrap">
@@ -818,9 +977,19 @@ export default function Services({ onBookService, onReserveClick, setCurrentPage
                       >
                         <div className="space-y-1 sm:space-y-1.5">
                           <div className="flex items-start justify-between gap-3">
-                            <h4 className="font-serif text-base sm:text-lg lg:text-xl text-[#2A2421] group-hover:text-[#4E755A] transition-colors font-medium leading-snug">
-                              {item.name}
-                            </h4>
+                            <button
+                              type="button"
+                              onClick={(e) => handleOpenDetail(item, cat, e)}
+                              className="font-serif text-base sm:text-lg lg:text-xl text-[#2A2421] hover:text-[#4E755A] focus-visible:text-[#4E755A] focus-visible:outline-2 focus-visible:outline-[#4E755A] focus-visible:outline-offset-2 rounded-xs transition-colors font-medium text-left leading-snug cursor-pointer group/title inline-flex items-center gap-1.5"
+                              title={`View details for ${item.name}`}
+                              aria-haspopup="dialog"
+                            >
+                              <span>{item.name}</span>
+                              <span className="inline-flex items-center gap-0.5 text-[9px] font-sans font-normal text-[#4E755A] opacity-0 group-hover:opacity-100 sm:opacity-75 transition-opacity bg-[#E5EFE7] px-1.5 py-0.5 rounded-full border border-[#CCDDCF]">
+                                <span>Details</span>
+                                <ArrowRight className="w-2.5 h-2.5" />
+                              </span>
+                            </button>
                             <span className="font-serif text-base sm:text-lg lg:text-xl font-bold text-[#4E755A] whitespace-nowrap">
                               ₹{item.price}
                             </span>
@@ -1026,6 +1195,256 @@ export default function Services({ onBookService, onReserveClick, setCurrentPage
         </section>
 
       </section>
+
+      {/* ========================================================================= */}
+      {/* 7. ACCESSIBLE SERVICE DETAILS MODAL / DIALOG                               */}
+      {/* ========================================================================= */}
+      <AnimatePresence>
+        {activeServiceDetail && (() => {
+          const { item, category } = activeServiceDetail;
+          const isJustBooked = bookedFeedbackId === item.id;
+          const CategoryIcon = CATEGORY_ICONS[category.iconName] || Sparkles;
+
+          // Resolve image gallery for this service: item gallery, item image, or category image gallery
+          const galleryImages =
+            item.gallery && item.gallery.length > 0
+              ? item.gallery
+              : item.image
+              ? [item.image, ...(CATEGORY_GALLERY_IMAGES[category.id] || [])]
+              : CATEGORY_GALLERY_IMAGES[category.id] || [category.image];
+          const activeImage = galleryImages[selectedImageIndex] || item.image || category.image;
+
+          return (
+            <div
+              className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 md:p-6 overflow-y-auto"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="service-modal-title"
+              aria-describedby="service-modal-description"
+            >
+              {/* Backdrop with smooth blur and warm tint */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.25 }}
+                onClick={handleCloseModal}
+                className="fixed inset-0 bg-[#1F1916]/60 backdrop-blur-sm cursor-pointer"
+                aria-hidden="true"
+              />
+
+              {/* Modal Container */}
+              <motion.div
+                ref={modalRef}
+                initial={{ opacity: 0, scale: 0.95, y: 16 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.96, y: 16 }}
+                transition={{ type: 'spring', damping: 26, stiffness: 320 }}
+                className="relative w-full max-w-xl sm:max-w-2xl lg:max-w-3xl bg-[#FCFBF9] rounded-2xl sm:rounded-3xl lg:rounded-4xl shadow-[0_25px_70px_rgba(30,20,15,0.4)] border border-[#E8DACB] overflow-hidden my-auto z-10 flex flex-col max-h-[92vh] sm:max-h-[90vh]"
+              >
+                {/* Modal Header Bar with Close Button */}
+                <div className="flex items-center justify-between px-4 sm:px-6 lg:px-7 py-3.5 sm:py-4.5 border-b border-[#EFE5DB] bg-white/90 backdrop-blur-md sticky top-0 z-20">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#FAF0ED] text-[#C96850] flex items-center justify-center border border-[#E8BAB0]/70 shrink-0">
+                      <CategoryIcon className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <span className="text-[10px] sm:text-[11px] font-sans uppercase tracking-[0.2em] font-semibold text-[#C96850] block leading-none truncate">
+                        {category.name}
+                      </span>
+                      <span className="text-[11px] sm:text-xs text-[#8C7D73] font-sans font-light truncate block mt-0.5">
+                        {category.tagline}
+                      </span>
+                    </div>
+                  </div>
+
+                  <button
+                    id="close-service-modal-btn"
+                    type="button"
+                    onClick={handleCloseModal}
+                    className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#FAF6F2] hover:bg-[#EFE5DC] text-[#4A3E37] hover:text-[#1F1916] flex items-center justify-center transition-colors cursor-pointer border border-[#E5DACD] focus-visible:outline-2 focus-visible:outline-[#C96850] shrink-0 ml-2"
+                    aria-label="Close service details"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* Modal Scrollable Body */}
+                <div className="overflow-y-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-5 sm:space-y-6">
+                  {/* Image & Gallery Carousel Preview */}
+                  <div className="space-y-3">
+                    <div className="relative w-full aspect-[4/3] sm:aspect-[16/10] md:aspect-[16/10] max-h-[50vh] rounded-2xl overflow-hidden border border-[#E8DACB] shadow-sm bg-[#221C19] flex items-center justify-center">
+                      {/* Blurred Ambient Background Layer to give seamless edge fill */}
+                      <img
+                        src={activeImage}
+                        alt=""
+                        aria-hidden="true"
+                        className="absolute inset-0 w-full h-full object-cover blur-xl opacity-35 scale-110 pointer-events-none select-none"
+                      />
+
+                      {/* Foreground Subject Image - Perfectly Centered, Unstretched & Natural Aspect Ratio */}
+                      <img
+                        src={activeImage}
+                        alt={`${item.name} - ${category.name}`}
+                        className="relative z-10 w-full h-full object-contain object-center transition-all duration-300 drop-shadow-md"
+                      />
+
+                      {/* Subtle Vignette Gradient for Depth */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#1F1916]/50 via-transparent to-transparent pointer-events-none z-10" />
+
+                      {/* Image Category Badge */}
+                      <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-20 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/70 text-[#2A2421] text-[10px] sm:text-xs font-sans font-semibold uppercase tracking-wider flex items-center gap-1.5 shadow-sm">
+                        <Sparkle className="w-3 h-3 text-[#C96850]" />
+                        <span>Highlights Studio Ritual</span>
+                      </div>
+                    </div>
+
+                    {/* Gallery Thumbnails (Cleanly Aligned Below Main Image) */}
+                    {galleryImages.length > 1 && (
+                      <div className="flex items-center gap-2.5 pt-1 overflow-x-auto pb-1 scrollbar-none">
+                        <span className="text-[10px] sm:text-[11px] uppercase tracking-wider font-sans text-[#8C7D73] font-semibold shrink-0 mr-0.5">
+                          Photos ({galleryImages.length}):
+                        </span>
+                        {galleryImages.map((img, idx) => (
+                          <button
+                            key={idx}
+                            type="button"
+                            onClick={() => setSelectedImageIndex(idx)}
+                            className={`group relative w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden border-2 transition-all cursor-pointer shrink-0 bg-[#221C19] flex items-center justify-center ${
+                              selectedImageIndex === idx
+                                ? 'border-[#C96850] ring-2 ring-[#C96850]/30 scale-105 shadow-md'
+                                : 'border-[#E8DACB] opacity-75 hover:opacity-100 hover:border-[#C96850]/60'
+                            }`}
+                            aria-label={`View photo ${idx + 1} for ${item.name}`}
+                          >
+                            <img
+                              src={img}
+                              alt=""
+                              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                            />
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Title & Core Price / Duration Metrics */}
+                  <div className="space-y-3 pb-4 border-b border-[#EFE5DB]">
+                    <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2">
+                      <h3
+                        id="service-modal-title"
+                        className="font-serif text-2xl sm:text-3xl text-[#2A2421] font-normal leading-tight"
+                      >
+                        {item.name}
+                      </h3>
+                      <div className="flex items-baseline gap-1.5 shrink-0">
+                        <span className="text-xs uppercase tracking-wider font-sans text-[#8C7D73]">Tariff:</span>
+                        <span className="font-serif text-2xl sm:text-3xl font-bold text-[#C96850]">
+                          ₹{item.price}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-3 text-xs text-[#7A6D63] font-sans">
+                      {item.duration && (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FAF6F2] border border-[#E5DACD] text-[#5E5249] font-medium">
+                          <Clock className="w-3.5 h-3.5 text-[#C96850]" />
+                          <span>Duration: {item.duration}</span>
+                        </span>
+                      )}
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EAF0EB] border border-[#CFDFD2] text-[#4E755A] font-medium">
+                        <Tag className="w-3.5 h-3.5 text-[#4E755A]" />
+                        <span>Category: {category.name}</span>
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Description Section */}
+                  <div className="space-y-2">
+                    <span className="text-[11px] uppercase tracking-wider font-sans font-semibold text-[#8C7D73] block">
+                      Treatment Description &amp; Details
+                    </span>
+                    <p
+                      id="service-modal-description"
+                      className="text-xs sm:text-sm text-[#5E5249] font-sans font-light leading-relaxed bg-[#FAF6F2] p-4 rounded-2xl border border-[#EAE0D4]"
+                    >
+                      {item.description || `${item.name} treatment under ${category.name}.`}
+                    </p>
+                    <p className="text-[11px] text-[#7A6D63] font-sans font-light italic">
+                      "{category.subtitle}"
+                    </p>
+                  </div>
+
+                  {/* Verified Service Guarantees (Present in Project) */}
+                  <div className="space-y-2 pt-2 border-t border-[#EFE5DB]">
+                    <span className="text-[11px] uppercase tracking-wider font-sans font-semibold text-[#8C7D73] block">
+                      Highlights Studio Inclusions
+                    </span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-[#6B5E55] font-sans">
+                      <div className="flex items-center gap-2 p-2.5 rounded-xl bg-white border border-[#EAE0D4]">
+                        <ShieldCheck className="w-4 h-4 text-[#6B8E76] shrink-0" />
+                        <span>Sterilized single-use linen &amp; tools</span>
+                      </div>
+                      <div className="flex items-center gap-2 p-2.5 rounded-xl bg-white border border-[#EAE0D4]">
+                        <Sparkles className="w-4 h-4 text-[#C96850] shrink-0" />
+                        <span>Certified beauty artisan care</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Modal Footer Controls */}
+                <div className="px-5 sm:px-8 py-4 sm:py-5 border-t border-[#EFE5DB] bg-white flex flex-col sm:flex-row items-center justify-between gap-3 sticky bottom-0 z-20">
+                  <div className="text-center sm:text-left">
+                    <span className="text-[10px] uppercase tracking-wider text-[#8C7D73] block font-sans">
+                      Total Payable Rate
+                    </span>
+                    <span className="font-serif text-xl sm:text-2xl font-bold text-[#2A2421]">
+                      ₹{item.price}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2.5 w-full sm:w-auto">
+                    <button
+                      type="button"
+                      onClick={handleCloseModal}
+                      className="flex-1 sm:flex-none px-4 py-2.5 rounded-full border border-[#D5C2B1] text-[#4A3E37] hover:bg-[#FAF6F2] text-xs uppercase tracking-wider font-semibold font-sans transition-colors cursor-pointer"
+                    >
+                      Back to Menu
+                    </button>
+
+                    <button
+                      id="modal-book-this-service-btn"
+                      type="button"
+                      onClick={() => {
+                        handleCloseModal();
+                        handleSelectService(item, category);
+                      }}
+                      className={`flex-1 sm:flex-none px-6 py-2.5 rounded-full text-xs uppercase tracking-wider font-semibold font-sans transition-all duration-300 shadow-sm cursor-pointer flex items-center justify-center gap-2 ${
+                        isJustBooked
+                          ? 'bg-[#4E755A] text-white'
+                          : 'bg-[#C96850] hover:bg-[#B3563F] text-white hover:shadow-[0_4px_15px_rgba(201,104,80,0.3)]'
+                      }`}
+                    >
+                      {isJustBooked ? (
+                        <>
+                          <Check className="w-3.5 h-3.5" />
+                          <span>Added to Schedule</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>Book this service</span>
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          );
+        })()}
+      </AnimatePresence>
 
     </div>
   );

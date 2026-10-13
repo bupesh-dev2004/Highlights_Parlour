@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'motion/react';
-import { Award, Sparkles, ShieldCheck, Calendar, ArrowRight, Star, ChevronLeft, ChevronRight } from 'lucide-react';
-import { SERVICES, GALLERY_ITEMS } from '../data';
+import { Award, Sparkles, ShieldCheck, Calendar, ArrowRight, Star, ChevronLeft, ChevronRight, Clock } from 'lucide-react';
+import { SALON_PRICE_CATEGORIES, GALLERY_ITEMS } from '../data';
 import { Service, Testimonial } from '../types';
 import { getStoredReviews } from '../lib/reviewStorage';
 import SocialCards from './ui/card-fan-carousel';
@@ -37,8 +37,44 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
     return () => window.removeEventListener('highlights_reviews_updated', load);
   }, []);
 
-  // Take first 6 popular services
-  const popularServices = SERVICES.slice(0, 6);
+  // Curated representative rituals from the actual salon price categories & services catalog
+  const popularServices: Service[] = useMemo(() => {
+    // Select 6 prominent guest favorite rituals across distinct categories
+    const selectedKeys: Array<{ catId: string; serviceId: string }> = [
+      { catId: 'facials', serviceId: 'fa-golden-glow' },        // Golden Glow Facial - ₹750
+      { catId: 'hair-cut', serviceId: 'hc-butterfly' },          // Butterfly Cut - ₹500
+      { catId: 'hair-spa', serviceId: 'hs-loreal' },             // Hair Spa (L'Oréal) - ₹899
+      { catId: 'pedicure-manicure', serviceId: 'pm-pedicure' },   // Pedicure - ₹400
+      { catId: 'threading', serviceId: 'th-eyebrow' },           // Eyebrow - ₹40
+      { catId: 'waxing', serviceId: 'wx-full-hand' }             // Full Hand - ₹200
+    ];
+
+    const results: Service[] = [];
+
+    for (const key of selectedKeys) {
+      const category = SALON_PRICE_CATEGORIES.find((c) => c.id === key.catId);
+      if (!category) continue;
+      const item = category.services.find((s) => s.id === key.serviceId);
+      if (!item) continue;
+
+      results.push({
+        id: `salon-${item.id}`,
+        name: item.name,
+        category: category.name as Service['category'],
+        description: item.description || `${item.name} ritual under ${category.name}.`,
+        duration: item.duration || '30 mins',
+        price: item.price,
+        image: item.image || category.image,
+        features: [
+          `Category: ${category.name}`,
+          'Sterilized equipment & organic skin-friendly formulations',
+          'Certified beauty artisan care'
+        ]
+      });
+    }
+
+    return results;
+  }, []);
 
   // Take gallery items for teaser carousel
   const fanCarouselCards = GALLERY_ITEMS.map((item) => ({
@@ -363,13 +399,14 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7 lg:gap-8 items-stretch">
             {popularServices.map((service) => (
               <div
                 key={service.id}
-                className="bg-white rounded-2xl overflow-hidden border border-brand-blush/80 hover:border-brand-gold/40 shadow-2xs hover:shadow-md transition-all duration-400 flex flex-col group"
+                className="bg-white rounded-2xl sm:rounded-3xl overflow-hidden border border-[#E8DACB] hover:border-[#C96850]/50 shadow-[0_4px_20px_rgba(74,58,49,0.05)] hover:shadow-[0_10px_30px_rgba(74,58,49,0.1)] transition-all duration-300 flex flex-col h-full group"
               >
-                <div className="h-60 relative overflow-hidden shrink-0 bg-stone-100">
+                {/* Consistent Image Aspect Ratio Header */}
+                <div className="relative aspect-[16/10] w-full overflow-hidden shrink-0 bg-[#F5EFE8]">
                   <img
                     src={service.image}
                     alt={service.name}
@@ -377,34 +414,62 @@ export default function Home({ setCurrentPage, onReserveClick, onBookService }: 
                     referrerPolicy="no-referrer"
                     loading="lazy"
                   />
-                  <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-semibold tracking-wider text-brand-gold-dark shadow-2xs border border-brand-blush">
-                    ${service.price}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#2A2421]/60 via-transparent to-transparent pointer-events-none" />
+
+                  {/* Price Badge in Indian Rupees (₹) */}
+                  <div className="absolute top-3.5 right-3.5 bg-white/95 backdrop-blur-md px-3 py-1 rounded-full text-xs sm:text-sm font-bold font-serif text-[#C96850] shadow-xs border border-[#E8BAB0]/70">
+                    ₹{service.price}
                   </div>
-                  <div className="absolute bottom-3 left-3 bg-brand-charcoal/80 backdrop-blur-xs px-2.5 py-1 rounded-md text-[10px] text-white tracking-widest uppercase font-medium">
-                    {service.duration}
+
+                  {/* Category Pill Over Image */}
+                  <div className="absolute bottom-3 left-3.5 bg-[#2A2421]/80 backdrop-blur-xs px-2.5 py-1 rounded-md text-[10px] sm:text-[11px] text-[#FAF4ED] tracking-wider uppercase font-sans font-medium flex items-center gap-1.5">
+                    <Sparkles className="w-3 h-3 text-[#E29578]" />
+                    <span>{service.category}</span>
                   </div>
                 </div>
 
-                <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
+                {/* Card Body with Flex Column & Justified Content */}
+                <div className="p-5 sm:p-6 flex-1 flex flex-col justify-between gap-5">
                   <div className="space-y-2">
-                    <span className="text-[10px] text-brand-gold-dark uppercase tracking-[0.2em] font-semibold block">
-                      {service.category}
-                    </span>
-                    <h3 className="font-serif text-xl font-medium text-brand-charcoal group-hover:text-brand-gold-dark transition-colors">
+                    {/* Duration Sub-pill */}
+                    <div className="flex items-center gap-1.5 text-[11px] text-[#8C7D73] font-sans font-light">
+                      <Clock className="w-3 h-3 text-[#C96850] shrink-0" />
+                      <span>{service.duration}</span>
+                    </div>
+
+                    {/* Ritual Title */}
+                    <h3 className="font-serif text-lg sm:text-xl font-medium text-[#2A2421] group-hover:text-[#C96850] transition-colors leading-snug line-clamp-1">
                       {service.name}
                     </h3>
-                    <p className="text-stone-500 text-xs font-light leading-relaxed line-clamp-2">
+
+                    {/* Description - Normalized across cards with 2-line clamp */}
+                    <p className="text-[#6B5E55] text-xs sm:text-sm font-sans font-light leading-relaxed line-clamp-2 min-h-[2.5rem]">
                       {service.description}
                     </p>
                   </div>
 
-                  <button
-                    id={`book-popular-${service.id}`}
-                    onClick={() => onBookService(service)}
-                    className="w-full bg-brand-cream hover:bg-brand-charcoal text-brand-charcoal hover:text-white border border-brand-gold/30 hover:border-brand-charcoal text-xs font-semibold py-3 rounded-xl uppercase tracking-widest transition-all duration-300 cursor-pointer text-center"
-                  >
-                    Reserve Service
-                  </button>
+                  {/* Bottom Footer Section: Price Summary & Booking CTA aligned across row */}
+                  <div className="pt-3 border-t border-[#F2ECE4] flex items-center justify-between gap-3 mt-auto">
+                    <div>
+                      <span className="text-[10px] uppercase tracking-wider text-[#8C7D73] block font-sans">
+                        Rate
+                      </span>
+                      <span className="font-serif text-base sm:text-lg font-bold text-[#2A2421]">
+                        ₹{service.price}
+                      </span>
+                    </div>
+
+                    <button
+                      id={`book-popular-${service.id}`}
+                      type="button"
+                      onClick={() => onBookService(service)}
+                      className="px-4 sm:px-5 py-2.5 rounded-full bg-[#FAF0ED] hover:bg-[#C96850] text-[#C96850] hover:text-white border border-[#E8BAB0]/80 text-[11px] sm:text-xs font-semibold uppercase tracking-wider font-sans transition-all duration-200 cursor-pointer flex items-center gap-1.5 shadow-2xs hover:shadow-xs"
+                      title={`Book ${service.name}`}
+                    >
+                      <span>Book Ritual</span>
+                      <ArrowRight className="w-3 h-3" />
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}

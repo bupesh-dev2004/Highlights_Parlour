@@ -31,6 +31,8 @@ export interface SalonServiceItem {
   duration?: string;
   description?: string;
   popular?: boolean;
+  image?: string;
+  gallery?: string[];
 }
 
 export interface SalonServiceCategory {
